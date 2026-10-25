@@ -13,7 +13,7 @@
   </main>
   <script src="../../assets/md.js"></script>
   <script>
-    fetch("hypothesis-testing-study-guide.md")
+    fetch("studijni-pruvodce.md")
       .then((r) => r.ok ? r.text() : Promise.reject(r.status))
       .then((text) => { document.getElementById("doc").innerHTML = renderMarkdown(text); })
       .catch(() => { document.getElementById("doc").textContent = "Průvodce se nepodařilo načíst. Stránka se musí otevřít přes server, ne přímo ze souboru."; });

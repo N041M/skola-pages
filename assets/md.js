@@ -5,7 +5,7 @@ function renderMarkdown(source) {
   const inline = (s) => esc(s)
     .replace(/`([^`]+)`/g, "<code>$1</code>")
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-  const cells = (line) => line.trim().replace(/^\||\|$/g, "").split("|").map((c) => c.trim());
+  const cells = (line) => line.trim().replace(/^\||\|$/g, "").split(/(?<!\\)\|/).map((c) => c.trim().replace(/\\\|/g, "|"));
   const isBlockStart = (l) => /^(#{1,4} |\|)/.test(l) || /^(\d+\.|[-*]) /.test(l);
 
   const lines = source.replace(/\r\n?/g, "\n").split("\n");
