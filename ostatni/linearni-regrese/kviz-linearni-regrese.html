@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kvíz: lineární regrese</title>
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --surface: #ffffff;
+      --ink: #1a1f27;
+      --ink-2: #4b5563;
+      --line: #d3d9e2;
+      --accent: #1f56b8;
+      --accent-soft: #e6eefb;
+      --ok: #1f6b47;
+      --ok-soft: #e3f1e6;
+      --bad: #b3261e;
+      --bad-soft: #fbe7e5;
+      --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color-scheme: light;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #111418;
+        --surface: #1a1f26;
+        --ink: #e9ecf1;
+        --ink-2: #aab2bf;
+        --line: #333b47;
+        --accent: #8db4ff;
+        --accent-soft: #232d3f;
+        --ok: #7fd4a5;
+        --ok-soft: #1c3328;
+        --bad: #ff9a92;
+        --bad-soft: #3d2220;
+        color-scheme: dark;
+      }
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 400 1.0625rem / 1.6 var(--font); -webkit-font-smoothing: antialiased; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    main { max-width: 46rem; margin: 0 auto; padding: 3rem 1.5rem 4rem; }
+    @media (max-width: 40em) { main { padding: 1.75rem 1rem 3rem; } }
+    h1 { margin: 0 0 1.5rem; font-size: clamp(1.75rem, 5vw, 2.25rem); line-height: 1.15; }
+    h2 { margin: 0 0 1rem; font-size: 1.25rem; }
+    .crumb { margin: 0 0 1.5rem; font-size: 0.9375rem; }
+    [hidden] { display: none !important; }
+    .panel { padding: 1.5rem; background: var(--surface); border: 1px solid var(--line); }
+    .panel + .panel { margin-top: 1rem; }
+    .muted { color: var(--ink-2); }
+    .small { font-size: 0.9375rem; }
+    fieldset { margin: 0 0 1.25rem; padding: 0; border: 0; }
+    legend { margin-bottom: 0.5rem; font-weight: 700; }
+    .choices { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; }
+    .choices label { display: inline-flex; align-items: center; gap: 0.4rem; }
+    button { font: inherit; cursor: pointer; }
+    .btn { padding: 0.55rem 1.1rem; background: var(--accent); color: var(--bg); border: 1px solid var(--accent); font-weight: 700; }
+    .btn.secondary { background: var(--surface); color: var(--accent); }
+    .btn:disabled { opacity: 0.5; cursor: default; }
+    .row { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+
+    .bar { height: 0.4rem; margin: 0 0 1rem; background: var(--line); }
+    .bar > div { height: 100%; width: 0; background: var(--accent); transition: width 0.2s; }
+    .meta { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; margin: 0 0 0.75rem; font-size: 0.9375rem; color: var(--ink-2); }
+    .tag { padding: 0 0.5rem; background: var(--accent-soft); color: var(--accent); font-weight: 700; font-size: 0.8125rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    .q { margin: 0 0 1rem; font-size: 1.125rem; }
+    .q .data { display: block; margin-top: 0.5rem; font-size: 1rem; color: var(--ink-2); }
+    .opts { display: grid; gap: 0.5rem; margin: 0 0 1rem; }
+    .opt { display: flex; gap: 0.75rem; align-items: flex-start; width: 100%; padding: 0.65rem 0.85rem; background: var(--surface); border: 2px solid var(--line); color: var(--ink); text-align: left; line-height: 1.45; }
+    .opt .n { flex: none; min-width: 1.5rem; height: 1.5rem; border: 1px solid var(--line); font-size: 0.875rem; line-height: 1.4rem; text-align: center; color: var(--ink-2); }
+    .opt[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+    .opt[aria-pressed="true"] .n { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+    .opt.correct { border-color: var(--ok); background: var(--ok-soft); }
+    .opt.wrong { border-color: var(--bad); background: var(--bad-soft); }
+    .opt:disabled { cursor: default; }
+    .num { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin: 0 0 1rem; }
+    .num input { width: 11rem; padding: 0.5rem 0.65rem; font: inherit; background: var(--surface); color: var(--ink); border: 2px solid var(--line); }
+    .num input.correct { border-color: var(--ok); }
+    .num input.wrong { border-color: var(--bad); }
+    .fb { margin: 0 0 1rem; padding: 0.85rem 1rem; border-left: 4px solid var(--line); background: var(--bg); }
+    .fb.ok { border-color: var(--ok); }
+    .fb.bad { border-color: var(--bad); }
+    .fb strong { display: block; margin-bottom: 0.25rem; }
+    .fb .ans { margin: 0.25rem 0; }
+
+    .score { font-size: 2rem; font-weight: 700; line-height: 1.2; }
+    table { width: 100%; margin: 1rem 0; border-collapse: collapse; font-size: 0.9375rem; }
+    th, td { padding: 0.4rem 0.6rem; border: 1px solid var(--line); text-align: left; }
+    th { background: var(--accent-soft); }
+    td.r, th.r { text-align: right; }
+    .review { margin: 1.5rem 0 0; padding: 0; list-style: none; }
+    .review li { margin: 0 0 1rem; padding: 0.85rem 1rem; border: 1px solid var(--line); border-left: 4px solid var(--bad); background: var(--surface); }
+    .review .qq { font-weight: 700; }
+    .review p { margin: 0.35rem 0 0; }
+    kbd { padding: 0 0.3rem; border: 1px solid var(--line); font: 0.85em var(--font); }
+    .open { margin-top: 3rem; }
+    .open h2 { padding-top: 1.25rem; border-top: 2px solid var(--ink); font-size: 1.5rem; }
+    .open h3 { margin: 2rem 0 0.5rem; font-size: 1.1875rem; color: var(--accent); }
+    .open .scroll { overflow-x: auto; }
+    .open .scroll table { margin: 0 0 1.25rem; background: var(--surface); }
+    .open td.r { white-space: nowrap; }
+    .open ol { padding-left: 1.5rem; }
+    .open ol > li { margin: 0 0 1.25rem; }
+    details { margin-top: 0.5rem; padding: 0.5rem 0.75rem; background: var(--surface); border: 1px solid var(--line); }
+    summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+    details[open] summary { margin-bottom: 0.5rem; }
+    details p:last-child { margin-bottom: 0; }
+  </style>
+</head>
+<body>
+<main>
+  <p class="crumb"><a href="../../">Škola</a></p>
+  <h1>Kvíz: lineární regrese</h1>
+
+  <section id="start" class="panel">
+    <p class="muted">Otázky k úkolům 5 a 6 cvičení 2 z PSYb2521. Čísla jsou z ukázkových dat studijního průvodce.</p>
+    <fieldset>
+      <legend>Okruhy</legend>
+      <div class="choices" id="topics"></div>
+    </fieldset>
+    <fieldset>
+      <legend>Počet otázek</legend>
+      <div class="choices" id="counts">
+        <label><input type="radio" name="count" value="10"> 10</label>
+        <label><input type="radio" name="count" value="20" checked> 20</label>
+        <label><input type="radio" name="count" value="40"> 40</label>
+        <label><input type="radio" name="count" value="all"> všechny</label>
+      </div>
+    </fieldset>
+    <div class="row">
+      <button class="btn" id="startBtn">Spustit kvíz</button>
+      <span class="small muted" id="best"></span>
+    </div>
+    <p class="small muted">Klávesy: <kbd>1</kbd> až <kbd>9</kbd> označí odpověď, <kbd>Enter</kbd> zkontroluje a přejde dál. Desetinná čísla lze psát s čárkou i tečkou.</p>
+  </section>
+
+  <section id="quiz" class="panel" hidden>
+    <div class="bar"><div id="barFill"></div></div>
+    <div class="meta"><span id="counter"></span><span class="tag" id="topicTag"></span><span id="kind"></span></div>
+    <p class="q" id="qText"></p>
+    <div class="opts" id="opts"></div>
+    <div class="num" id="numWrap" hidden>
+      <label for="numIn">Výsledek:</label>
+      <input id="numIn" type="text" inputmode="decimal" autocomplete="off" placeholder="např. −1,99">
+      <span class="small muted" id="numHint"></span>
+    </div>
+    <div class="fb" id="fb" hidden aria-live="polite"></div>
+    <div class="row">
+      <button class="btn" id="checkBtn">Zkontrolovat</button>
+      <button class="btn" id="nextBtn" hidden>Další otázka</button>
+      <button class="btn secondary" id="quitBtn">Ukončit</button>
+      <span class="small muted" id="running"></span>
+    </div>
+  </section>
+
+  <section id="end" class="panel" hidden>
+    <h2>Výsledek</h2>
+    <p class="score" id="scoreLine"></p>
+    <p class="muted" id="scoreNote"></p>
+    <table id="byTopic"></table>
+    <div class="row">
+      <button class="btn" id="againWrong">Zopakovat chybné</button>
+      <button class="btn secondary" id="restart">Nový kvíz</button>
+    </div>
+    <ul class="review" id="review"></ul>
+  </section>
+
+  <section class="open">
+      <h2>Testové otázky</h2>
+      <p>Otázky se týkají výstupu níže. Data jsou vymyšlená a mají stejné proměnné jako úkol. Ze 184 lidí zůstalo po vyřazení chybějících hodnot 172 a oba modely stojí na stejných lidech.</p>
+
+      <h3>Popisné statistiky lidí v modelu</h3>
+      <div class="scroll"><table>
+        <thead><tr><th></th><th>Průměr</th><th>SD</th><th>Min</th><th>Max</th></tr></thead>
+        <tbody>
+          <tr><td>zavazok</td><td class="r">6,46</td><td class="r">1,31</td><td class="r">2,8</td><td class="r">8,0</td></tr>
+          <tr><td>investicie</td><td class="r">4,41</td><td class="r">1,48</td><td class="r">0,0</td><td class="r">8,0</td></tr>
+          <tr><td>spokojnost</td><td class="r">5,57</td><td class="r">1,39</td><td class="r">1,2</td><td class="r">8,0</td></tr>
+          <tr><td>alternativy</td><td class="r">3,65</td><td class="r">1,55</td><td class="r">0,0</td><td class="r">7,4</td></tr>
+          <tr><td>cas_mesiace</td><td class="r">39,38</td><td class="r">38,39</td><td class="r">2</td><td class="r">220</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Model 1</h3>
+      <p>R² = 0,299, adjR² = 0,295, F(1, 170) = 72,46, p &lt; 0,001</p>
+      <div class="scroll"><table>
+        <thead><tr><th></th><th>B</th><th>SE</th><th>β</th><th>t</th><th>p</th></tr></thead>
+        <tbody>
+          <tr><td>(Intercept)</td><td class="r">4,338</td><td class="r">0,263</td><td></td><td class="r">16,49</td><td class="r">&lt; 0,001</td></tr>
+          <tr><td>investicie</td><td class="r">0,482</td><td class="r">0,057</td><td class="r">0,547</td><td class="r">8,51</td><td class="r">&lt; 0,001</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Model 2</h3>
+      <p>R² = 0,695, adjR² = 0,687, F(4, 167) = 94,90, p &lt; 0,001, RMSE = 0,732</p>
+      <div class="scroll"><table>
+        <thead><tr><th></th><th>B</th><th>SE</th><th>β</th><th>t</th><th>p</th><th>VIF</th><th>Bootstrap 95% CI</th></tr></thead>
+        <tbody>
+          <tr><td>(Intercept)</td><td class="r">3,583</td><td class="r">0,321</td><td></td><td class="r">11,15</td><td class="r">&lt; 0,001</td><td></td><td class="r">2,859 až 4,250</td></tr>
+          <tr><td>investicie</td><td class="r">0,072</td><td class="r">0,050</td><td class="r">0,082</td><td class="r">1,44</td><td class="r">0,151</td><td class="r">1,77</td><td class="r">−0,022 až 0,172</td></tr>
+          <tr><td>spokojnost</td><td class="r">0,572</td><td class="r">0,055</td><td class="r">0,607</td><td class="r">10,49</td><td class="r">&lt; 0,001</td><td class="r">1,83</td><td class="r">0,467 až 0,680</td></tr>
+          <tr><td>alternativy</td><td class="r">−0,266</td><td class="r">0,038</td><td class="r">−0,316</td><td class="r">−6,94</td><td class="r">&lt; 0,001</td><td class="r">1,13</td><td class="r">−0,342 až −0,192</td></tr>
+          <tr><td>cas_mesiace</td><td class="r">0,0087</td><td class="r">0,0016</td><td class="r">0,257</td><td class="r">5,60</td><td class="r">&lt; 0,001</td><td class="r">1,15</td><td class="r">0,0058 až 0,0115</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Diagnostika modelu 2</h3>
+      <div class="scroll"><table>
+        <tbody>
+          <tr><td>Predikované hodnoty závazku</td><td>3,45 až 8,72, z toho 15 predikcí nad 8</td></tr>
+          <tr><td>Lidé s maximálním závazkem 8</td><td>39 ze 172</td></tr>
+          <tr><td>SD reziduí podle třetin predikcí</td><td>dolní 0,83, střední 0,71, horní 0,58</td></tr>
+          <tr><td>Casewise diagnostics</td><td>1 případ: závazek 3,4, predikce 5,73, reziduum −2,33, standardizované reziduum −3,19, Cookova vzdálenost 0,07</td></tr>
+          <tr><td>Největší Cookova vzdálenost</td><td>0,07</td></tr>
+          <tr><td>Q-Q graf reziduí</td><td>body leží blízko diagonály</td></tr>
+        </tbody>
+      </table></div>
+
+      <ol>
+        <li>Kolik případů je v modelu a jak se to dá zjistit z F testu?
+          <details><summary>Řešení</summary>
+            <p>Stupně volnosti reziduí jsou n − k − 1. V modelu 2 je F(4, 167), takže n = 167 + 4 + 1 = 172. Stejně vyjde model 1 s F(1, 170): 170 + 1 + 1 = 172.</p>
+          </details>
+        </li>
+        <li>Zapište výsledek modelu 1 jednou větou ve formátu APA.
+          <details><summary>Řešení</summary>
+            <p>Investice predikovaly závazek kladně a vysvětlily 30 % jeho rozptylu, R² = 0,30, adjR² = 0,29, F(1, 170) = 72,46, p &lt; 0,001; B = 0,48, SE = 0,06, β = 0,55, t = 8,51, p &lt; 0,001.</p>
+          </details>
+        </li>
+        <li>Jak se změnil koeficient investic mezi modely a čím se to dá vysvětlit?
+          <details><summary>Řešení</summary>
+            <p>B klesl z 0,482 na 0,072 a β z 0,547 na 0,082. V modelu 2 už investice nejsou významné (p = 0,151). Investice korelují se spokojeností a v modelu 1 jejich koeficient obsahoval i vztah spokojenosti k závazku. Když je spokojenost v modelu, investicím nezbývá téměř žádný jedinečný vztah k závazku.</p>
+          </details>
+        </li>
+        <li>Ověřte z B a SE hodnotu t pro alternativy.
+          <details><summary>Řešení</summary>
+            <p>t = B / SE = −0,266 / 0,038 = −7,0. Z přesnějších čísel −0,2662 / 0,0384 vyjde −6,93. Rozdíl proti −6,94 ve výstupu je zaokrouhlení.</p>
+          </details>
+        </li>
+        <li>Ověřte adjR² modelu 2.
+          <details><summary>Řešení</summary>
+            <p>adjR² = 1 − (1 − R²)(n − 1)/(n − k − 1) = 1 − (1 − 0,6945) · 171 / 167 = 1 − 0,3055 · 1,0240 = 0,687.</p>
+          </details>
+        </li>
+        <li>Spočítejte z B a směrodatných odchylek β investic v modelu 1.
+          <details><summary>Řešení</summary>
+            <p>β = B · sₓ / s_y = 0,482 · 1,48 / 1,31 = 0,54. Výstup uvádí 0,547, rozdíl je zaokrouhlení směrodatných odchylek.</p>
+          </details>
+        </li>
+        <li>Interpretujte koeficient délky vztahu. Proč je tak malý a co se stane po převodu na roky?
+          <details><summary>Řešení</summary>
+            <p>Každý měsíc vztahu navíc zvyšuje predikovaný závazek o 0,0087 bodu při stejných hodnotách ostatních prediktorů. Číslo je malé, protože jeden měsíc je malá jednotka. Po převodu cas_roky = cas_mesiace / 12 se B i SE vynásobí 12: B = 0,105, SE = 0,019. Rok vztahu tedy znamená asi o 0,1 bodu vyšší závazek. β = 0,257, t = 5,60 a p se nezmění. Podle β je délka vztahu v tomto modelu silnější prediktor než investice.</p>
+          </details>
+        </li>
+        <li>Mění bootstrap závěry o významnosti koeficientů?
+          <details><summary>Řešení</summary>
+            <p>Nemění. Interval investic −0,022 až 0,172 obsahuje nulu, stejně jako klasický test vyšel nevýznamný (p = 0,151). Intervaly spokojenosti, alternativ a délky vztahu nulu neobsahují, stejně jako jsou jejich klasické p pod 0,001.</p>
+          </details>
+        </li>
+        <li>Zhodnoťte multikolinearitu a odlehlé hodnoty.
+          <details><summary>Řešení</summary>
+            <p>Všechny VIF jsou pod 1,9, takže multikolinearita problém není. Jeden člověk má standardizované reziduum −3,19, takže je odlehlý: má závazek 3,4, ale model mu predikoval 5,73. Jeho Cookova vzdálenost je 0,07, hluboko pod hranicí 1, takže regresní přímku výrazně neovlivňuje. Případ není důvod vyřadit. Stačí ho ve zprávě uvést.</p>
+          </details>
+        </li>
+        <li>Je splněná homoskedasticita a normalita reziduí? Jaké z toho plyne omezení?
+          <details><summary>Řešení</summary>
+            <p>Normalita reziduí je přibližně splněná, protože body Q-Q grafu leží blízko diagonály. Homoskedasticita splněná není: rozptyl reziduí se u vysokých predikcí zužuje z 0,83 na 0,58. Příčinou je strop škály, protože 39 lidí má maximální závazek 8. Klasické SE, p hodnoty a intervaly proto nemusí být přesné. Bootstrap, který tento předpoklad nepotřebuje, ale dává stejné závěry.</p>
+          </details>
+        </li>
+        <li>Porovnejte rozsah predikovaných a naměřených hodnot závazku. K čemu se model hodí?
+          <details><summary>Řešení</summary>
+            <p>Naměřený závazek je od 2,8 do 8,0, predikce od 3,45 do 8,72. Nejnižší predikce je nad nejnižšími naměřenými hodnotami, takže velmi nízký závazek by model nikomu nepředpověděl. U 15 lidí predikuje víc než 8, což škála nedovoluje. Model se hodí k vysvětlení, které složky se závazkem souvisejí a jak silně. K predikci závazku konkrétního člověka se nehodí, protože RMSE je 0,73 bodu a predikce jsou stažené k průměru.</p>
+          </details>
+        </li>
+        <li>U koho se model nejvíc mýlí a jakým směrem?
+          <details><summary>Řešení</summary>
+            <p>U lidí s nízkým závazkem. Mají velká záporná rezidua, například případ se závazkem 3,4 a predikcí 5,73. Model jejich závazek přeceňuje. U lidí s maximálním závazkem 8 jsou rezidua spíš kladná, takže je model mírně podceňuje.</p>
+          </details>
+        </li>
+      </ol>
+  </section>
+</main>
+
+<script>
+// Okruhy otázek. Klíč je v každé otázce v poli t.
+const TOPICS = {
+  zaklady: "Základy regrese",
+  vicenasobna: "Vícenásobná regrese a výstup",
+  vypocet: "Výpočet",
+  predpoklady: "Předpoklady",
+  bootstrap: "Bootstrap",
+  ukol6: "Překódování a predikce",
+};
+
+// Otázka: t okruh, k druh (single = jedna správná, multi = všechny správné, num = číslo),
+// q text, o možnosti, a správná odpověď (index, pole indexů, nebo číslo), tol tolerance,
+// e vysvětlení, fixed = možnosti se nemíchají.
+const BANK = [
+  // Základy regrese
+  { t: "zaklady", k: "single", q: "Model 2 má u investic B = 0,134. Co to číslo znamená?", o: ["Když investice vzrostou o 1 bod a ostatní prediktory zůstanou stejné, predikovaný závazek vzroste o 0,134 bodu.", "Investice vysvětlují 13,4 % rozptylu závazku.", "Korelace investic a závazku je 0,134.", "Když investice vzrostou o 1 směrodatnou odchylku, závazek vzroste o 0,134 směrodatné odchylky."], a: 0,
+    e: "B je nestandardizovaný sklon v jednotkách proměnných. Ve vícenásobné regresi platí při stejných hodnotách ostatních prediktorů. Poslední možnost popisuje β." },
+  { t: "zaklady", k: "single", q: "Člověk má reziduum −1,5. Co to znamená?", o: ["Model jeho závazek přecenil o 1,5 bodu.", "Model jeho závazek podcenil o 1,5 bodu.", "Jeho závazek je o 1,5 bodu pod průměrem.", "Je to odlehlá hodnota, kterou je nutné vyřadit."], a: 0,
+    e: "Reziduum je skutečná hodnota minus predikce. Záporné reziduum znamená, že predikce byla vyšší než skutečnost." },
+  { t: "zaklady", k: "single", q: "R<sup>2</sup> = 0,73. Co to znamená?", o: ["Model vysvětluje 73 % rozptylu závazku.", "73 % lidí model predikuje správně.", "Korelace mezi prediktory a závazkem je 0,73.", "Pravděpodobnost, že model platí, je 73 %."], a: 0,
+    e: "R<sup>2</sup> = SS<sub>reg</sub> / SS<sub>T</sub> je podíl celkové variability závislé proměnné, který model vysvětlil. Mnohonásobná korelace R je odmocnina z R<sup>2</sup>, tedy 0,85." },
+  { t: "zaklady", k: "single", q: "Proč se při porovnání modelů s různým počtem prediktorů dívá na adjR<sup>2</sup>?", o: ["R<sup>2</sup> po přidání prediktoru nikdy neklesne a adjR<sup>2</sup> penalizuje počet prediktorů.", "adjR<sup>2</sup> je vždy větší než R<sup>2</sup>.", "adjR<sup>2</sup> nezávisí na velikosti vzorku.", "adjR<sup>2</sup> je podíl rozptylu vysvětlený jen významnými prediktory."], a: 0,
+    e: "R<sup>2</sup> roste i po přidání prediktoru, který nic nevysvětluje. adjR<sup>2</sup> = 1 − (1 − R<sup>2</sup>)(n − 1)/(n − k − 1) za každý prediktor ubírá, takže vzroste jen tehdy, když přidaný prediktor pomůže víc, než odpovídá náhodě." },
+  { t: "zaklady", k: "single", q: "Jakou nulovou hypotézu testuje F test celého modelu?", o: ["Všechny koeficienty prediktorů jsou nulové.", "Intercept je nulový.", "Rezidua jsou normálně rozdělená.", "Aspoň jeden koeficient je nulový."], a: 0,
+    e: "Významné F znamená, že aspoň jeden prediktor má nenulový koeficient a model vysvětluje víc než samotný průměr." },
+  { t: "zaklady", k: "single", q: "Metoda nejmenších čtverců vybere přímku, u které je nejmenší:", o: ["součet čtverců reziduí", "součet reziduí", "rozptyl predikovaných hodnot", "počet odlehlých hodnot"], a: 0,
+    e: "Součet reziduí je u každé přímky procházející bodem (x̄, ȳ) nulový, takže by nic nerozlišil. Minimalizuje se Σe<sup>2</sup>." },
+  { t: "zaklady", k: "single", q: "V jednoduché regresi na 5 lidech vyšlo R<sup>2</sup> = 0,64 a p = 0,104. Co z toho plyne?", o: ["Efekt je velký, ale na tak malém vzorku není statisticky významný.", "Výpočet je chybný, protože velké R<sup>2</sup> musí být významné.", "Model nevysvětluje nic.", "R<sup>2</sup> je nutné přepočítat na adjR<sup>2</sup> a pak bude významné."], a: 0,
+    e: "Velikost efektu a statistická významnost jsou dvě různé věci. Významnost závisí na velikosti vzorku. Při df = 3 je kritická hodnota t 3,18 a vyšlo t = 2,31." },
+
+  // Vícenásobná regrese a výstup
+  { t: "vicenasobna", k: "single", q: "Koeficient investic klesl po přidání spokojenosti, alternativ a délky vztahu z 0,54 na 0,13. Co je nejlepší vysvětlení?", o: ["Investice sdílejí rozptyl se spokojeností a v modelu 1 jejich koeficient obsahoval i vztah spokojenosti k závazku.", "V modelu 2 je méně lidí.", "Model 2 porušuje předpoklad linearity.", "Bootstrap snižuje koeficienty."], a: 0,
+    e: "Když vynechaný prediktor koreluje s prediktorem v modelu i se závislou proměnnou, koeficient prediktoru v modelu přebírá část jeho vlivu. Po přidání spokojenosti zbyde investicím jen jejich jedinečný vztah k závazku. Jiný počet lidí může změnu zčásti způsobit, proto se oba modely počítají na stejných případech." },
+  { t: "vicenasobna", k: "single", q: "JASP vyřazuje chybějící data metodou listwise. Co to znamená?", o: ["Vyřadí každého, komu chybí hodnota v kterékoli proměnné analýzy.", "Chybějící hodnoty nahradí průměrem.", "Každou korelaci spočítá na všech lidech, kteří mají obě hodnoty.", "Vyřadí jen lidi, kterým chybí závislá proměnná."], a: 0,
+    e: "Třetí možnost popisuje pairwise. Při listwise může mít model 1 ve vlastní analýze víc lidí než model 2, protože model 1 obsahuje méně proměnných." },
+  { t: "vicenasobna", k: "single", q: "Model 1 ve vlastní analýze použil 179 lidí a model 2 jen 170. Proč je to problém při porovnání koeficientu investic?", o: ["Změna koeficientu může být zčásti způsobená jiným vzorkem, a ne přidanými prediktory.", "Model s menším N má vždy menší R<sup>2</sup>.", "JASP pak nedokáže spočítat β.", "Bootstrap nejde spustit na různých N."], a: 0,
+    e: "Oba modely se mají počítat na stejných lidech. V JASP to zajistí jedna analýza, ve které jsou investice v nulovém modelu, nebo filtr na lidi bez chybějících hodnot." },
+  { t: "vicenasobna", k: "single", q: "Které číslo se hodí k porovnání, který prediktor má se závazkem silnější vztah?", o: ["β", "B", "SE", "Intercept"], a: 0,
+    e: "β je v jednotkách směrodatných odchylek, takže nezávisí na tom, v čem se prediktor měří. B se mezi prediktory s různými jednotkami porovnat nedá." },
+  { t: "vicenasobna", k: "single", q: "Koeficient délky vztahu má p = 0,198. Jaký je správný závěr?", o: ["H<sub>0</sub> nezamítáme. Při kontrole ostatních prediktorů se nepodařilo prokázat vztah délky vztahu k závazku.", "H<sub>0</sub> přijímáme, délka vztahu se závazkem nesouvisí.", "H<sub>0</sub> zamítáme, délka vztahu závazek snižuje.", "Délka vztahu má 19,8% vliv na závazek."], a: 0,
+    e: "Nevýznamný výsledek neprokazuje, že vztah je nulový. Proto se píše „H<sub>0</sub> nezamítáme“, ne „H<sub>0</sub> přijímáme“." },
+  { t: "vicenasobna", k: "single", q: "Intercept modelu 2 je 3,527. Jak se interpretuje?", o: ["Je to predikce pro člověka s nulou ve všech prediktorech. Takový člověk v datech není, takže se neinterpretuje.", "Je to průměrný závazek v datech.", "Je to závazek člověka s průměrnými hodnotami prediktorů.", "Je to nejnižší možný závazek."], a: 0,
+    e: "Intercept je ŷ pro x = 0 u všech prediktorů, tedy i pro vztah dlouhý 0 měsíců. Smysl by dostal po vycentrování prediktorů." },
+  { t: "vicenasobna", k: "multi", q: "Co patří do výsledků modelu podle zadání úkolu 5? Označte všechny správné možnosti.", o: ["počet případů v modelu", "R<sup>2</sup> a adjR<sup>2</sup>", "F test se stupni volnosti a p", "B, SE, β, t a p u každého koeficientu", "korelační matice všech položek dotazníku"], a: [0, 1, 2, 3],
+    e: "Zadání požaduje počet případů, R<sup>2</sup>, adjR<sup>2</sup>, F test a koeficienty B, SE, β, t a p pro oba modely." },
+
+  // Výpočet
+  { t: "vypocet", k: "num", q: "Pět lidí: Sxy = Σ(x − x̄)(y − ȳ) = 8 a Sxx = Σ(x − x̄)<sup>2</sup> = 10. Spočítejte sklon b<sub>1</sub>.", a: 0.8, tol: 0.001, hint: "na 2 desetinná místa",
+    e: "b<sub>1</sub> = Sxy / Sxx = 8 / 10 = 0,8." },
+  { t: "vypocet", k: "num", q: "Průměry jsou x̄ = 3 a ȳ = 4, sklon b<sub>1</sub> = 0,8. Spočítejte intercept b<sub>0</sub>.", a: 1.6, tol: 0.001, hint: "na 2 desetinná místa",
+    e: "b<sub>0</sub> = ȳ − b<sub>1</sub> · x̄ = 4 − 0,8 · 3 = 1,6." },
+  { t: "vypocet", k: "num", q: "SS<sub>T</sub> = 10 a SS<sub>res</sub> = 3,6. Spočítejte R<sup>2</sup>.", a: 0.64, tol: 0.001, hint: "na 2 desetinná místa",
+    e: "SS<sub>reg</sub> = 10 − 3,6 = 6,4 a R<sup>2</sup> = 6,4 / 10 = 0,64." },
+  { t: "vypocet", k: "num", q: "R<sup>2</sup> = 0,64, n = 5 a k = 1. Spočítejte adjR<sup>2</sup>.", a: 0.52, tol: 0.002, hint: "na 2 desetinná místa",
+    e: "adjR<sup>2</sup> = 1 − (1 − R<sup>2</sup>)(n − 1)/(n − k − 1) = 1 − 0,36 · 4/3 = 0,52." },
+  { t: "vypocet", k: "num", q: "MS<sub>res</sub> = 1,2 a Sxx = 10. Spočítejte směrodatnou chybu sklonu SE(b<sub>1</sub>).", a: 0.3464, tol: 0.005, hint: "na 3 desetinná místa",
+    e: "SE(b<sub>1</sub>) = √(MS<sub>res</sub> / Sxx) = √(1,2 / 10) = 0,346." },
+  { t: "vypocet", k: "single", q: "V jednoduché regresi vyšlo t = 2,31. Jaká je hodnota F testu modelu?", o: ["5,33", "2,31", "1,52", "4,62"], a: 0,
+    e: "U jednoho prediktoru platí F = t<sup>2</sup>, tedy 2,31<sup>2</sup> = 5,33. Oba testy mají stejné p." },
+  { t: "vypocet", k: "num", q: "Výstup uvádí F(4, 165). Kolik lidí je v modelu?", a: 170, tol: 0, hint: "celé číslo",
+    e: "Stupně volnosti reziduí jsou n − k − 1 = 165 a k = 4, takže n = 165 + 4 + 1 = 170." },
+  { t: "vypocet", k: "num", q: "Investice mají B = 0,541 a SE = 0,059. Spočítejte t.", a: 9.17, tol: 0.05, hint: "na 2 desetinná místa",
+    e: "t = B / SE = 0,541 / 0,059 = 9,17. Výstup z nezaokrouhlených čísel uvádí 9,16." },
+  { t: "vypocet", k: "num", q: "Investice mají B = 0,541, směrodatná odchylka investic je 1,49 a závazku 1,39. Spočítejte β.", a: 0.58, tol: 0.01, hint: "na 2 desetinná místa",
+    e: "β = B · s<sub>x</sub> / s<sub>y</sub> = 0,541 · 1,49 / 1,39 = 0,58." },
+  { t: "vypocet", k: "num", q: "Model 2 má R<sup>2</sup> = 0,728, n = 170 a k = 4. Spočítejte adjR<sup>2</sup>.", a: 0.7214, tol: 0.002, hint: "na 3 desetinná místa",
+    e: "adjR<sup>2</sup> = 1 − 0,272 · 169 / 165 = 0,721." },
+  { t: "vypocet", k: "num", q: "ŷ = 3,527 + 0,134 · investicie + 0,565 · spokojnost − 0,232 · alternativy + 0,0025 · cas_mesiace. Jaký závazek model predikuje člověku s investicemi 5, spokojeností 6, alternativami 3 a vztahem dlouhým 24 měsíců?", a: 6.951, tol: 0.02, hint: "na 2 desetinná místa",
+    e: "3,527 + 0,670 + 3,390 − 0,696 + 0,060 = 6,95." },
+  { t: "vypocet", k: "num", q: "Člověku model predikoval závazek 6,95 a jeho skutečný závazek je 6. Jaké má reziduum?", a: -0.95, tol: 0.02, hint: "na 2 desetinná místa, se znaménkem",
+    e: "e = y − ŷ = 6 − 6,95 = −0,95. Model jeho závazek přecenil." },
+  { t: "vypocet", k: "num", q: "Tolerance spokojenosti je 0,47. Jaký je její VIF?", a: 2.13, tol: 0.02, hint: "na 2 desetinná místa",
+    e: "VIF = 1 / tolerance = 1 / 0,47 = 2,13." },
+
+  // Předpoklady
+  { t: "predpoklady", k: "single", q: "U čeho se kontroluje předpoklad normality?", o: ["U reziduí.", "U závislé proměnné.", "U každého prediktoru.", "U predikovaných hodnot."], a: 0,
+    e: "Předpoklad se týká chyb modelu. Šikmá závislá proměnná nevadí, pokud jsou rezidua přibližně normální. Kontroluje se Q-Q grafem standardizovaných reziduí." },
+  { t: "predpoklady", k: "single", q: "V grafu reziduí proti predikovaným hodnotám se body u vysokých predikcí sbíhají do úzkého pruhu. Který předpoklad je porušený?", o: ["Homoskedasticita.", "Multikolinearita.", "Nezávislost prediktorů.", "Normalita prediktorů."], a: 0,
+    e: "Homoskedasticita znamená stejný rozptyl reziduí pro všechny predikované hodnoty. Tvar trychtýře ukazuje, že rozptyl se mění. U závazku je častou příčinou strop škály." },
+  { t: "predpoklady", k: "multi", q: "Které předpoklady se kontrolují v grafu reziduí proti predikovaným hodnotám? Označte všechny správné možnosti.", o: ["linearita", "homoskedasticita", "multikolinearita", "normalita prediktorů"], a: [0, 1],
+    e: "Oblouk v grafu znamená nelinearitu a trychtýř znamená heteroskedasticitu. Multikolinearita se posuzuje podle VIF." },
+  { t: "predpoklady", k: "single", q: "Všechny VIF jsou mezi 1,1 a 2,1. Co to znamená?", o: ["Multikolinearita není problém.", "Prediktory spolu vůbec nekorelují.", "Model vysvětluje příliš málo rozptylu.", "Prediktory je nutné standardizovat."], a: 0,
+    e: "VIF = 1 / (1 − R<sub>j</sub><sup>2</sup>), kde R<sub>j</sub><sup>2</sup> je podíl rozptylu prediktoru vysvětlený ostatními prediktory. VIF 2 znamená, že rozptyl koeficientu je dvakrát větší, než kdyby prediktor s ostatními nekoreloval. Varováním bývá VIF nad 5, vážným problémem nad 10." },
+  { t: "predpoklady", k: "single", q: "Jeden případ má standardizované reziduum −3,2 a Cookovu vzdálenost 0,07. Co s ním?", o: ["Uvést jako odlehlou hodnotu. Přímku výrazně neovlivňuje, takže není důvod ho vyřadit.", "Vyřadit, protože reziduum je přes 3.", "Vyřadit, protože Cookova vzdálenost je nenulová.", "Nahradit průměrem."], a: 0,
+    e: "Reziduum nad 3 říká, že model se u člověka hodně mýlí. Cookova vzdálenost pod 1 říká, že případ nemění koeficienty. Vyřadit se dá případ s chybou v datech, ne případ, který se jen nehodí modelu." },
+  { t: "predpoklady", k: "single", q: "Co porušení homoskedasticity v modelu zkreslí?", o: ["Směrodatné chyby, a tím t, p a intervaly spolehlivosti.", "Koeficienty B.", "R<sup>2</sup>.", "Predikované hodnoty."], a: 0,
+    e: "Koeficienty zůstávají nezkreslené. Nepřesné jsou SE, takže p hodnoty a intervaly je třeba brát s rezervou nebo ověřit bootstrapem." },
+  { t: "predpoklady", k: "single", q: "Vysoký VIF způsobí:", o: ["velké SE a nestabilní koeficienty", "nelinearitu", "šikmá rezidua", "nižší počet případů v modelu"], a: 0,
+    e: "Když prediktor téměř celý vysvětlují ostatní prediktory, model těžko odliší jeho jedinečný vliv. Koeficient se pak výrazně mění s malou změnou dat." },
+
+  // Bootstrap
+  { t: "bootstrap", k: "single", q: "Bootstrapový 95% interval koeficientu je −0,022 až 0,172. Co z toho plyne?", o: ["Koeficient není na hladině 0,05 významný, protože interval obsahuje nulu.", "Koeficient je významný, protože horní hranice je kladná.", "Bootstrap selhal, protože interval obsahuje záporná čísla.", "Koeficient je záporný."], a: 0,
+    e: "Interval obsahující nulu znamená, že nulový koeficient je s daty slučitelný. Odpovídá to p > 0,05 v oboustranném testu." },
+  { t: "bootstrap", k: "single", q: "Co dělá bootstrap s 5000 opakováními?", o: ["5000krát vybere z dat stejný počet lidí s vracením, spočítá regresi a z rozložení koeficientů určí interval.", "Sbírá 5000 nových respondentů.", "Přidá do dat 5000 simulovaných lidí podle normálního rozdělení.", "Spočítá regresi 5000krát na stejných datech a výsledky zprůměruje."], a: 0,
+    e: "Výběry s vracením napodobují opakované sbírání dat. Rozložení 5000 koeficientů ukazuje jejich variabilitu bez předpokladu normality reziduí a stejného rozptylu." },
+  { t: "bootstrap", k: "single", q: "Které porušení předpokladů bootstrap neopraví?", o: ["nelinearitu", "nenormalitu reziduí", "heteroskedasticitu", "žádné z uvedených, opraví všechna"], a: 0, fixed: true,
+    e: "Bootstrap nahrazuje vzorec pro SE, takže nepotřebuje normalitu ani stejný rozptyl reziduí. Špatně zvolený tvar vztahu ani vlivné body neopraví." },
+  { t: "bootstrap", k: "single", q: "Proč se bootstrapové intervaly mezi dvěma spuštěními mírně liší?", o: ["Výběry s vracením jsou náhodné.", "JASP pokaždé vyřadí jiné chybějící hodnoty.", "Data se mezi spuštěními změnila.", "Interval závisí na pořadí proměnných v modelu."], a: 0,
+    e: "Při 5000 opakováních jsou rozdíly malé. Pokud se mění závěr, leží hranice intervalu velmi blízko nuly." },
+  { t: "bootstrap", k: "single", q: "Klasický test i bootstrap shodně ukazují, že investice, spokojenost a alternativy jsou významné a délka vztahu není. Co se napíše do zprávy?", o: ["Bootstrap závěry nezměnil, takže porušení předpokladů výsledky podstatně neovlivnilo.", "Bootstrap je zbytečný a do zprávy nepatří.", "Platí jen výsledky bootstrapu, klasické se neuvádějí.", "Model je třeba zamítnout."], a: 0,
+    e: "Zadání chce úvahu, jestli by se závěry změnily. Shoda obou postupů je odpověď na tuto otázku." },
+
+  // Překódování a predikce
+  { t: "ukol6", k: "single", q: "Koeficient cas_mesiace je B = 0,0025. Proč je tak malý?", o: ["Proměnná je měřena v měsících a jeden měsíc je malá změna.", "Délka vztahu se závazkem nesouvisí.", "Délka vztahu má vysoký VIF.", "Proměnná je šikmá."], a: 0,
+    e: "B je změna predikce na jednotku prediktoru. Velikost B závisí na jednotce, takže o síle vztahu říká víc β nebo t." },
+  { t: "ukol6", k: "multi", q: "Délka vztahu se převede z měsíců na roky (děleno 12). Co zůstane stejné? Označte všechny správné možnosti.", o: ["β", "t", "p", "B", "SE"], a: [0, 1, 2], fixed: true,
+    e: "Když je jednotka 12krát větší, B i SE se vynásobí 12. Vztah se nemění, takže β, t, p, R<sup>2</sup> i ostatní koeficienty zůstanou stejné." },
+  { t: "ukol6", k: "num", q: "Délka vztahu v měsících má B = 0,0025. Jaké bude B po převodu na roky?", a: 0.03, tol: 0.0005, hint: "na 3 desetinná místa",
+    e: "B · 12 = 0,0025 · 12 = 0,030. Rok vztahu navíc znamená o 0,03 bodu vyšší predikovaný závazek." },
+  { t: "ukol6", k: "single", q: "Model lidem s nízkým závazkem predikuje vyšší hodnoty, než mají. Proč?", o: ["Při R<sup>2</sup> menším než 1 jsou predikce stažené k průměru, takže extrémní hodnoty model nedosáhne.", "Model je špatně spočítaný.", "Lidé s nízkým závazkem jsou odlehlé hodnoty.", "Bootstrap posouvá predikce nahoru."], a: 0,
+    e: "Směrodatná odchylka predikcí je √R<sup>2</sup> krát směrodatná odchylka závislé proměnné. Při R<sup>2</sup> = 0,73 je směrodatná odchylka predikcí asi 85 % směrodatné odchylky dat, takže lidé na okrajích dostávají predikce blíž průměru." },
+  { t: "ukol6", k: "single", q: "Model predikuje 20 lidem závazek vyšší než 8, ačkoli škála končí na 8. Co z toho plyne?", o: ["Lineární model hranice škály nezná a u stropu dává nereálné predikce.", "V datech je chyba.", "Těch 20 lidí je nutné vyřadit.", "Model má příliš mnoho prediktorů."], a: 0,
+    e: "Přímka pokračuje za hranice škály. Ukazuje to, že model se hodí spíš k popisu vztahů než k přesné predikci u jednotlivce." },
+  { t: "ukol6", k: "single", q: "Naměřený závazek je 1,8 až 8,0, predikce jsou 3,39 až 9,21. Dokázal by model někomu předpovědět velmi nízký závazek?", o: ["Ne, nejnižší predikce je vysoko nad nejnižšími naměřenými hodnotami.", "Ano, rozsah predikcí je širší než rozsah dat.", "Ano, stačí dosadit nulové hodnoty prediktorů.", "Nedá se říct bez bootstrapu."], a: 0,
+    e: "Rozsah predikcí je posunutý nahoru a jejich rozptyl je menší než rozptyl dat. Lidé s nejnižším závazkem dostávají predikce kolem 4." },
+  { t: "ukol6", k: "single", q: "K čemu se model s R<sup>2</sup> = 0,73 a RMSE = 0,74 hodí nejlépe?", o: ["K ověření teorie: které složky se závazkem souvisejí, jakým směrem a jak silně.", "K určení, kdo z konkrétního páru se rozejde.", "K diagnostice jednotlivých klientů v poradně.", "K ničemu, protože R<sup>2</sup> není 1."], a: 0,
+    e: "Model popisuje vztahy na úrovni skupiny. U jednotlivce je chyba predikce kolem 0,74 bodu a lidi s nízkým závazkem model systematicky přeceňuje." },
+];
+
+const $ = (id) => document.getElementById(id);
+const STORE = "kviz-linearni-regrese";
+let round = [];      // otázky aktuálního kola, každá s promíchanými možnostmi
+let pos = 0;
+let picked = new Set();
+let answered = false;
+let results = [];    // {q, ok, given}
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function prepare(q) {
+  if (q.k === "num") return { q, opts: null, correct: null };
+  const idx = q.fixed ? q.o.map((_, i) => i) : shuffle(q.o.map((_, i) => i));
+  const opts = idx.map((i) => q.o[i]);
+  const correctSet = new Set(Array.isArray(q.a) ? q.a : [q.a]);
+  const correct = idx.map((orig, j) => correctSet.has(orig) ? j : -1).filter((j) => j >= 0);
+  return { q, opts, correct };
+}
+
+function fmt(n) {
+  const s = Math.abs(n) >= 100 ? n.toFixed(2) : n.toFixed(4);
+  return s.replace(/\.?0+$/, "").replace(".", ",").replace("-", "−");
+}
+
+function loadStore() {
+  try { return JSON.parse(localStorage.getItem(STORE)) || {}; } catch (e) { return {}; }
+}
+function saveStore(data) {
+  try { localStorage.setItem(STORE, JSON.stringify(data)); } catch (e) { /* bez úložiště funguje kvíz dál */ }
+}
+
+function renderStart() {
+  const box = $("topics");
+  box.innerHTML = "";
+  for (const key in TOPICS) {
+    const n = BANK.filter((q) => q.t === key).length;
+    const label = document.createElement("label");
+    label.innerHTML = `<input type="checkbox" value="${key}" checked> ${TOPICS[key]} <span class="muted small">(${n})</span>`;
+    box.appendChild(label);
+  }
+  const s = loadStore();
+  $("best").textContent = s.best != null ? `Nejlepší výsledek: ${s.best} % (${s.bestN} otázek)` : "";
+}
+
+function startRound(questions) {
+  round = questions.map(prepare);
+  pos = 0;
+  results = [];
+  $("start").hidden = true;
+  $("end").hidden = true;
+  $("quiz").hidden = false;
+  showQuestion();
+}
+
+function startFromForm() {
+  const topics = [...document.querySelectorAll("#topics input:checked")].map((i) => i.value);
+  if (!topics.length) { alert("Je potřeba zvolit aspoň jeden okruh."); return; }
+  const pool = shuffle(BANK.filter((q) => topics.includes(q.t)));
+  const countVal = document.querySelector("input[name=count]:checked").value;
+  const n = countVal === "all" ? pool.length : Math.min(pool.length, Number(countVal));
+  startRound(pool.slice(0, n));
+}
+
+function showQuestion() {
+  const item = round[pos];
+  const q = item.q;
+  picked = new Set();
+  answered = false;
+  $("barFill").style.width = `${(pos / round.length) * 100}%`;
+  $("counter").textContent = `Otázka ${pos + 1} z ${round.length}`;
+  $("topicTag").textContent = TOPICS[q.t];
+  $("kind").textContent = q.k === "multi" ? "více správných odpovědí" : q.k === "num" ? "číselná odpověď" : "jedna správná odpověď";
+  $("qText").innerHTML = q.q;
+  $("fb").hidden = true;
+  $("fb").className = "fb";
+  $("checkBtn").hidden = false;
+  $("checkBtn").disabled = false;
+  $("nextBtn").hidden = true;
+  $("running").textContent = `Správně ${results.filter((r) => r.ok).length} z ${results.length}`;
+
+  const opts = $("opts");
+  opts.innerHTML = "";
+  if (q.k === "num") {
+    $("numWrap").hidden = false;
+    $("numIn").value = "";
+    $("numIn").className = "";
+    $("numIn").disabled = false;
+    $("numHint").textContent = q.hint || "";
+    $("numIn").focus();
+  } else {
+    $("numWrap").hidden = true;
+    item.opts.forEach((text, i) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "opt";
+      b.setAttribute("aria-pressed", "false");
+      b.dataset.i = i;
+      b.innerHTML = `<span class="n">${i + 1}</span><span>${text}</span>`;
+      b.addEventListener("click", () => toggle(i));
+      opts.appendChild(b);
+    });
+  }
+}
+
+function toggle(i) {
+  if (answered) return;
+  const q = round[pos].q;
+  if (q.k === "single") picked = new Set([i]);
+  else if (picked.has(i)) picked.delete(i); else picked.add(i);
+  document.querySelectorAll(".opt").forEach((b) => b.setAttribute("aria-pressed", picked.has(Number(b.dataset.i)) ? "true" : "false"));
+}
+
+function parseNumber(text) {
+  const t = text.trim().replace(/\s/g, "").replace("−", "-").replace(",", ".");
+  if (!/^[-+]?\d*\.?\d+$/.test(t)) return NaN;
+  return Number(t);
+}
+
+function check() {
+  if (answered) return;
+  const item = round[pos];
+  const q = item.q;
+  let ok, given, correctText;
+  if (q.k === "num") {
+    const v = parseNumber($("numIn").value);
+    if (Number.isNaN(v)) { $("numIn").focus(); return; }
+    ok = Math.abs(v - q.a) <= q.tol;
+    given = fmt(v);
+    correctText = fmt(q.a);
+    $("numIn").className = ok ? "correct" : "wrong";
+    $("numIn").disabled = true;
+  } else {
+    if (!picked.size) return;
+    const want = new Set(item.correct);
+    ok = picked.size === want.size && [...picked].every((i) => want.has(i));
+    given = [...picked].sort().map((i) => item.opts[i]).join("; ");
+    correctText = item.correct.map((i) => item.opts[i]).join("; ");
+    document.querySelectorAll(".opt").forEach((b) => {
+      const i = Number(b.dataset.i);
+      b.disabled = true;
+      if (want.has(i)) b.classList.add("correct");
+      else if (picked.has(i)) b.classList.add("wrong");
+    });
+  }
+  answered = true;
+  results.push({ q, item, ok, given, correctText });
+  const fb = $("fb");
+  fb.className = `fb ${ok ? "ok" : "bad"}`;
+  fb.innerHTML = `<strong>${ok ? "Správně." : "Špatně."}</strong>` +
+    (ok ? "" : `<div class="ans">Správná odpověď: ${correctText}</div>`) +
+    `<div>${q.e}</div>`;
+  fb.hidden = false;
+  $("checkBtn").hidden = true;
+  $("nextBtn").hidden = false;
+  $("nextBtn").textContent = pos + 1 < round.length ? "Další otázka" : "Zobrazit výsledek";
+  $("nextBtn").focus();
+}
+
+function next() {
+  if (!answered) return;
+  pos++;
+  if (pos < round.length) showQuestion(); else finish();
+}
+
+function finish() {
+  $("quiz").hidden = true;
+  $("end").hidden = false;
+  const okN = results.filter((r) => r.ok).length;
+  const pct = Math.round((okN / results.length) * 100);
+  $("scoreLine").textContent = `${okN} z ${results.length} správně (${pct} %)`;
+  const s = loadStore();
+  let note = "";
+  if (s.best == null || pct > s.best || (pct === s.best && results.length > s.bestN)) {
+    saveStore({ best: pct, bestN: results.length });
+    note = "Nový nejlepší výsledek.";
+  } else {
+    note = `Nejlepší výsledek: ${s.best} % (${s.bestN} otázek).`;
+  }
+  $("scoreNote").textContent = note;
+
+  const rows = [];
+  for (const key in TOPICS) {
+    const rs = results.filter((r) => r.q.t === key);
+    if (!rs.length) continue;
+    const k = rs.filter((r) => r.ok).length;
+    rows.push(`<tr><td>${TOPICS[key]}</td><td class="r">${k} / ${rs.length}</td><td class="r">${Math.round((k / rs.length) * 100)} %</td></tr>`);
+  }
+  $("byTopic").innerHTML = `<thead><tr><th>Okruh</th><th class="r">Správně</th><th class="r">Úspěšnost</th></tr></thead><tbody>${rows.join("")}</tbody>`;
+
+  const wrong = results.filter((r) => !r.ok);
+  $("againWrong").hidden = !wrong.length;
+  $("review").innerHTML = wrong.length
+    ? `<li class="muted" style="border-left-color: var(--line)">Chybné odpovědi (${wrong.length}):</li>` + wrong.map((r) =>
+      `<li><div class="qq">${r.q.q}</div><p>Zadaná odpověď: ${r.given}</p><p>Správná odpověď: ${r.correctText}</p><p class="muted">${r.q.e}</p></li>`).join("")
+    : "";
+}
+
+$("startBtn").addEventListener("click", startFromForm);
+$("checkBtn").addEventListener("click", check);
+$("nextBtn").addEventListener("click", next);
+$("quitBtn").addEventListener("click", () => { if (results.length) finish(); else { $("quiz").hidden = true; $("start").hidden = false; } });
+$("againWrong").addEventListener("click", () => startRound(results.filter((r) => !r.ok).map((r) => r.q)));
+$("restart").addEventListener("click", () => { $("end").hidden = true; $("start").hidden = false; renderStart(); });
+$("numIn").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); answered ? next() : check(); } });
+document.addEventListener("keydown", (e) => {
+  if ($("quiz").hidden || e.target.tagName === "INPUT") return;
+  if (e.key === "Enter") { e.preventDefault(); answered ? next() : check(); }
+  else if (/^[1-9]$/.test(e.key) && round[pos].q.k !== "num") { toggle(Number(e.key) - 1); }
+});
+
+renderStart();
+</script>
+</body>
+</html>
