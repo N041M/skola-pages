@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Studijní průvodce – Lineární regrese</title>
+  <link rel="stylesheet" href="../../assets/site.css">
+</head>
+<body>
+  <main>
+    <p class="crumb"><a href="../../">Škola</a></p>
+    <article class="doc" id="doc">Načítá se…</article>
+  </main>
+  <script src="../../assets/md.js"></script>
+  <script>
+    fetch("studijni-pruvodce.md")
+      .then((r) => r.ok ? r.text() : Promise.reject(r.status))
+      .then((text) => { document.getElementById("doc").innerHTML = renderMarkdown(text); })
+      .catch(() => { document.getElementById("doc").textContent = "Průvodce se nepodařilo načíst. Stránka se musí otevřít přes server, ne přímo ze souboru."; });
+  </script>
+</body>
+</html>
