@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kvíz: testy hypotéz</title>
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --surface: #ffffff;
+      --ink: #1a1f27;
+      --ink-2: #4b5563;
+      --line: #d3d9e2;
+      --accent: #1f56b8;
+      --accent-soft: #e6eefb;
+      --ok: #1f6b47;
+      --ok-soft: #e3f1e6;
+      --bad: #b3261e;
+      --bad-soft: #fbe7e5;
+      --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color-scheme: light;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #111418;
+        --surface: #1a1f26;
+        --ink: #e9ecf1;
+        --ink-2: #aab2bf;
+        --line: #333b47;
+        --accent: #8db4ff;
+        --accent-soft: #232d3f;
+        --ok: #7fd4a5;
+        --ok-soft: #1c3328;
+        --bad: #ff9a92;
+        --bad-soft: #3d2220;
+        color-scheme: dark;
+      }
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 400 1.0625rem / 1.6 var(--font); -webkit-font-smoothing: antialiased; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    main { max-width: 46rem; margin: 0 auto; padding: 3rem 1.5rem 4rem; }
+    @media (max-width: 40em) { main { padding: 1.75rem 1rem 3rem; } }
+    h1 { margin: 0 0 1.5rem; font-size: clamp(1.75rem, 5vw, 2.25rem); line-height: 1.15; }
+    h2 { margin: 0 0 1rem; font-size: 1.25rem; }
+    .crumb { margin: 0 0 1.5rem; font-size: 0.9375rem; }
+    [hidden] { display: none !important; }
+    .panel { padding: 1.5rem; background: var(--surface); border: 1px solid var(--line); }
+    .panel + .panel { margin-top: 1rem; }
+    .muted { color: var(--ink-2); }
+    .small { font-size: 0.9375rem; }
+    fieldset { margin: 0 0 1.25rem; padding: 0; border: 0; }
+    legend { margin-bottom: 0.5rem; font-weight: 700; }
+    .choices { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; }
+    .choices label { display: inline-flex; align-items: center; gap: 0.4rem; }
+    button { font: inherit; cursor: pointer; }
+    .btn { padding: 0.55rem 1.1rem; background: var(--accent); color: var(--bg); border: 1px solid var(--accent); font-weight: 700; }
+    .btn.secondary { background: var(--surface); color: var(--accent); }
+    .btn:disabled { opacity: 0.5; cursor: default; }
+    .row { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+
+    .bar { height: 0.4rem; margin: 0 0 1rem; background: var(--line); }
+    .bar > div { height: 100%; width: 0; background: var(--accent); transition: width 0.2s; }
+    .meta { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; margin: 0 0 0.75rem; font-size: 0.9375rem; color: var(--ink-2); }
+    .tag { padding: 0 0.5rem; background: var(--accent-soft); color: var(--accent); font-weight: 700; font-size: 0.8125rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    .q { margin: 0 0 1rem; font-size: 1.125rem; }
+    .q .data { display: block; margin-top: 0.5rem; font-size: 1rem; color: var(--ink-2); }
+    .opts { display: grid; gap: 0.5rem; margin: 0 0 1rem; }
+    .opt { display: flex; gap: 0.75rem; align-items: flex-start; width: 100%; padding: 0.65rem 0.85rem; background: var(--surface); border: 2px solid var(--line); color: var(--ink); text-align: left; line-height: 1.45; }
+    .opt .n { flex: none; min-width: 1.5rem; height: 1.5rem; border: 1px solid var(--line); font-size: 0.875rem; line-height: 1.4rem; text-align: center; color: var(--ink-2); }
+    .opt[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+    .opt[aria-pressed="true"] .n { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+    .opt.correct { border-color: var(--ok); background: var(--ok-soft); }
+    .opt.wrong { border-color: var(--bad); background: var(--bad-soft); }
+    .opt:disabled { cursor: default; }
+    .num { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin: 0 0 1rem; }
+    .num input { width: 11rem; padding: 0.5rem 0.65rem; font: inherit; background: var(--surface); color: var(--ink); border: 2px solid var(--line); }
+    .num input.correct { border-color: var(--ok); }
+    .num input.wrong { border-color: var(--bad); }
+    .fb { margin: 0 0 1rem; padding: 0.85rem 1rem; border-left: 4px solid var(--line); background: var(--bg); }
+    .fb.ok { border-color: var(--ok); }
+    .fb.bad { border-color: var(--bad); }
+    .fb strong { display: block; margin-bottom: 0.25rem; }
+    .fb .ans { margin: 0.25rem 0; }
+
+    .score { font-size: 2rem; font-weight: 700; line-height: 1.2; }
+    table { width: 100%; margin: 1rem 0; border-collapse: collapse; font-size: 0.9375rem; }
+    th, td { padding: 0.4rem 0.6rem; border: 1px solid var(--line); text-align: left; }
+    th { background: var(--accent-soft); }
+    td.r, th.r { text-align: right; }
+    .review { margin: 1.5rem 0 0; padding: 0; list-style: none; }
+    .review li { margin: 0 0 1rem; padding: 0.85rem 1rem; border: 1px solid var(--line); border-left: 4px solid var(--bad); background: var(--surface); }
+    .review .qq { font-weight: 700; }
+    .review p { margin: 0.35rem 0 0; }
+    kbd { padding: 0 0.3rem; border: 1px solid var(--line); font: 0.85em var(--font); }
+  </style>
+</head>
+<body>
+<main>
+  <p class="crumb"><a href="../../">Škola</a></p>
+  <h1>Kvíz: testy hypotéz</h1>
+
+  <section id="start" class="panel">
+    <p class="muted">Otázky pokrývají přednášky 1 až 3 předmětu APSTA: pojmy, zápis hypotéz, volbu testu, výpočet testového kritéria, rozhodnutí podle kvantilu a interpretaci. Každá otázka se vyhodnotí hned a ukáže vysvětlení.</p>
+    <fieldset>
+      <legend>Okruhy</legend>
+      <div class="choices" id="topics"></div>
+    </fieldset>
+    <fieldset>
+      <legend>Počet otázek</legend>
+      <div class="choices" id="counts">
+        <label><input type="radio" name="count" value="10"> 10</label>
+        <label><input type="radio" name="count" value="20" checked> 20</label>
+        <label><input type="radio" name="count" value="40"> 40</label>
+        <label><input type="radio" name="count" value="all"> všechny</label>
+      </div>
+    </fieldset>
+    <div class="row">
+      <button class="btn" id="startBtn">Spustit kvíz</button>
+      <span class="small muted" id="best"></span>
+    </div>
+    <p class="small muted">Klávesy: <kbd>1</kbd> až <kbd>9</kbd> označí odpověď, <kbd>Enter</kbd> zkontroluje a přejde dál. Desetinná čísla lze psát s čárkou i tečkou.</p>
+  </section>
+
+  <section id="quiz" class="panel" hidden>
+    <div class="bar"><div id="barFill"></div></div>
+    <div class="meta"><span id="counter"></span><span class="tag" id="topicTag"></span><span id="kind"></span></div>
+    <p class="q" id="qText"></p>
+    <div class="opts" id="opts"></div>
+    <div class="num" id="numWrap" hidden>
+      <label for="numIn">Výsledek:</label>
+      <input id="numIn" type="text" inputmode="decimal" autocomplete="off" placeholder="např. −1,99">
+      <span class="small muted" id="numHint"></span>
+    </div>
+    <div class="fb" id="fb" hidden aria-live="polite"></div>
+    <div class="row">
+      <button class="btn" id="checkBtn">Zkontrolovat</button>
+      <button class="btn" id="nextBtn" hidden>Další otázka</button>
+      <button class="btn secondary" id="quitBtn">Ukončit</button>
+      <span class="small muted" id="running"></span>
+    </div>
+  </section>
+
+  <section id="end" class="panel" hidden>
+    <h2>Výsledek</h2>
+    <p class="score" id="scoreLine"></p>
+    <p class="muted" id="scoreNote"></p>
+    <table id="byTopic"></table>
+    <div class="row">
+      <button class="btn" id="againWrong">Zopakovat chybné</button>
+      <button class="btn secondary" id="restart">Nový kvíz</button>
+    </div>
+    <ul class="review" id="review"></ul>
+  </section>
+</main>
+
+<script>
+// Okruhy otázek. Klíč je v každé otázce v poli t.
+const TOPICS = {
+  pojmy: "Základní pojmy",
+  hypotezy: "Zápis hypotéz",
+  volba: "Volba testu",
+  vypocet: "Výpočet",
+  rozhodnuti: "Rozhodnutí a kvantily",
+  interpretace: "Interpretace, předpoklady, software",
+};
+
+// Otázka: t okruh, k druh (single = jedna správná, multi = všechny správné, num = číslo),
+// q text, o možnosti, a správná odpověď (index, pole indexů, nebo číslo), tol tolerance,
+// e vysvětlení, fixed = možnosti se nemíchají.
+const BANK = [
+  // Základní pojmy
+  { t: "pojmy", k: "single", q: "Nulová hypotéza H<sub>0</sub> vždy obsahuje relaci:", o: ["=", ">", "≠", "<"], a: 0,
+    e: "H<sub>0</sub> tvrdí shodu: není rozdíl mezi parametrem a hypotetickou hodnotou, nebo mezi parametry dvou populací. Nerovnosti patří do H<sub>1</sub>." },
+  { t: "pojmy", k: "single", q: "Chyba I. druhu je:", o: ["zamítnutí H<sub>0</sub>, která platí", "nezamítnutí H<sub>0</sub>, která neplatí", "přijetí H<sub>1</sub>, která platí", "volba nevhodného testu"], a: 0,
+    e: "Chyba I. druhu = nesprávné zamítnutí platné H<sub>0</sub>. Její pravděpodobnost je nejvýše α." },
+  { t: "pojmy", k: "single", q: "Pravděpodobnost chyby I. druhu se značí a nazývá:", o: ["α, hladina významnosti", "β, chyba II. druhu", "1 − β, síla testu", "p, přesná hladina významnosti"], a: 0,
+    e: "α je hladina významnosti. Volí se předem, obvykle 0,05 nebo 0,01." },
+  { t: "pojmy", k: "single", q: "Chyba II. druhu je:", o: ["nezamítnutí (přijetí) H<sub>0</sub>, která ve skutečnosti neplatí", "zamítnutí H<sub>0</sub>, která platí", "zamítnutí H<sub>1</sub>, která neplatí", "chyba při výpočtu testového kritéria"], a: 0,
+    e: "Chyba II. druhu má pravděpodobnost β. Nevolí se a často není známá, proto se H<sub>0</sub> „nezamítá“ a ne „přijímá“." },
+  { t: "pojmy", k: "single", q: "Síla testu je:", o: ["1 − β", "1 − α", "α", "β"], a: 0,
+    e: "Síla testu je pravděpodobnost, že test zamítne H<sub>0</sub>, která neplatí. Je to doplněk chyby II. druhu." },
+  { t: "pojmy", k: "single", q: "Při stejném rozsahu výběru se α sníží z 0,05 na 0,01. Co se stane s β?", o: ["β vzroste", "β klesne", "β se nezmění", "β bude rovno 0,01"], a: 0,
+    e: "Menší α znamená menší kritický obor, takže se neplatná H<sub>0</sub> zamítá hůře. Proto se α nevolí příliš malé." },
+  { t: "pojmy", k: "multi", q: "Co snižuje chybu II. druhu β při nezměněném α? (Všechny správné možnosti.)", o: ["větší rozsah výběru n", "menší variabilita sledovaného znaku", "menší hladina významnosti α", "zaokrouhlení testového kritéria"], a: [0, 1],
+    e: "β klesá s rostoucím n a s menší variabilitou (ta je vlastností dat). Menší α naopak β zvyšuje." },
+  { t: "pojmy", k: "single", q: "Hodnota p (přesná hladina významnosti) je:", o: ["pravděpodobnost, že při platnosti H<sub>0</sub> vyjde testové kritérium aspoň tak extrémní jako pozorované", "pravděpodobnost, že H<sub>0</sub> platí", "pravděpodobnost chyby II. druhu", "relativní četnost p = m/n"], a: 0,
+    e: "p se počítá z rozdělení testového kritéria za platnosti H<sub>0</sub>. SPSS ji uvádí jako Sig. Podíl p = m/n je jiná veličina se stejným písmenem." },
+  { t: "pojmy", k: "single", q: "Rozhodovací pravidlo II říká, že H<sub>0</sub> se zamítá, když:", o: ["p ≤ α", "p > α", "p ≤ 1 − α", "p = α/2"], a: 0,
+    e: "Malá hodnota p znamená, že pozorovaný výsledek je za platnosti H<sub>0</sub> nepravděpodobný. Pravidlo I (TK ∈ W<sub>α</sub>) dává vždy stejný závěr." },
+  { t: "pojmy", k: "single", q: "Testové kritérium nepadlo do kritického oboru. Správná formulace závěru je:", o: ["H<sub>0</sub> nezamítáme", "H<sub>0</sub> přijímáme, H<sub>0</sub> platí", "H<sub>1</sub> je vyvrácena", "test nelze provést"], a: 0,
+    e: "Nezamítnutí neznamená důkaz H<sub>0</sub>. Chyba β není známá, proto se píše „H<sub>0</sub> nezamítáme“." },
+  { t: "pojmy", k: "single", q: "Kvantil t<sub>0,975;6</sub> = 2,45 znamená:", o: ["P(T < 2,45) = 0,975 pro t-rozdělení s 6 stupni volnosti", "P(T > 2,45) = 0,975 pro t-rozdělení s 6 stupni volnosti", "P(T < 2,45) = 0,025", "hodnota 2,45 má pravděpodobnost 0,975"], a: 0,
+    e: "Index je percentil: hodnoty menší než kvantil mají pravděpodobnost 0,975, větší 0,025. Pro spojité rozdělení má jedna hodnota pravděpodobnost 0." },
+  { t: "pojmy", k: "multi", q: "Na čem závisí kritický obor W<sub>α</sub>? (Všechny správné možnosti.)", o: ["na rozdělení testového kritéria při platnosti H<sub>0</sub> (zvoleném testu)", "na zvolené hladině významnosti α", "na tvaru alternativní hypotézy (oboustranná, levostranná, pravostranná)", "na vypočtené hodnotě testového kritéria"], a: [0, 1, 2],
+    e: "Hodnota testového kritéria rozhoduje, zda do kritického oboru padne, ale kritický obor sama neurčuje." },
+  { t: "pojmy", k: "single", q: "Proč se α nevolí příliš malé (třeba 0,0001)?", o: ["protože roste chyba II. druhu β", "protože klesá chyba II. druhu β", "protože testové kritérium nelze spočítat", "protože se mění rozdělení testového kritéria"], a: 0,
+    e: "Při stejném n jsou α a β ve vzájemném vztahu: menší α dává větší β. Obvyklé volby jsou 0,05 a 0,01." },
+  { t: "pojmy", k: "single", q: "Statistická a věcná významnost:", o: ["při velkém n může být statisticky významný i věcně zanedbatelný rozdíl", "statisticky významný rozdíl je vždy věcně důležitý", "věcně důležitý rozdíl je vždy statisticky významný", "jde o totéž"], a: 0,
+    e: "S rostoucím n klesá směrodatná chyba, takže i malý rozdíl dá velké testové kritérium. Vždy se uvádí také velikost rozdílu." },
+  { t: "pojmy", k: "single", q: "Pro n > 100 se t-rozdělení testového kritéria prakticky nahrazuje:", o: ["normovaným normálním rozdělením N(0,1)", "χ² rozdělením", "F rozdělením", "binomickým rozdělením"], a: 0,
+    e: "t-rozdělení se s rostoucími stupni volnosti blíží N(0,1). Kritická hodnota 1,96 místo t<sub>0,975;df</sub>." },
+  { t: "pojmy", k: "single", q: "Jaký je vztah mezi kvantily t<sub>α;df</sub> a t<sub>1−α;df</sub>?", o: ["t<sub>α;df</sub> = −t<sub>1−α;df</sub>", "t<sub>α;df</sub> = 1 − t<sub>1−α;df</sub>", "t<sub>α;df</sub> = 1/t<sub>1−α;df</sub>", "nesouvisí spolu"], a: 0,
+    e: "t-rozdělení je symetrické kolem 0, stejně jako N(0,1). Levostranná kritická hodnota je záporná." },
+  { t: "pojmy", k: "single", q: "Oboustranný test s testovým kritériem N(0,1) při α = 0,05 má kritické hodnoty:", o: ["±1,96 (u<sub>0,975</sub>)", "±1,645 (u<sub>0,95</sub>)", "1,96 jen vpravo", "±2,576"], a: 0,
+    e: "Při oboustranné alternativě se α dělí na dva ocasy po α/2 = 0,025, takže kvantil je u<sub>0,975</sub> = 1,96. Hodnota 2,576 patří k α = 0,01." },
+  { t: "pojmy", k: "single", q: "Hodnota p u jednostranné alternativy je:", o: ["plocha jednoho ocasu, nezdvojuje se", "dvojnásobek plochy jednoho ocasu", "vždy polovina α", "stejná jako u oboustranné alternativy"], a: 0,
+    e: "U oboustranné alternativy je p = 2·[1 − F(|TK|)], u jednostranné jen F(TK) nebo 1 − F(TK)." },
+  { t: "pojmy", k: "single", q: "Testové kritérium (TK) je:", o: ["statistika (funkce výběru), jejíž rozdělení je odvozené za předpokladu platnosti H<sub>0</sub>", "populační parametr, o kterém se rozhoduje", "zvolená hladina významnosti", "kvantil z tabulek"], a: 0,
+    e: "TK je náhodná veličina. Jeho hodnota se počítá z dat výběru a porovnává s kritickou hodnotou." },
+  { t: "pojmy", k: "single", q: "Kritická hodnota je:", o: ["kvantil rozdělení testového kritéria, který odděluje kritický obor W<sub>α</sub> od doplňku V", "vypočtená hodnota testového kritéria", "hodnota parametru v H<sub>0</sub>", "pravděpodobnost chyby I. druhu"], a: 0,
+    e: "Kritická hodnota závisí na rozdělení TK, na α a na tvaru H<sub>1</sub>." },
+  { t: "pojmy", k: "single", q: "Hladina významnosti α = 0,05 znamená:", o: ["riziko nesprávného zamítnutí platné H<sub>0</sub> je nejvýše 5 %", "H<sub>0</sub> platí s pravděpodobností 95 %", "chyba II. druhu je 5 %", "síla testu je 5 %"], a: 0,
+    e: "α je podmíněná pravděpodobnost zamítnutí H<sub>0</sub> za předpokladu, že H<sub>0</sub> platí." },
+  { t: "pojmy", k: "single", fixed: true, q: "Správné pořadí kroků testu hypotézy:", o: ["H<sub>0</sub> a H<sub>1</sub> → volba α → data a předpoklady → volba testu → výpočet TK → kritický obor → rozhodnutí → interpretace", "data → H<sub>0</sub> a H<sub>1</sub> podle výsledku → volba α tak, aby H<sub>0</sub> byla zamítnuta → interpretace", "výpočet TK → H<sub>0</sub> a H<sub>1</sub> → volba α → rozhodnutí", "interpretace → H<sub>0</sub> → data → rozhodnutí"], a: 0,
+    e: "Hypotézy a α se stanovují před pohledem na výsledek, jinak se α přizpůsobuje datům." },
+  { t: "pojmy", k: "multi", q: "Co platí o chybě II. druhu β? (Všechny správné možnosti.)", o: ["β se nevolí, závisí na skutečné hodnotě parametru", "β lze spočítat jen pro konkrétní alternativu", "β = 1 − α", "β klesá s rostoucím rozsahem výběru"], a: [0, 1, 3],
+    e: "β není doplněk α. Pro každou možnou skutečnou hodnotu parametru je β jiné." },
+  { t: "pojmy", k: "single", q: "V simulaci z přednášky nebyla H<sub>0</sub> při skutečném rozdílu 3 zamítnuta ve 47 % výběrů o rozsahu 30, ale jen ve 3 % výběrů o rozsahu 100. Co to ukazuje?", o: ["vliv rozsahu výběru na chybu II. druhu", "vliv hladiny významnosti na chybu I. druhu", "že test při n = 30 nelze použít", "že H<sub>0</sub> platí"], a: 0,
+    e: "Při malém n je síla testu malá a neplatná H<sub>0</sub> často zůstane nezamítnuta. Větší n chybu β snižuje." },
+  { t: "pojmy", k: "single", q: "Při jednostranné alternativě H<sub>1</sub>: μ > μ<sub>0</sub> nulová hypotéza H<sub>0</sub>: μ = μ<sub>0</sub> logicky zahrnuje také:", o: ["všechny případy μ < μ<sub>0</sub>", "všechny případy μ > μ<sub>0</sub>", "jen hodnotu μ<sub>0</sub>", "obě nerovnosti"], a: 0,
+    e: "H<sub>1</sub> pokrývá jen jednu stranu, H<sub>0</sub> je její doplněk včetně opačné nerovnosti." },
+
+  // Zápis hypotéz
+  { t: "hypotezy", k: "single", q: "Dávkovač má odměřovat 5 g kávy. Ověřuje se, zda se skutečná průměrná dávka od 5 g odchyluje (oběma směry). Zápis hypotéz:", o: ["H<sub>0</sub>: μ = 5, H<sub>1</sub>: μ ≠ 5", "H<sub>0</sub>: μ = 5, H<sub>1</sub>: μ > 5", "H<sub>0</sub>: μ ≠ 5, H<sub>1</sub>: μ = 5", "H<sub>0</sub>: x̄ = 5, H<sub>1</sub>: x̄ ≠ 5"], a: 0,
+    e: "„Odchyluje se“ bez směru je oboustranná alternativa. Hypotézy se píší o populačním parametru μ, ne o průměru výběru x̄." },
+  { t: "hypotezy", k: "single", q: "Průměrná délka hovoru byla 540 s. Školení mělo hovory zkrátit. Zápis hypotéz:", o: ["H<sub>0</sub>: μ = 540, H<sub>1</sub>: μ < 540", "H<sub>0</sub>: μ = 540, H<sub>1</sub>: μ > 540", "H<sub>0</sub>: μ < 540, H<sub>1</sub>: μ ≥ 540", "H<sub>0</sub>: μ = 510, H<sub>1</sub>: μ ≠ 510"], a: 0,
+    e: "Domněnka „zkrátit“ je levostranná alternativa. Do H<sub>0</sub> jde původní hodnota 540, ne výběrový průměr." },
+  { t: "hypotezy", k: "single", q: "Firma má podíl na trhu 56 % a od kampaně čeká jeho zvýšení. Zápis hypotéz:", o: ["H<sub>0</sub>: π = 0,56, H<sub>1</sub>: π > 0,56", "H<sub>0</sub>: π = 0,56, H<sub>1</sub>: π ≠ 0,56", "H<sub>0</sub>: p = 0,56, H<sub>1</sub>: p > 0,56", "H<sub>0</sub>: π > 0,56, H<sub>1</sub>: π = 0,56"], a: 0,
+    e: "Očekávané zvýšení je pravostranná alternativa. Parametr populace je π, p = m/n je jeho odhad z výběru." },
+  { t: "hypotezy", k: "single", q: "Závěrečný test má zvládnout alespoň 70 % studentů. Ze 100 studentů uspělo 63 a je podezření, že úspěšnost je nižší. Zápis hypotéz:", o: ["H<sub>0</sub>: π = 0,7, H<sub>1</sub>: π < 0,7", "H<sub>0</sub>: π = 0,63, H<sub>1</sub>: π < 0,63", "H<sub>0</sub>: π = 0,7, H<sub>1</sub>: π > 0,7", "H<sub>0</sub>: π < 0,7, H<sub>1</sub>: π = 0,7"], a: 0,
+    e: "Hypotetická hodnota 0,7 patří do H<sub>0</sub>, podezření na nižší úspěšnost je levostranná H<sub>1</sub>. Výběrová hodnota 0,63 se do hypotéz nepíše." },
+  { t: "hypotezy", k: "single", q: "Porovnávají se průměrné ceny srovnatelných aut ve dvou nezávislých autobazarech, bez předem daného směru. Zápis hypotéz:", o: ["H<sub>0</sub>: μ<sub>1</sub> = μ<sub>2</sub>, H<sub>1</sub>: μ<sub>1</sub> ≠ μ<sub>2</sub>", "H<sub>0</sub>: μ<sub>1</sub> ≠ μ<sub>2</sub>, H<sub>1</sub>: μ<sub>1</sub> = μ<sub>2</sub>", "H<sub>0</sub>: x̄<sub>1</sub> = x̄<sub>2</sub>, H<sub>1</sub>: x̄<sub>1</sub> ≠ x̄<sub>2</sub>", "H<sub>0</sub>: μ<sub>1</sub> = μ<sub>2</sub>, H<sub>1</sub>: μ<sub>1</sub> > μ<sub>2</sub>"], a: 0,
+    e: "Bez směru v zadání je alternativa oboustranná. H<sub>0</sub> obsahuje rovnost populačních středních hodnot." },
+  { t: "hypotezy", k: "single", q: "Manažeři věří, že minuty zákazníků s Business plánem (1) mají menší směrodatnou odchylku než u Basic plánu (2). Zápis hypotéz:", o: ["H<sub>0</sub>: σ<sub>1</sub>² = σ<sub>2</sub>², H<sub>1</sub>: σ<sub>1</sub>² < σ<sub>2</sub>²", "H<sub>0</sub>: σ<sub>1</sub>² = σ<sub>2</sub>², H<sub>1</sub>: σ<sub>1</sub>² ≠ σ<sub>2</sub>²", "H<sub>0</sub>: μ<sub>1</sub> = μ<sub>2</sub>, H<sub>1</sub>: μ<sub>1</sub> < μ<sub>2</sub>", "H<sub>0</sub>: s<sub>1</sub>² = s<sub>2</sub>², H<sub>1</sub>: s<sub>1</sub>² < s<sub>2</sub>²"], a: 0,
+    e: "Variabilita je rozptyl σ², alternativa má směr (menší). Výběrové rozptyly s² se do hypotéz nepíší." },
+  { t: "hypotezy", k: "single", q: "Tlak byl u stejných osob změřen dvakrát. Rozdíl je definován D = X<sub>1</sub> − X<sub>2</sub> (první minus druhé měření) a ověřuje se, zda druhé měření dává v průměru nižší hodnotu. Zápis hypotéz:", o: ["H<sub>0</sub>: Δ = 0, H<sub>1</sub>: Δ > 0", "H<sub>0</sub>: Δ = 0, H<sub>1</sub>: Δ < 0", "H<sub>0</sub>: μ<sub>1</sub> = μ<sub>2</sub>, H<sub>1</sub>: μ<sub>1</sub> ≠ μ<sub>2</sub> (nezávislé výběry)", "H<sub>0</sub>: Δ > 0, H<sub>1</sub>: Δ = 0"], a: 0,
+    e: "Nižší druhé měření znamená kladný rozdíl X<sub>1</sub> − X<sub>2</sub>, tedy Δ > 0. Směr H<sub>1</sub> se řídí definicí rozdílu." },
+  { t: "hypotezy", k: "single", q: "Pizzerie předpokládá, že preference pálivé pizzy je stejná u mužů i žen. Zápis hypotéz:", o: ["H<sub>0</sub>: π<sub>1</sub> = π<sub>2</sub>, H<sub>1</sub>: π<sub>1</sub> ≠ π<sub>2</sub>", "H<sub>0</sub>: π<sub>1</sub> ≠ π<sub>2</sub>, H<sub>1</sub>: π<sub>1</sub> = π<sub>2</sub>", "H<sub>0</sub>: μ<sub>1</sub> = μ<sub>2</sub>, H<sub>1</sub>: μ<sub>1</sub> ≠ μ<sub>2</sub>", "H<sub>0</sub>: π<sub>1</sub> = π<sub>2</sub>, H<sub>1</sub>: π<sub>1</sub> > π<sub>2</sub>"], a: 0,
+    e: "Preference ano/ne je binární znak, testují se dva podíly. „Stejná“ je H<sub>0</sub>, rozdíl bez směru je oboustranná H<sub>1</sub>." },
+  { t: "hypotezy", k: "single", q: "Který zápis NENÍ platná nulová hypotéza?", o: ["H<sub>0</sub>: μ > 40", "H<sub>0</sub>: μ = 40", "H<sub>0</sub>: π<sub>1</sub> = π<sub>2</sub>", "H<sub>0</sub>: σ² = 4"], a: 0,
+    e: "Nulová hypotéza vždy obsahuje rovnost. Nerovnost patří do alternativy." },
+  { t: "hypotezy", k: "single", q: "Hypotézy se zapisují pomocí:", o: ["populačních parametrů (μ, π, σ²)", "výběrových charakteristik (x̄, p, s²)", "hodnoty testového kritéria", "hodnoty p"], a: 0,
+    e: "Výběrové charakteristiky jsou odhady a slouží k výpočtu testového kritéria, hypotéza je domněnka o populaci." },
+  { t: "hypotezy", k: "single", q: "Marketingový manažer tvrdí, že průměrný věk zákazníků je pod 40 let, a chce to prokázat. Zápis hypotéz:", o: ["H<sub>0</sub>: μ = 40, H<sub>1</sub>: μ < 40", "H<sub>0</sub>: μ < 40, H<sub>1</sub>: μ = 40", "H<sub>0</sub>: μ = 40, H<sub>1</sub>: μ ≠ 40", "H<sub>0</sub>: μ = 40, H<sub>1</sub>: μ > 40"], a: 0,
+    e: "Nová domněnka, kterou chce někdo prokázat, jde do H<sub>1</sub>. „Pod 40“ je levostranná alternativa." },
+  { t: "hypotezy", k: "single", q: "Mluvčí tvrdí, že přesně polovina telefonů je registrována na ženy. Zápis hypotéz pro ověření tohoto tvrzení:", o: ["H<sub>0</sub>: π = 0,5, H<sub>1</sub>: π ≠ 0,5", "H<sub>0</sub>: π = 0,5, H<sub>1</sub>: π < 0,5", "H<sub>0</sub>: π ≠ 0,5, H<sub>1</sub>: π = 0,5", "H<sub>0</sub>: p = 0,4, H<sub>1</sub>: p ≠ 0,4"], a: 0,
+    e: "Tvrzení „přesně 50 %“ se ověřuje oboustranně, jak uvádí i řešený příklad ke Cell Phone Survey." },
+
+  // Volba testu
+  { t: "volba", k: "single", q: "Náhodně bylo vybráno 50 balení koření, zjištěn průměr 14,9 g a výběrová směrodatná odchylka 3,9 g. Ověřuje se deklarovaných 16 g. Vhodný test:", o: ["jednovýběrový t-test o střední hodnotě", "u-test se známým σ", "párový t-test", "test o podílu"], a: 0,
+    e: "Jeden výběr, kvantitativní znak, σ neznámé a odhadnuté výběrovou směrodatnou odchylkou s: t-test s df = n − 1 = 49." },
+  { t: "volba", k: "single", q: "Výrobce tvrdí, že nejvýše 10 % zařízení selže do roka. Z 200 zařízení selhalo 28. Vhodný test:", o: ["limitní test o podílu (parametru binomického rozdělení) s kritériem U", "jednovýběrový t-test", "F-test", "χ² test rozptylu"], a: 0,
+    e: "Binární znak (selhalo/neselhalo), jeden výběr. Předpoklad CLV: 200·0,1 = 20 ≥ 5 a 200·0,9 = 180 ≥ 5, limitní test lze použít." },
+  { t: "volba", k: "single", q: "U 15 náhodně vybraných osob byl tlak změřen dvakrát, po minutě. Porovnávají se průměry obou měření. Vhodný test:", o: ["párový t-test", "nepárový t-test se shodnými rozptyly", "Welchův t-test", "test shody podílů"], a: 0,
+    e: "Stejné osoby měřené dvakrát jsou závislé (párové) výběry. Testuje se střední hodnota rozdílů, df = n − 1 = 14." },
+  { t: "volba", k: "single", q: "Dvě nezávislé skupiny uživatelů (originální a alternativní cartridge), porovnává se průměrný počet stran. F-test shodu rozptylů nezamítl. Vhodný test:", o: ["nepárový t-test se shodnými rozptyly (pooled), df = n<sub>1</sub> + n<sub>2</sub> − 2", "Welchův t-test s neshodnými rozptyly", "párový t-test", "u-test"], a: 0,
+    e: "Když F-test shodu rozptylů nezamítne, použije se společný odhad rozptylu s² a df = n<sub>1</sub> + n<sub>2</sub> − 2." },
+  { t: "volba", k: "single", q: "Nástupní platy absolventů IT a ekonomických oborů (dva nezávislé výběry). F-test zamítl shodu rozptylů. Vhodný test shody průměrů:", o: ["Welchův t-test (neshodné rozptyly) s df podle vzorce", "nepárový t-test se shodnými rozptyly", "párový t-test", "test shody podílů"], a: 0,
+    e: "Při neshodných rozptylech se nepoužívá společný odhad s². Stupně volnosti se počítají ze vzorce a zaokrouhlují dolů." },
+  { t: "volba", k: "single", q: "Porovnává se stabilita (variabilita) teploty náplně u dvou modelů ohřívače na nezávislých výběrech. Vhodný test:", o: ["F-test shody rozptylů", "nepárový t-test", "χ² test rozptylu jednoho výběru", "párový t-test"], a: 0,
+    e: "Variabilita je rozptyl, dva nezávislé výběry: F = s<sub>1</sub>²/s<sub>2</sub>² s větším rozptylem v čitateli, df = (n<sub>1</sub> − 1, n<sub>2</sub> − 1)." },
+  { t: "volba", k: "single", q: "280 mužů a 280 žen ochutnalo pizzu, 81 mužů a 74 žen dalo přednost pálivé. Porovnává se preference. Vhodný test:", o: ["test shody dvou podílů (dvou parametrů binomického rozdělení), limitní metoda", "nepárový t-test", "párový t-test", "F-test"], a: 0,
+    e: "Binární znak ve dvou nezávislých výběrech. Předpoklad CLV platí (n·p a n·(1 − p) jsou daleko nad 5)." },
+  { t: "volba", k: "single", q: "Jeden výběr o rozsahu 36, populační směrodatná odchylka σ = 15 je známá z dlouhodobé evidence. Testuje se střední hodnota. Vhodný test:", o: ["u-test, testové kritérium má rozdělení N(0,1)", "t-test s df = 35", "χ² test", "binomický test"], a: 0,
+    e: "Při známém σ se nemusí odhadovat rozptyl a testové kritérium U = (x̄ − μ<sub>0</sub>)/(σ/√n) má normované normální rozdělení." },
+  { t: "volba", k: "single", q: "U jednoho výběru 10 kusů se ověřuje, zda rozptyl rozměru odpovídá normě σ<sub>0</sub>² = 4 mm². Vhodný test:", o: ["χ² test rozptylu, df = n − 1", "F-test", "t-test", "u-test"], a: 0,
+    e: "Rozptyl jednoho výběru: χ² = (n − 1)s²/σ<sub>0</sub>² má χ² rozdělení s n − 1 stupni volnosti. Test je citlivý na odchylky od normality." },
+  { t: "volba", k: "single", q: "Testuje se podíl π<sub>0</sub> = 0,02 ve výběru n = 150, tedy n·π<sub>0</sub> = 3. Vhodný postup:", o: ["limitní test nelze použít (n·π<sub>0</sub> < 5), je nutný přesný binomický test", "limitní u-test, předpoklady jsou splněné", "t-test", "F-test"], a: 0,
+    e: "Limitní test vyžaduje n·π<sub>0</sub> ≥ 5 a n·(1 − π<sub>0</sub>) ≥ 5. Při malém n·π<sub>0</sub> se používá přesný test z binomického rozdělení." },
+  { t: "volba", k: "single", q: "Porovnává se shoda středních hodnot ve čtyřech nezávislých skupinách. Vhodná metoda:", o: ["analýza rozptylu (ANOVA) pro jeden faktor", "čtyři párové t-testy", "F-test shody rozptylů", "test shody podílů"], a: 0,
+    e: "Více než dva nezávislé výběry: ANOVA testuje H<sub>0</sub>: μ<sub>1</sub> = μ<sub>2</sub> = … = μ<sub>r</sub>. Je to téma následující kapitoly." },
+  { t: "volba", k: "single", q: "Před testem shody středních hodnot dvou nezávislých výběrů s neznámými rozptyly se nejdříve provádí:", o: ["F-test shody rozptylů, který určí variantu t-testu", "párový t-test", "test o podílu", "výpočet hodnoty p"], a: 0,
+    e: "Výsledek F-testu rozhoduje mezi t-testem se shodnými rozptyly a Welchovým t-testem." },
+  { t: "volba", k: "multi", q: "Podle čeho se poznají závislé (párové) výběry? (Všechny správné možnosti.)", o: ["stejné jednotky měřené dvakrát (před a po)", "každá hodnota má přirozeného partnera v druhém výběru (spárované dvojice)", "dvě různé skupiny osob stejného rozsahu", "oba výběry mají stejný průměr"], a: [0, 1],
+    e: "Stejný rozsah sám o sobě párování nezakládá. Rozhoduje, zda hodnoty tvoří dvojice." },
+  { t: "volba", k: "single", q: "Stejní respondenti odpověděli ano/ne před kampaní a po ní. Porovnávají se podíly kladných odpovědí. Vhodný test:", o: ["McNemarův test (závislé výběry, binární znak)", "test shody dvou podílů pro nezávislé výběry", "párový t-test", "F-test"], a: 0,
+    e: "Binární znak ve dvou závislých výběrech. Limitní test shody podílů předpokládá nezávislé výběry." },
+  { t: "volba", k: "single", q: "Dva nezávislé výběry, porovnávají se střední hodnoty a populační rozptyly σ<sub>1</sub>² a σ<sub>2</sub>² jsou známé. Vhodný test:", o: ["dvouvýběrový Z-test s rozdělením N(0,1)", "Welchův t-test", "nepárový t-test se shodnými rozptyly", "F-test"], a: 0,
+    e: "Při známých rozptylech se nic neodhaduje: Z = (x̄<sub>1</sub> − x̄<sub>2</sub>)/√(σ<sub>1</sub>²/n<sub>1</sub> + σ<sub>2</sub>²/n<sub>2</sub>)." },
+  { t: "volba", k: "single", q: "Ceny 100 nákupů v hypermarketu A a ke každému nákupu cena podobného nákupu v hypermarketu B. Vhodný test:", o: ["párový t-test rozdílů cen", "nepárový t-test", "F-test", "test shody podílů"], a: 0,
+    e: "Ke každému nákupu A je přiřazen nákup B, hodnoty tvoří dvojice. Přednáška řeší tento příklad párovým t-testem." },
+  { t: "volba", k: "single", q: "Dva nezávislé výběry binárního znaku, ale v jednom z nich je n·p = 2. Vhodný postup:", o: ["přesný Fisherův test, limitní metoda nesplňuje předpoklady", "limitní test shody podílů", "párový t-test", "Welchův t-test"], a: 0,
+    e: "Limitní test shody podílů vyžaduje n<sub>i</sub>·p<sub>i</sub> ≥ 5 a n<sub>i</sub>·(1 − p<sub>i</sub>) ≥ 5 v obou výběrech." },
+
+  // Výpočet
+  { t: "vypocet", k: "num", q: "Call-centrum: μ<sub>0</sub> = 540 s, n = 16, x̄ = 510 s, s = 45 s. Hodnota testového kritéria t jednovýběrového t-testu:", a: -2.667, tol: 0.02, hint: "na 2 desetinná místa",
+    e: "t = (x̄ − μ<sub>0</sub>)/(s/√n) = (510 − 540)/(45/4) = −30/11,25 = −2,667. Stupně volnosti df = 15." },
+  { t: "vypocet", k: "num", q: "Kurz: π<sub>0</sub> = 0,7, n = 100, m = 63. Hodnota testového kritéria u limitního testu o podílu:", a: -1.528, tol: 0.02, hint: "na 2 desetinná místa",
+    e: "p = 0,63. u = (p − π<sub>0</sub>)/√(π<sub>0</sub>(1 − π<sub>0</sub>)/n) = −0,07/√(0,21/100) = −0,07/0,04583 = −1,528." },
+  { t: "vypocet", k: "num", q: "Cartridge: s<sub>1</sub> = 48,3 (n<sub>1</sub> = 10), s<sub>2</sub> = 53,3 (n<sub>2</sub> = 8). Hodnota testového kritéria F (větší rozptyl v čitateli):", a: 1.218, tol: 0.01, hint: "na 2 desetinná místa",
+    e: "Zadány jsou směrodatné odchylky, takže se umocní: F = 53,3²/48,3² = 2840,89/2332,89 = 1,218. Stupně volnosti (7, 9): čitatel patří výběru 2." },
+  { t: "vypocet", k: "num", q: "Cartridge: n<sub>1</sub> = 10, s<sub>1</sub> = 48,3, n<sub>2</sub> = 8, s<sub>2</sub> = 53,3. Společný odhad rozptylu s² pro t-test se shodnými rozptyly:", a: 2555.14, tol: 1, hint: "na celé číslo",
+    e: "s² = [(n<sub>1</sub> − 1)s<sub>1</sub>² + (n<sub>2</sub> − 1)s<sub>2</sub>²]/(n<sub>1</sub> + n<sub>2</sub> − 2) = (9·2332,89 + 7·2840,89)/16 = 2555,14." },
+  { t: "vypocet", k: "num", q: "Cartridge: x̄<sub>1</sub> = 322,5, x̄<sub>2</sub> = 298,3, s² = 2555,14, n<sub>1</sub> = 10, n<sub>2</sub> = 8. Hodnota t nepárového t-testu se shodnými rozptyly:", a: 1.009, tol: 0.02, hint: "na 2 desetinná místa",
+    e: "s = √2555,14 = 50,55. t = (322,5 − 298,3)/(50,55·√(1/10 + 1/8)) = 24,2/(50,55·0,4743) = 24,2/23,98 = 1,009. df = 16." },
+  { t: "vypocet", k: "num", q: "Krevní tlak: průměr rozdílů d̄ = 4,133, s<sub>d</sub> = 5,436, n = 15, Δ<sub>0</sub> = 0. Hodnota t párového t-testu:", a: 2.945, tol: 0.02, hint: "na 2 desetinná místa",
+    e: "t = (d̄ − Δ<sub>0</sub>)/(s<sub>d</sub>/√n) = 4,133/(5,436/3,873) = 4,133/1,4036 = 2,945. df = 14." },
+  { t: "vypocet", k: "num", q: "Pizza: m<sub>1</sub> = 81, n<sub>1</sub> = 280, m<sub>2</sub> = 74, n<sub>2</sub> = 280. Společný odhad podílu p̄:", a: 0.2768, tol: 0.002, hint: "na 3 desetinná místa",
+    e: "p̄ = (m<sub>1</sub> + m<sub>2</sub>)/(n<sub>1</sub> + n<sub>2</sub>) = 155/560 = 0,277." },
+  { t: "vypocet", k: "num", q: "Pizza: p<sub>1</sub> = 0,289, p<sub>2</sub> = 0,264, p̄ = 0,277, n<sub>1</sub> = n<sub>2</sub> = 280. Hodnota testového kritéria u testu shody podílů:", a: 0.661, tol: 0.02, hint: "na 2 desetinná místa",
+    e: "u = (p<sub>1</sub> − p<sub>2</sub>)/√(p̄(1 − p̄)(1/n<sub>1</sub> + 1/n<sub>2</sub>)) = 0,025/√(0,277·0,723·0,007143) = 0,025/0,03783 = 0,661." },
+  { t: "vypocet", k: "num", q: "Platy: s<sub>1</sub> = 3519, n<sub>1</sub> = 110, s<sub>2</sub> = 4495, n<sub>2</sub> = 124. Stupně volnosti Welchova t-testu zaokrouhlené dolů na celé číslo:", a: 228, tol: 0.5, hint: "celé číslo",
+    e: "a = s<sub>1</sub>²/n<sub>1</sub> = 112 578, b = s<sub>2</sub>²/n<sub>2</sub> = 162 943. df = (a + b)²/(a²/109 + b²/123) = 228,6 → 228." },
+  { t: "vypocet", k: "num", q: "Koření: s = 3,9, n = 50. Směrodatná chyba průměru s/√n:", a: 0.5515, tol: 0.003, hint: "na 3 desetinná místa",
+    e: "√50 = 7,0711, 3,9/7,0711 = 0,5515. Je to jmenovatel testového kritéria t." },
+  { t: "vypocet", k: "num", q: "Stroj má mít směrodatnou odchylku σ<sub>0</sub> = 2,0 mm. Ve výběru n = 10 je s = 2,9 mm. Hodnota testového kritéria χ²:", a: 18.92, tol: 0.05, hint: "na 2 desetinná místa",
+    e: "χ² = (n − 1)s²/σ<sub>0</sub>² = 9·8,41/4 = 18,92. Zadané σ<sub>0</sub> se umocní na rozptyl 4. df = 9." },
+  { t: "vypocet", k: "num", q: "Z hodnot 12, 15, 18 se počítá výběrová směrodatná odchylka s (dělí se n − 1). Výsledek:", a: 3, tol: 0.01, hint: "na 2 desetinná místa",
+    e: "Σx = 45, Σx² = 693, x̄ = 15. s² = (Σx² − n·x̄²)/(n − 1) = (693 − 675)/2 = 9, s = 3." },
+  { t: "vypocet", k: "num", q: "μ<sub>0</sub> = 100, σ = 15 (známé), n = 36, x̄ = 104. Hodnota testového kritéria u-testu:", a: 1.6, tol: 0.01, hint: "na 2 desetinná místa",
+    e: "u = (x̄ − μ<sub>0</sub>)/(σ/√n) = 4/(15/6) = 4/2,5 = 1,6." },
+  { t: "vypocet", k: "num", q: "Nepárový t-test se shodnými rozptyly, n<sub>1</sub> = 10, n<sub>2</sub> = 8. Počet stupňů volnosti:", a: 16, tol: 0.5, hint: "celé číslo",
+    e: "df = n<sub>1</sub> + n<sub>2</sub> − 2 = 16." },
+  { t: "vypocet", k: "num", q: "Věkové skupiny: 54 z 231 a 49 ze 173 osob uvedlo zhoršení. Společný odhad podílu p̄:", a: 0.255, tol: 0.002, hint: "na 3 desetinná místa",
+    e: "p̄ = (54 + 49)/(231 + 173) = 103/404 = 0,255." },
+  { t: "vypocet", k: "single", q: "F-test s výběry n<sub>1</sub> = 13 (větší rozptyl) a n<sub>2</sub> = 15. Stupně volnosti F rozdělení (čitatel, jmenovatel):", o: ["(12, 14)", "(13, 15)", "(14, 12)", "(26, 1)"], a: 0,
+    e: "df čitatele = n<sub>1</sub> − 1 = 12 patří k rozptylu v čitateli, df jmenovatele = n<sub>2</sub> − 1 = 14." },
+  { t: "vypocet", k: "num", q: "Ve vzorku 500 nákupů zakoupilo výrobek firmy 298 zákazníků. Relativní četnost p:", a: 0.596, tol: 0.001, hint: "na 3 desetinná místa",
+    e: "p = m/n = 298/500 = 0,596. Odhaduje neznámé π." },
+  { t: "vypocet", k: "num", q: "μ<sub>0</sub> = 250, n = 25, x̄ = 243, s = 20. Hodnota t jednovýběrového t-testu:", a: -1.75, tol: 0.01, hint: "na 2 desetinná místa",
+    e: "t = (243 − 250)/(20/√25) = −7/4 = −1,75. df = 24." },
+  { t: "vypocet", k: "num", q: "Ve městě A podpořilo projekt 45 ze 150 dotázaných, ve městě B 30 ze 150. Hodnota testového kritéria u testu shody podílů:", a: 2.0, tol: 0.02, hint: "na 2 desetinná místa",
+    e: "p<sub>1</sub> = 0,30, p<sub>2</sub> = 0,20, p̄ = 75/300 = 0,25. u = 0,10/√(0,25·0,75·(2/150)) = 0,10/0,05 = 2,0." },
+  { t: "vypocet", k: "num", q: "μ<sub>0</sub> = 50, σ = 8 (známé), n = 64, x̄ = 52,4. Hodnota testového kritéria u-testu:", a: 2.4, tol: 0.01, hint: "na 2 desetinná místa",
+    e: "u = (52,4 − 50)/(8/√64) = 2,4/1 = 2,4." },
+  { t: "vypocet", k: "num", q: "Výběr n = 16 má s² = 9, norma je σ<sub>0</sub>² = 4. Hodnota testového kritéria χ²:", a: 33.75, tol: 0.05, hint: "na 2 desetinná místa",
+    e: "χ² = (n − 1)s²/σ<sub>0</sub>² = 15·9/4 = 33,75. df = 15." },
+  { t: "vypocet", k: "num", q: "Hodnota testového kritéria je u = 1,5766 a Φ(1,5766) = 0,9426. Hodnota p pro oboustrannou alternativu:", a: 0.1148, tol: 0.002, hint: "na 3 desetinná místa",
+    e: "p = 2·[1 − Φ(|u|)] = 2·(1 − 0,9426) = 2·0,0574 = 0,1148. Pro pravostrannou alternativu by bylo p = 0,0574." },
+  { t: "vypocet", k: "num", q: "Welch: s<sub>1</sub>² = 1442,99, n<sub>1</sub> = 36, s<sub>2</sub>² = 636,004, n<sub>2</sub> = 36. Jmenovatel testového kritéria √(s<sub>1</sub>²/n<sub>1</sub> + s<sub>2</sub>²/n<sub>2</sub>):", a: 7.599, tol: 0.01, hint: "na 2 desetinná místa",
+    e: "a = 40,083, b = 17,667, a + b = 57,750, √57,750 = 7,599." },
+  { t: "vypocet", k: "num", q: "Dávkovač: μ<sub>0</sub> = 5, n = 10, x̄ = 5,3, s = 0,4. Hodnota t jednovýběrového t-testu:", a: 2.372, tol: 0.02, hint: "na 2 desetinná místa",
+    e: "t = (5,3 − 5)/(0,4/√10) = 0,3/0,1265 = 2,372. df = 9." },
+  { t: "vypocet", k: "num", q: "Zařízení: π<sub>0</sub> = 0,10, n = 200, m = 28. Hodnota testového kritéria u (bez korekce na nespojitost):", a: 1.886, tol: 0.02, hint: "na 2 desetinná místa",
+    e: "p = 0,14. u = 0,04/√(0,1·0,9/200) = 0,04/0,02121 = 1,886." },
+
+  // Rozhodnutí a kvantily
+  { t: "rozhodnuti", k: "single", q: "Call-centrum: t = −2,667, df = 15, H<sub>1</sub>: μ < 540, α = 0,01. Zadán kvantil t<sub>0,01;15</sub> = −2,602. Rozhodnutí:", o: ["H<sub>0</sub> zamítáme, školení hovory statisticky významně zkrátilo", "H<sub>0</sub> nezamítáme", "nelze rozhodnout, chybí t<sub>0,995;15</sub>", "H<sub>0</sub> přijímáme"], a: 0,
+    e: "Levostranný test: W = {t < t<sub>0,01;15</sub>}. −2,667 < −2,602, hodnota je v kritickém oboru. p = 0,0088 < 0,01." },
+  { t: "rozhodnuti", k: "single", q: "Kurz: u = −1,528, H<sub>1</sub>: π < 0,7, α = 0,05, kritická hodnota u<sub>0,05</sub> = −1,645. Rozhodnutí:", o: ["H<sub>0</sub> nezamítáme, nižší úspěšnost nebyla prokázána", "H<sub>0</sub> zamítáme", "nelze rozhodnout, chybí u<sub>0,975</sub>", "H<sub>1</sub> je prokázána"], a: 0,
+    e: "−1,528 není menší než −1,645, hodnota není v kritickém oboru. p = 0,063 > 0,05." },
+  { t: "rozhodnuti", k: "single", q: "F = 1,218, H<sub>1</sub>: σ<sub>1</sub>² ≠ σ<sub>2</sub>², α = 0,05, zadán F<sub>0,975;7;9</sub> = 4,197. Rozhodnutí a důsledek:", o: ["H<sub>0</sub> nezamítáme, rozptyly lze považovat za shodné, následuje t-test se shodnými rozptyly", "H<sub>0</sub> zamítáme, následuje Welchův t-test", "nelze rozhodnout, chybí F<sub>0,95;7;9</sub>", "H<sub>0</sub> zamítáme, rozptyly jsou shodné"], a: 0,
+    e: "Větší rozptyl je v čitateli, proto stačí pravý kvantil F<sub>1−α/2</sub>. 1,218 < 4,197." },
+  { t: "rozhodnuti", k: "single", q: "Cartridge: t = 1,009, H<sub>1</sub>: μ<sub>1</sub> > μ<sub>2</sub>, df = 16, α = 0,05, t<sub>0,95;16</sub> = 1,746. Rozhodnutí:", o: ["H<sub>0</sub> nezamítáme, vyšší kvalita originálních cartridgí nebyla prokázána", "H<sub>0</sub> zamítáme", "nelze rozhodnout, chybí t<sub>0,975;16</sub>", "H<sub>0</sub> přijímáme, cartridge jsou stejné"], a: 0,
+    e: "Pravostranný test: W = {t > 1,746}. 1,009 < 1,746. p = 0,164." },
+  { t: "rozhodnuti", k: "single", q: "Krevní tlak: t = 2,945, H<sub>1</sub>: Δ > 0, df = 14, α = 0,05, t<sub>0,95;14</sub> = 1,761. Rozhodnutí:", o: ["H<sub>0</sub> zamítáme, druhé měření dává v průměru statisticky významně nižší hodnotu", "H<sub>0</sub> nezamítáme", "nelze rozhodnout, je potřeba t<sub>0,975;14</sub>", "H<sub>0</sub> zamítáme, protože t > 1"], a: 0,
+    e: "2,945 > 1,761, hodnota je v kritickém oboru. p = 0,005 < 0,05." },
+  { t: "rozhodnuti", k: "single", q: "Pizza: u = 0,661, H<sub>1</sub>: π<sub>1</sub> ≠ π<sub>2</sub>, α = 0,1, kritická hodnota u<sub>0,95</sub> = 1,645. Rozhodnutí:", o: ["H<sub>0</sub> nezamítáme, rozdíl preferencí mezi muži a ženami nebyl prokázán", "H<sub>0</sub> zamítáme", "nelze rozhodnout, chybí u<sub>0,9</sub>", "H<sub>0</sub> zamítáme, protože α je velké"], a: 0,
+    e: "Oboustranný test při α = 0,1 má kritické hodnoty ±u<sub>0,95</sub> = ±1,645. |0,661| < 1,645. p = 0,509." },
+  { t: "rozhodnuti", k: "single", q: "Platy: t = 2,867, df = 228, H<sub>1</sub>: μ<sub>1</sub> ≠ μ<sub>2</sub>, α = 0,05, t<sub>0,975;228</sub> = 1,97. Rozhodnutí:", o: ["H<sub>0</sub> zamítáme, průměrné nástupní platy se statisticky významně liší", "H<sub>0</sub> nezamítáme", "nelze rozhodnout, chybí t<sub>0,95;228</sub>", "H<sub>0</sub> zamítáme jen při α = 0,1"], a: 0,
+    e: "|2,867| > 1,97. p = 0,0045 < 0,05. Při df = 228 je kvantil téměř 1,96 jako u N(0,1)." },
+  { t: "rozhodnuti", k: "single", q: "Test H<sub>1</sub>: μ > μ<sub>0</sub> při α = 0,05 a df = 24. Potřebná kritická hodnota:", o: ["t<sub>0,95;24</sub>", "t<sub>0,975;24</sub>", "t<sub>0,05;24</sub>", "u<sub>0,95</sub> = 1,645"], a: 0,
+    e: "Pravostranný test: celé α je v pravém ocasu, kvantil 1 − α = 0,95. Kvantil 0,975 patří k oboustrannému testu. N(0,1) se používá až pro velké n." },
+  { t: "rozhodnuti", k: "single", q: "Oboustranný t-test při α = 0,01 a df = 9. Potřebná kritická hodnota:", o: ["±t<sub>0,995;9</sub>", "±t<sub>0,99;9</sub>", "±t<sub>0,975;9</sub>", "t<sub>0,01;9</sub>"], a: 0,
+    e: "α/2 = 0,005 v každém ocasu, kvantil 1 − α/2 = 0,995." },
+  { t: "rozhodnuti", k: "single", q: "Levostranný t-test při α = 0,05 a df = 15, v tabulce je jen t<sub>0,95;15</sub> = 1,753. Kritická hodnota je:", o: ["−1,753, díky symetrii t<sub>0,05;15</sub> = −t<sub>0,95;15</sub>", "1,753", "nelze určit, tabulka záporné kvantily neobsahuje", "−2,131"], a: 0,
+    e: "t-rozdělení je symetrické. Kladný tabulkový kvantil stačí, jen se otočí znaménko. −2,131 by bylo t<sub>0,025;15</sub>." },
+  { t: "rozhodnuti", k: "single", q: "Pravostranný test při α = 0,05, df = 11, t = 2,0. Zadán je pouze kvantil t<sub>0,975;11</sub> = 2,201. Co lze říci?", o: ["zadaný kvantil k rozhodnutí nestačí, je potřeba t<sub>0,95;11</sub> (= 1,796, takže H<sub>0</sub> se zamítá)", "H<sub>0</sub> nezamítáme, protože 2,0 < 2,201", "H<sub>0</sub> zamítáme, protože 2,0 > 1", "test nelze provést"], a: 0,
+    e: "Kvantil 0,975 patří k oboustrannému testu při α = 0,05. Z 2,0 < 2,201 plyne jen, že jednostranné p je větší než 0,025, ne zda je větší než 0,05." },
+  { t: "rozhodnuti", k: "single", q: "Oboustranný test při α = 0,05, df = 11, |t| = 1,5. Zadán je pouze kvantil t<sub>0,95;11</sub> = 1,796. Co lze říci?", o: ["H<sub>0</sub> nezamítáme: 1,5 < t<sub>0,95</sub> < t<sub>0,975</sub>, takže hodnota není v kritickém oboru", "H<sub>0</sub> zamítáme", "nelze říci nic, chybí t<sub>0,975;11</sub>", "H<sub>0</sub> zamítáme jednostranně"], a: 0,
+    e: "Potřebný kvantil t<sub>0,975;11</sub> je větší než zadaný t<sub>0,95;11</sub>. Když |t| nepřekročí ani menší kvantil, nepřekročí ani větší." },
+  { t: "rozhodnuti", k: "single", q: "Pravostranný test při α = 0,05, df = 15, t = 2,5. Zadán je pouze t<sub>0,975;15</sub> = 2,131. Co lze říci?", o: ["H<sub>0</sub> zamítáme: 2,5 > t<sub>0,975</sub> > t<sub>0,95</sub>", "H<sub>0</sub> nezamítáme", "nelze rozhodnout", "H<sub>0</sub> zamítáme jen při α = 0,025"], a: 0,
+    e: "Potřebný kvantil t<sub>0,95;15</sub> = 1,753 je menší než zadaný 2,131. Když t překročí větší kvantil, překročí i menší." },
+  { t: "rozhodnuti", k: "single", q: "Výstup programu udává p = 0,0088. Hladina významnosti α = 0,01. Rozhodnutí:", o: ["H<sub>0</sub> zamítáme, protože p ≤ α", "H<sub>0</sub> nezamítáme, protože p < α", "nelze rozhodnout bez kritické hodnoty", "H<sub>0</sub> zamítáme jen při α = 0,05"], a: 0,
+    e: "Pravidlo II: p ≤ α → zamítáme. 0,0088 < 0,01." },
+  { t: "rozhodnuti", k: "single", q: "Hodnota p = 0,063, α = 0,05. Rozhodnutí a poznámka:", o: ["H<sub>0</sub> nezamítáme; při α = 0,1 by se zamítla", "H<sub>0</sub> zamítáme", "H<sub>0</sub> nezamítáme a nezamítla by se při žádném α", "nelze rozhodnout"], a: 0,
+    e: "0,063 > 0,05, ale 0,063 ≤ 0,1. Závěr závisí na zvolené hladině, proto se α volí předem." },
+  { t: "rozhodnuti", k: "single", q: "Autobazary A a C: F = 2,27, F<sub>0,975;35;35</sub> = 1,96, α = 0,05. Důsledek pro test shody průměrů:", o: ["rozptyly jsou statisticky významně různé, použije se Welchův t-test", "rozptyly jsou shodné, použije se t-test se společným rozptylem", "test průměrů nelze provést", "použije se párový t-test"], a: 0,
+    e: "2,27 > 1,96, H<sub>0</sub> o shodě rozptylů se zamítá. Přednáška pak počítá Welchův test s df = 60." },
+  { t: "rozhodnuti", k: "single", q: "t = 2,0 při df = 9, pravostranná alternativa. Z tabulky: t<sub>0,95;9</sub> = 1,833 a t<sub>0,975;9</sub> = 2,262. Hodnota p leží:", o: ["mezi 0,025 a 0,05", "mezi 0,05 a 0,10", "pod 0,025", "nad 0,10"], a: 0,
+    e: "1,833 < 2,0 < 2,262: plocha vpravo od 2,0 je menší než 0,05 a větší než 0,025. Přesně p = 0,038." },
+  { t: "rozhodnuti", k: "single", q: "χ² = 18,92, df = 9, H<sub>1</sub>: σ² ≠ 4, α = 0,05. Kvantily: χ²<sub>0,025;9</sub> = 2,70 a χ²<sub>0,975;9</sub> = 19,02. Rozhodnutí:", o: ["H<sub>0</sub> nezamítáme, 18,92 leží mezi oběma kvantily", "H<sub>0</sub> zamítáme, 18,92 > 2,70", "nelze rozhodnout", "H<sub>0</sub> zamítáme, 18,92 je blízko 19,02"], a: 0,
+    e: "U nesymetrického rozdělení má oboustranný kritický obor dvě části: χ² < 2,70 nebo χ² > 19,02. Hodnota 18,92 není ani v jedné." },
+  { t: "rozhodnuti", k: "single", q: "SPSS: Sig. (2-tailed) = 0,036 pro t-test shody průměrů, H<sub>1</sub>: μ<sub>1</sub> ≠ μ<sub>2</sub>, α = 0,05. Rozhodnutí:", o: ["H<sub>0</sub> zamítáme, průměry se statisticky významně liší", "H<sub>0</sub> nezamítáme", "nelze rozhodnout bez kritické hodnoty", "H<sub>0</sub> zamítáme jen při α = 0,01"], a: 0,
+    e: "Sig. je hodnota p. 0,036 ≤ 0,05." },
+  { t: "rozhodnuti", k: "single", q: "SPSS, Independent Samples Test: Levene Sig. = 0,002 při α = 0,05. Který řádek výstupu se čte?", o: ["Equal variances not assumed", "Equal variances assumed", "oba řádky, výsledky se zprůměrují", "žádný, test nelze použít"], a: 0,
+    e: "Leveneův test zamítl shodu rozptylů (0,002 < 0,05), proto platí řádek pro neshodné rozptyly (Welch)." },
+  { t: "rozhodnuti", k: "single", q: "SPSS udává Sig. (2-tailed) = 0,018 a výběrový rozdíl míří ve směru jednostranné alternativy. Hodnota p pro tuto jednostrannou alternativu:", o: ["0,009", "0,018", "0,036", "0,982"], a: 0,
+    e: "Oboustranná hodnota p se při odpovídajícím směru rozdílu dělí dvěma." },
+  { t: "rozhodnuti", k: "single", q: "Test H<sub>1</sub>: μ < μ<sub>0</sub>, α = 0,05, n = 200 (σ neznámé). Vhodná kritická hodnota:", o: ["přibližně −1,645 (t-rozdělení s df = 199 je prakticky N(0,1))", "+1,645", "−1,96", "−2,576"], a: 0,
+    e: "Levostranný test, kvantil 0,05, záporný. Pro n > 100 se t-rozdělení nahrazuje N(0,1)." },
+  { t: "rozhodnuti", k: "single", q: "F-test s oboustrannou alternativou při α = 0,05 a větším rozptylem v čitateli. Testové kritérium se porovnává s:", o: ["F<sub>0,975;n1−1;n2−1</sub>", "F<sub>0,95;n1−1;n2−1</sub>", "F<sub>0,05;n1−1;n2−1</sub>", "F<sub>0,5;n1−1;n2−1</sub>"], a: 0,
+    e: "Díky volbě většího rozptylu v čitateli stačí pravý ocas s pravděpodobností α/2 = 0,025, tedy kvantil 0,975." },
+
+  // Interpretace, předpoklady, software
+  { t: "interpretace", k: "single", q: "Koření: H<sub>0</sub> byla zamítnuta na hladině 0,05 ve prospěch H<sub>1</sub>: μ < 16. Správná interpretace:", o: ["Na hladině významnosti 0,05 je prokázáno, že průměrná hmotnost balení je nižší než deklarovaných 16 g. Stížnost zákazníků je oprávněná.", "H<sub>0</sub> platí, balení mají 16 g.", "Všechna balení mají méně než 16 g.", "Pravděpodobnost, že H<sub>0</sub> platí, je 5 %."], a: 0,
+    e: "Závěr se formuluje slovy úlohy, s hladinou významnosti a směrem rozdílu. Jde o průměr populace, ne o každé balení." },
+  { t: "interpretace", k: "single", q: "Kampaň: H<sub>0</sub>: π = 0,56 nebyla zamítnuta (p = 0,115). Správná interpretace:", o: ["Statisticky významná změna podílu na trhu nebyla na hladině 0,05 prokázána; pozorovanou odchylku lze vysvětlit náhodnou chybou výběru.", "Podíl na trhu se nezměnil, H<sub>0</sub> platí.", "Kampaň zvýšila podíl na 59,6 %.", "H<sub>0</sub> je dokázána s pravděpodobností 88,5 %."], a: 0,
+    e: "Nezamítnutí není důkaz H<sub>0</sub>. Výběrový podíl 0,596 je jen odhad, odchylka od 0,56 není statisticky významná." },
+  { t: "interpretace", k: "multi", q: "Předpoklady jednovýběrového t-testu o střední hodnotě. (Všechny správné možnosti.)", o: ["znak má v populaci přibližně normální rozdělení", "prostý náhodný výběr", "σ není známé a odhaduje se výběrovou směrodatnou odchylkou s", "n·π<sub>0</sub> ≥ 5 a n·(1 − π<sub>0</sub>) ≥ 5"], a: [0, 1, 2],
+    e: "Podmínka n·π<sub>0</sub> ≥ 5 patří k limitnímu testu o podílu, ne k t-testu." },
+  { t: "interpretace", k: "single", q: "Předpoklad použití limitního testu o podílu (konvergence binomického rozdělení k normálnímu):", o: ["n·π<sub>0</sub> ≥ 5 a n·(1 − π<sub>0</sub>) ≥ 5", "n ≥ 30", "normální rozdělení znaku", "shodné rozptyly"], a: 0,
+    e: "Kontrola se počítá s hypotetickou hodnotou π<sub>0</sub>. Navíc π<sub>0</sub> nemá být blízko 0 nebo 1." },
+  { t: "interpretace", k: "multi", q: "Předpoklady nepárového t-testu se shodnými rozptyly. (Všechny správné možnosti.)", o: ["oba výběry pocházejí z přibližně normálních rozdělení", "výběry jsou navzájem nezávislé", "populační rozptyly jsou shodné (F-test shodu nezamítl)", "hodnoty tvoří dvojice"], a: [0, 1, 2],
+    e: "Dvojice hodnot jsou znakem závislých výběrů, pro které se používá párový t-test." },
+  { t: "interpretace", k: "single", q: "Kritická hodnota oboustranného t-testu při α = 0,05 a df = 9 v Excelu:", o: ["T.INV(0,975;9)", "T.INV(0,95;9)", "T.DIST(0,975;9;1)", "NORM.S.INV(0,975)"], a: 0,
+    e: "Funkce INV vrací kvantil z pravděpodobnosti. Pro oboustranný test je kvantil 1 − α/2 = 0,975 a výsledek je 2,2621." },
+  { t: "interpretace", k: "single", q: "Hodnota p pravostranného t-testu s hodnotou t a df stupni volnosti v Excelu:", o: ["T.DIST.RT(t;df)", "T.DIST(t;df;1)", "T.INV(t;df)", "T.DIST.2T(t;df)"], a: 0,
+    e: "RT je pravý ocas, tedy P(T > t). T.DIST dává levý ocas, 2T oba ocasy." },
+  { t: "interpretace", k: "single", q: "Co vrací F.INV.RT(0,05;10;25)?", o: ["kvantil F<sub>0,95;10;25</sub>, tedy hodnotu s pravým ocasem 5 %", "pravděpodobnost, že F < 0,05", "kvantil F<sub>0,05;10;25</sub>", "hodnotu p testu"], a: 0,
+    e: "INV.RT přijímá pravděpodobnost pravého ocasu. Stejný výsledek dá F.INV(0,95;10;25) = 2,2365." },
+  { t: "interpretace", k: "single", q: "Co vrací NORM.S.DIST(x;1)?", o: ["Φ(x), tedy P(U ≤ x) pro N(0,1)", "kvantil u<sub>x</sub>", "hustotu v bodě x", "P(U > x)"], a: 0,
+    e: "Parametr 1 znamená kumulativní (distribuční) funkci. Hodnota p pravostranného testu je 1 − NORM.S.DIST(u;1)." },
+  { t: "interpretace", k: "single", q: "Leveneův test F ve výstupu SPSS:", o: ["není podíl výběrových rozptylů s<sub>1</sub>²/s<sub>2</sub>², ale jeho Sig. slouží k volbě řádku výstupu", "je přesně F = s<sub>1</sub>²/s<sub>2</sub>²", "testuje shodu průměrů", "udává hodnotu p t-testu"], a: 0,
+    e: "Když zadání požaduje F-kritérium, počítá se podíl rozptylů ručně. Leveneův test plní stejnou úlohu volby varianty." },
+  { t: "interpretace", k: "single", q: "Hlavní použití F-testu shody rozptylů v tomto kurzu:", o: ["volba varianty nepárového t-testu (shodné nebo neshodné rozptyly)", "ověření normality", "výpočet hodnoty p t-testu", "test shody podílů"], a: 0,
+    e: "F-test předchází testu shody středních hodnot dvou nezávislých výběrů." },
+  { t: "interpretace", k: "single", q: "Korekce na nespojitost u limitního testu o podílu:", o: ["od |p − π<sub>0</sub>| v čitateli odečte 1/(2n)", "přičte k π<sub>0</sub> hodnotu 0,5", "zvětší rozsah výběru o 1", "nahradí π<sub>0</sub> hodnotou p"], a: 0,
+    e: "Nespojité binomické rozdělení se aproximuje spojitým normálním. V příkladu z přednášky vyšlo u = 1,62 bez korekce a 1,58 s korekcí." },
+  { t: "interpretace", k: "single", q: "Stupně volnosti Welchova t-testu vyšly 60,83. Do tabulky se použije:", o: ["60, zaokrouhlení dolů", "61, zaokrouhlení nahoru", "60,83 bez zaokrouhlení", "70, součet rozsahů mínus 2"], a: 0,
+    e: "Přednáška zaokrouhluje df dolů na nejbližší celé číslo." },
+  { t: "interpretace", k: "single", q: "Při F-testu se značení výběrů volí tak, aby:", o: ["větší výběrový rozptyl byl v čitateli (F ≥ 1) a stačil pravý kvantil", "menší rozptyl byl v čitateli", "v čitateli byl výběr s větším rozsahem", "v čitateli byl výběr s větším průměrem"], a: 0,
+    e: "Pak je kritický obor jen F > F<sub>1−α/2</sub> (oboustranně) nebo F > F<sub>1−α</sub> (pravostranně). Stupně volnosti se uvádějí v tomtéž pořadí." },
+  { t: "interpretace", k: "single", q: "Při zamítnutí H<sub>0</sub> na hladině 0,05 platí:", o: ["riziko, že byla zamítnuta platná H<sub>0</sub>, je nejvýše 5 %", "H<sub>1</sub> platí s jistotou", "H<sub>0</sub> platí s pravděpodobností 5 %", "chyba II. druhu je 5 %"], a: 0,
+    e: "α je pravděpodobnost chyby I. druhu, tedy nesprávného zamítnutí." },
+  { t: "interpretace", k: "single", q: "Interpretace hodnoty p = 0,386 u testu shody cen v autobazarech A a B:", o: ["rozdíl průměrných cen nebyl na hladině 0,05 prokázán, pozorovaný rozdíl lze vysvětlit výběrovou chybou", "ceny v A jsou s pravděpodobností 38,6 % vyšší", "H<sub>0</sub> platí s pravděpodobností 0,386", "rozdíl je statisticky významný"], a: 0,
+    e: "p = 0,386 > 0,05, H<sub>0</sub> se nezamítá. p není pravděpodobnost platnosti hypotézy." },
+  { t: "interpretace", k: "single", q: "Výzkum na n = 10 000 zamítl H<sub>0</sub>: μ<sub>1</sub> = μ<sub>2</sub> s p = 0,001, pozorovaný rozdíl je 0,2 % průměru. Správný komentář:", o: ["rozdíl je statisticky významný díky velkému n, ale věcně zanedbatelný; uvést obojí", "rozdíl je důležitý, protože p je velmi malé", "výsledek je chybný, protože rozdíl je malý", "test nelze při tak velkém n použít"], a: 0,
+    e: "Statistická významnost roste s n. Věcná významnost se posuzuje podle velikosti rozdílu v kontextu úlohy." },
+  { t: "interpretace", k: "single", q: "Který odhad se dosazuje do jmenovatele testu shody dvou podílů?", o: ["společný podíl p̄ = (m<sub>1</sub> + m<sub>2</sub>)/(n<sub>1</sub> + n<sub>2</sub>), protože za platnosti H<sub>0</sub> jsou podíly stejné", "hypotetická hodnota π<sub>0</sub>", "průměr p<sub>1</sub> a p<sub>2</sub> bez ohledu na rozsahy", "větší z podílů p<sub>1</sub>, p<sub>2</sub>"], a: 0,
+    e: "H<sub>0</sub>: π<sub>1</sub> = π<sub>2</sub> nemá hypotetickou hodnotu, společná pravděpodobnost se odhadne ze sloučených výběrů." },
+  { t: "interpretace", k: "single", q: "Co znamená zkratka df (stupně volnosti) u jednovýběrového t-testu?", o: ["parametr t-rozdělení, zde df = n − 1", "počet proměnných", "rozsah výběru n", "počet alternativ"], a: 0,
+    e: "Tvar t-rozdělení závisí na df. Jeden stupeň volnosti se ztrácí odhadem průměru." },
+  { t: "interpretace", k: "single", q: "U párového t-testu z přednášky SPSS vypsal Sig. = 0,000. Správné čtení:", o: ["p je menší než 0,0005, po zaokrouhlení na tři místa 0,000; H<sub>0</sub> se zamítá", "p je přesně nula, H<sub>0</sub> je vyvrácena s jistotou", "test selhal", "p = 0, takže H<sub>0</sub> platí"], a: 0,
+    e: "Skutečná hodnota byla 7·10<sup>−21</sup>. Hodnota p je vždy kladná, jen zaokrouhlená." },
+];
+
+const $ = (id) => document.getElementById(id);
+const STORE = "kviz-testy-hypotez";
+let round = [];      // otázky aktuálního kola, každá s promíchanými možnostmi
+let pos = 0;
+let picked = new Set();
+let answered = false;
+let results = [];    // {q, ok, given}
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function prepare(q) {
+  if (q.k === "num") return { q, opts: null, correct: null };
+  const idx = q.fixed ? q.o.map((_, i) => i) : shuffle(q.o.map((_, i) => i));
+  const opts = idx.map((i) => q.o[i]);
+  const correctSet = new Set(Array.isArray(q.a) ? q.a : [q.a]);
+  const correct = idx.map((orig, j) => correctSet.has(orig) ? j : -1).filter((j) => j >= 0);
+  return { q, opts, correct };
+}
+
+function fmt(n) {
+  const s = Math.abs(n) >= 100 ? n.toFixed(2) : n.toFixed(4);
+  return s.replace(/\.?0+$/, "").replace(".", ",").replace("-", "−");
+}
+
+function loadStore() {
+  try { return JSON.parse(localStorage.getItem(STORE)) || {}; } catch (e) { return {}; }
+}
+function saveStore(data) {
+  try { localStorage.setItem(STORE, JSON.stringify(data)); } catch (e) { /* bez úložiště funguje kvíz dál */ }
+}
+
+function renderStart() {
+  const box = $("topics");
+  box.innerHTML = "";
+  for (const key in TOPICS) {
+    const n = BANK.filter((q) => q.t === key).length;
+    const label = document.createElement("label");
+    label.innerHTML = `<input type="checkbox" value="${key}" checked> ${TOPICS[key]} <span class="muted small">(${n})</span>`;
+    box.appendChild(label);
+  }
+  const s = loadStore();
+  $("best").textContent = s.best != null ? `Nejlepší výsledek: ${s.best} % (${s.bestN} otázek)` : "";
+}
+
+function startRound(questions) {
+  round = questions.map(prepare);
+  pos = 0;
+  results = [];
+  $("start").hidden = true;
+  $("end").hidden = true;
+  $("quiz").hidden = false;
+  showQuestion();
+}
+
+function startFromForm() {
+  const topics = [...document.querySelectorAll("#topics input:checked")].map((i) => i.value);
+  if (!topics.length) { alert("Je potřeba zvolit aspoň jeden okruh."); return; }
+  const pool = shuffle(BANK.filter((q) => topics.includes(q.t)));
+  const countVal = document.querySelector("input[name=count]:checked").value;
+  const n = countVal === "all" ? pool.length : Math.min(pool.length, Number(countVal));
+  startRound(pool.slice(0, n));
+}
+
+function showQuestion() {
+  const item = round[pos];
+  const q = item.q;
+  picked = new Set();
+  answered = false;
+  $("barFill").style.width = `${(pos / round.length) * 100}%`;
+  $("counter").textContent = `Otázka ${pos + 1} z ${round.length}`;
+  $("topicTag").textContent = TOPICS[q.t];
+  $("kind").textContent = q.k === "multi" ? "více správných odpovědí" : q.k === "num" ? "číselná odpověď" : "jedna správná odpověď";
+  $("qText").innerHTML = q.q;
+  $("fb").hidden = true;
+  $("fb").className = "fb";
+  $("checkBtn").hidden = false;
+  $("checkBtn").disabled = false;
+  $("nextBtn").hidden = true;
+  $("running").textContent = `Správně ${results.filter((r) => r.ok).length} z ${results.length}`;
+
+  const opts = $("opts");
+  opts.innerHTML = "";
+  if (q.k === "num") {
+    $("numWrap").hidden = false;
+    $("numIn").value = "";
+    $("numIn").className = "";
+    $("numIn").disabled = false;
+    $("numHint").textContent = q.hint || "";
+    $("numIn").focus();
+  } else {
+    $("numWrap").hidden = true;
+    item.opts.forEach((text, i) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "opt";
+      b.setAttribute("aria-pressed", "false");
+      b.dataset.i = i;
+      b.innerHTML = `<span class="n">${i + 1}</span><span>${text}</span>`;
+      b.addEventListener("click", () => toggle(i));
+      opts.appendChild(b);
+    });
+  }
+}
+
+function toggle(i) {
+  if (answered) return;
+  const q = round[pos].q;
+  if (q.k === "single") picked = new Set([i]);
+  else if (picked.has(i)) picked.delete(i); else picked.add(i);
+  document.querySelectorAll(".opt").forEach((b) => b.setAttribute("aria-pressed", picked.has(Number(b.dataset.i)) ? "true" : "false"));
+}
+
+function parseNumber(text) {
+  const t = text.trim().replace(/\s/g, "").replace("−", "-").replace(",", ".");
+  if (!/^[-+]?\d*\.?\d+$/.test(t)) return NaN;
+  return Number(t);
+}
+
+function check() {
+  if (answered) return;
+  const item = round[pos];
+  const q = item.q;
+  let ok, given, correctText;
+  if (q.k === "num") {
+    const v = parseNumber($("numIn").value);
+    if (Number.isNaN(v)) { $("numIn").focus(); return; }
+    ok = Math.abs(v - q.a) <= q.tol;
+    given = fmt(v);
+    correctText = fmt(q.a);
+    $("numIn").className = ok ? "correct" : "wrong";
+    $("numIn").disabled = true;
+  } else {
+    if (!picked.size) return;
+    const want = new Set(item.correct);
+    ok = picked.size === want.size && [...picked].every((i) => want.has(i));
+    given = [...picked].sort().map((i) => item.opts[i]).join("; ");
+    correctText = item.correct.map((i) => item.opts[i]).join("; ");
+    document.querySelectorAll(".opt").forEach((b) => {
+      const i = Number(b.dataset.i);
+      b.disabled = true;
+      if (want.has(i)) b.classList.add("correct");
+      else if (picked.has(i)) b.classList.add("wrong");
+    });
+  }
+  answered = true;
+  results.push({ q, item, ok, given, correctText });
+  const fb = $("fb");
+  fb.className = `fb ${ok ? "ok" : "bad"}`;
+  fb.innerHTML = `<strong>${ok ? "Správně." : "Špatně."}</strong>` +
+    (ok ? "" : `<div class="ans">Správná odpověď: ${correctText}</div>`) +
+    `<div>${q.e}</div>`;
+  fb.hidden = false;
+  $("checkBtn").hidden = true;
+  $("nextBtn").hidden = false;
+  $("nextBtn").textContent = pos + 1 < round.length ? "Další otázka" : "Zobrazit výsledek";
+  $("nextBtn").focus();
+}
+
+function next() {
+  if (!answered) return;
+  pos++;
+  if (pos < round.length) showQuestion(); else finish();
+}
+
+function finish() {
+  $("quiz").hidden = true;
+  $("end").hidden = false;
+  const okN = results.filter((r) => r.ok).length;
+  const pct = Math.round((okN / results.length) * 100);
+  $("scoreLine").textContent = `${okN} z ${results.length} správně (${pct} %)`;
+  const s = loadStore();
+  let note = "";
+  if (s.best == null || pct > s.best || (pct === s.best && results.length > s.bestN)) {
+    saveStore({ best: pct, bestN: results.length });
+    note = "Nový nejlepší výsledek.";
+  } else {
+    note = `Nejlepší výsledek: ${s.best} % (${s.bestN} otázek).`;
+  }
+  $("scoreNote").textContent = note;
+
+  const rows = [];
+  for (const key in TOPICS) {
+    const rs = results.filter((r) => r.q.t === key);
+    if (!rs.length) continue;
+    const k = rs.filter((r) => r.ok).length;
+    rows.push(`<tr><td>${TOPICS[key]}</td><td class="r">${k} / ${rs.length}</td><td class="r">${Math.round((k / rs.length) * 100)} %</td></tr>`);
+  }
+  $("byTopic").innerHTML = `<thead><tr><th>Okruh</th><th class="r">Správně</th><th class="r">Úspěšnost</th></tr></thead><tbody>${rows.join("")}</tbody>`;
+
+  const wrong = results.filter((r) => !r.ok);
+  $("againWrong").hidden = !wrong.length;
+  $("review").innerHTML = wrong.length
+    ? `<li class="muted" style="border-left-color: var(--line)">Chybné odpovědi (${wrong.length}):</li>` + wrong.map((r) =>
+      `<li><div class="qq">${r.q.q}</div><p>Zadaná odpověď: ${r.given}</p><p>Správná odpověď: ${r.correctText}</p><p class="muted">${r.q.e}</p></li>`).join("")
+    : "";
+}
+
+$("startBtn").addEventListener("click", startFromForm);
+$("checkBtn").addEventListener("click", check);
+$("nextBtn").addEventListener("click", next);
+$("quitBtn").addEventListener("click", () => { if (results.length) finish(); else { $("quiz").hidden = true; $("start").hidden = false; } });
+$("againWrong").addEventListener("click", () => startRound(results.filter((r) => !r.ok).map((r) => r.q)));
+$("restart").addEventListener("click", () => { $("end").hidden = true; $("start").hidden = false; renderStart(); });
+$("numIn").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); answered ? next() : check(); } });
+document.addEventListener("keydown", (e) => {
+  if ($("quiz").hidden || e.target.tagName === "INPUT") return;
+  if (e.key === "Enter") { e.preventDefault(); answered ? next() : check(); }
+  else if (/^[1-9]$/.test(e.key) && round[pos].q.k !== "num") { toggle(Number(e.key) - 1); }
+});
+
+renderStart();
+</script>
+</body>
+</html>
