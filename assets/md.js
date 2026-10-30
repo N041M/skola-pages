@@ -2,7 +2,7 @@
 // numbered lists, tables, images, boxes, **bold**, ==highlight== and `code`.
 // A box is a run of lines starting with ">". Its first line is the title, and the titles
 // in BOXES get their own colour.
-const BOXES = { "Shrnutí": "box-sum", "Pozor": "box-warn", "Na písemku": "box-exam" };
+const BOXES = { "Shrnutí": "box-sum", "Pozor": "box-warn", "Na písemku": "box-exam", "Do zprávy": "box-exam" };
 
 function renderMarkdown(source) {
   const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");

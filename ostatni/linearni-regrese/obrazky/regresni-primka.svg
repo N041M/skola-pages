@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif" font-size="19">
+  <style>
+    .ink { fill: #1a1f27; } .ink2 { fill: #4b5563; } .line { stroke: #1a1f27; } .faint { stroke: #d3d9e2; }
+    .keep { fill: #e3f1e6; } .reject { fill: #fbe7e5; stroke: #b3261e; } .rej { fill: #b3261e; } .ok { fill: #1f6b47; }
+    .beta { fill: #e6eefb; stroke: #1f56b8; } .acc { fill: #1f56b8; } .accl { stroke: #1f56b8; }
+    .okl { stroke: #1f6b47; } .rejl { stroke: #b3261e; } .ink2l { stroke: #4b5563; }
+    .box { fill: #ffffff; stroke: #4b5563; } .boxa { fill: #e6eefb; stroke: #1f56b8; } .boxok { fill: #e3f1e6; stroke: #1f6b47; } .boxbad { fill: #fbe7e5; stroke: #b3261e; }
+    @media (prefers-color-scheme: dark) {
+      .ink { fill: #e9ecf1; } .ink2 { fill: #aab2bf; } .line { stroke: #e9ecf1; } .faint { stroke: #333b47; }
+      .keep { fill: #1c3328; } .reject { fill: #3d2220; stroke: #ff9a92; } .rej { fill: #ff9a92; } .ok { fill: #7fd4a5; }
+      .beta { fill: #232d3f; stroke: #8db4ff; } .acc { fill: #8db4ff; } .accl { stroke: #8db4ff; }
+      .okl { stroke: #7fd4a5; } .rejl { stroke: #ff9a92; } .ink2l { stroke: #aab2bf; }
+      .box { fill: #1a1f26; stroke: #aab2bf; } .boxa { fill: #232d3f; stroke: #8db4ff; } .boxok { fill: #1c3328; stroke: #7fd4a5; } .boxbad { fill: #3d2220; stroke: #ff9a92; }
+    }
+  </style>
+  <line class="faint" stroke-width="1" x1="70" y1="306" x2="466" y2="306"/>
+  <text class="ink2" x="60.0" y="312.0" text-anchor="end" font-size="16">0</text>
+  <line class="faint" stroke-width="1" x1="70" y1="274" x2="466" y2="274"/>
+  <text class="ink2" x="60.0" y="280.0" text-anchor="end" font-size="16">1</text>
+  <line class="faint" stroke-width="1" x1="70" y1="242" x2="466" y2="242"/>
+  <text class="ink2" x="60.0" y="248.0" text-anchor="end" font-size="16">2</text>
+  <line class="faint" stroke-width="1" x1="70" y1="210" x2="466" y2="210"/>
+  <text class="ink2" x="60.0" y="216.0" text-anchor="end" font-size="16">3</text>
+  <line class="faint" stroke-width="1" x1="70" y1="178" x2="466" y2="178"/>
+  <text class="ink2" x="60.0" y="184.0" text-anchor="end" font-size="16">4</text>
+  <line class="faint" stroke-width="1" x1="70" y1="146" x2="466" y2="146"/>
+  <text class="ink2" x="60.0" y="152.0" text-anchor="end" font-size="16">5</text>
+  <line class="faint" stroke-width="1" x1="70" y1="114" x2="466" y2="114"/>
+  <text class="ink2" x="60.0" y="120.0" text-anchor="end" font-size="16">6</text>
+  <line class="faint" stroke-width="1" x1="70" y1="82" x2="466" y2="82"/>
+  <text class="ink2" x="60.0" y="88.0" text-anchor="end" font-size="16">7</text>
+  <text class="ink2" x="136.0" y="328.0" text-anchor="middle" font-size="16">1</text>
+  <text class="ink2" x="202.0" y="328.0" text-anchor="middle" font-size="16">2</text>
+  <text class="ink2" x="268.0" y="328.0" text-anchor="middle" font-size="16">3</text>
+  <text class="ink2" x="334.0" y="328.0" text-anchor="middle" font-size="16">4</text>
+  <text class="ink2" x="400.0" y="328.0" text-anchor="middle" font-size="16">5</text>
+  <text class="ink2" x="466.0" y="328.0" text-anchor="middle" font-size="16">6</text>
+  <line class="line" stroke-width="2" x1="70" y1="306" x2="466" y2="306"/>
+  <line class="line" stroke-width="2" x1="70" y1="306" x2="70" y2="72.4"/>
+  <line class="accl" stroke-width="3" x1="70" y1="254.8" x2="466" y2="101.19999999999999"/>
+  <line class="rejl" stroke-width="3" x1="136" y1="242.0" x2="136" y2="229.2"/>
+  <circle class="ink" cx="136" cy="242.0" r="6"/>
+  <text class="ink" x="122.0" y="248.0" text-anchor="end" font-weight="700" font-size="17">A</text>
+  <line class="okl" stroke-width="3" x1="202" y1="178.0" x2="202" y2="203.6"/>
+  <circle class="ink" cx="202" cy="178.0" r="6"/>
+  <text class="ink" x="188.0" y="184.0" text-anchor="end" font-weight="700" font-size="17">B</text>
+  <line class="rejl" stroke-width="3" x1="268" y1="210.0" x2="268" y2="178.0"/>
+  <circle class="ink" cx="268" cy="210.0" r="6"/>
+  <text class="ink" x="254.0" y="216.0" text-anchor="end" font-weight="700" font-size="17">C</text>
+  <line class="okl" stroke-width="3" x1="334" y1="114.0" x2="334" y2="152.4"/>
+  <circle class="ink" cx="334" cy="114.0" r="6"/>
+  <text class="ink" x="320.0" y="120.0" text-anchor="end" font-weight="700" font-size="17">D</text>
+  <line class="rejl" stroke-width="3" x1="400" y1="146.0" x2="400" y2="126.8"/>
+  <circle class="ink" cx="400" cy="146.0" r="6"/>
+  <text class="ink" x="386.0" y="152.0" text-anchor="end" font-weight="700" font-size="17">E</text>
+  <circle class="acc" cx="70" cy="254.8" r="6"/>
+  <text class="acc" x="82.0" y="276.8" text-anchor="start" font-weight="700">b₀ = 1,6</text>
+  <text class="acc" x="466.0" y="89.2" text-anchor="end" font-weight="700">ŷ = 1,6 + 0,8x</text>
+  <text class="ok" x="16.0" y="22.0" text-anchor="start" font-size="17" font-weight="700">e &gt; 0: model podcenil</text>
+  <text class="rej" x="250.0" y="22.0" text-anchor="start" font-size="17" font-weight="700">e &lt; 0: model přecenil</text>
+  <text class="ink2" x="466.0" y="350.0" text-anchor="end" font-size="16">x = investice</text>
+</svg>

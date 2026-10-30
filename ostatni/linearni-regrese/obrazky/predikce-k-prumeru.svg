@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 310" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif" font-size="19">
+  <style>
+    .ink { fill: #1a1f27; } .ink2 { fill: #4b5563; } .line { stroke: #1a1f27; } .faint { stroke: #d3d9e2; }
+    .keep { fill: #e3f1e6; } .reject { fill: #fbe7e5; stroke: #b3261e; } .rej { fill: #b3261e; } .ok { fill: #1f6b47; }
+    .beta { fill: #e6eefb; stroke: #1f56b8; } .acc { fill: #1f56b8; } .accl { stroke: #1f56b8; }
+    .okl { stroke: #1f6b47; } .rejl { stroke: #b3261e; } .ink2l { stroke: #4b5563; }
+    .box { fill: #ffffff; stroke: #4b5563; } .boxa { fill: #e6eefb; stroke: #1f56b8; } .boxok { fill: #e3f1e6; stroke: #1f6b47; } .boxbad { fill: #fbe7e5; stroke: #b3261e; }
+    @media (prefers-color-scheme: dark) {
+      .ink { fill: #e9ecf1; } .ink2 { fill: #aab2bf; } .line { stroke: #e9ecf1; } .faint { stroke: #333b47; }
+      .keep { fill: #1c3328; } .reject { fill: #3d2220; stroke: #ff9a92; } .rej { fill: #ff9a92; } .ok { fill: #7fd4a5; }
+      .beta { fill: #232d3f; stroke: #8db4ff; } .acc { fill: #8db4ff; } .accl { stroke: #8db4ff; }
+      .okl { stroke: #7fd4a5; } .rejl { stroke: #ff9a92; } .ink2l { stroke: #aab2bf; }
+      .box { fill: #1a1f26; stroke: #aab2bf; } .boxa { fill: #232d3f; stroke: #8db4ff; } .boxok { fill: #1c3328; stroke: #7fd4a5; } .boxbad { fill: #3d2220; stroke: #ff9a92; }
+    }
+  </style>
+  <line class="faint" stroke-width="1" x1="60" y1="250" x2="452" y2="250"/>
+  <text class="ink2" x="50.0" y="256.0" text-anchor="end" font-size="16">2</text>
+  <text class="ink2" x="60.0" y="272.0" text-anchor="middle" font-size="16">2</text>
+  <line class="faint" stroke-width="1" x1="60" y1="220" x2="452" y2="220"/>
+  <text class="ink2" x="50.0" y="226.0" text-anchor="end" font-size="16">3</text>
+  <text class="ink2" x="116.0" y="272.0" text-anchor="middle" font-size="16">3</text>
+  <line class="faint" stroke-width="1" x1="60" y1="190" x2="452" y2="190"/>
+  <text class="ink2" x="50.0" y="196.0" text-anchor="end" font-size="16">4</text>
+  <text class="ink2" x="172.0" y="272.0" text-anchor="middle" font-size="16">4</text>
+  <line class="faint" stroke-width="1" x1="60" y1="160" x2="452" y2="160"/>
+  <text class="ink2" x="50.0" y="166.0" text-anchor="end" font-size="16">5</text>
+  <text class="ink2" x="228.0" y="272.0" text-anchor="middle" font-size="16">5</text>
+  <line class="faint" stroke-width="1" x1="60" y1="130" x2="452" y2="130"/>
+  <text class="ink2" x="50.0" y="136.0" text-anchor="end" font-size="16">6</text>
+  <text class="ink2" x="284.0" y="272.0" text-anchor="middle" font-size="16">6</text>
+  <line class="faint" stroke-width="1" x1="60" y1="100" x2="452" y2="100"/>
+  <text class="ink2" x="50.0" y="106.0" text-anchor="end" font-size="16">7</text>
+  <text class="ink2" x="340.0" y="272.0" text-anchor="middle" font-size="16">7</text>
+  <line class="faint" stroke-width="1" x1="60" y1="70" x2="452" y2="70"/>
+  <text class="ink2" x="50.0" y="76.0" text-anchor="end" font-size="16">8</text>
+  <text class="ink2" x="396.0" y="272.0" text-anchor="middle" font-size="16">8</text>
+  <line class="faint" stroke-width="1" x1="60" y1="40" x2="452" y2="40"/>
+  <text class="ink2" x="50.0" y="46.0" text-anchor="end" font-size="16">9</text>
+  <text class="ink2" x="452.0" y="272.0" text-anchor="middle" font-size="16">9</text>
+  <path class="reject" stroke="none" d="M60,250 L452,40 L60,40 Z" fill-opacity="0.6"/>
+  <line class="line" stroke-width="2" stroke-dasharray="6 4" x1="60" y1="250" x2="452" y2="40"/>
+  <line class="line" stroke-width="2" x1="60" y1="250" x2="452" y2="250"/>
+  <line class="line" stroke-width="2" x1="60" y1="250" x2="60" y2="40"/>
+  <line class="ink2l" stroke-width="2" x1="396" y1="250" x2="396" y2="40"/>
+  <text class="ink2" x="402.0" y="235.0" text-anchor="start" font-size="15">max škály</text>
+  <circle class="acc" cx="111.0" cy="184.0" r="7"/>
+  <circle class="acc" cx="217.4" cy="151.6" r="7"/>
+  <circle class="acc" cx="295.8" cy="126.7" r="7"/>
+  <circle class="acc" cx="377.5" cy="87.1" r="7"/>
+  <text class="rej" x="70.0" y="52.0" text-anchor="start" font-weight="700">model přeceňuje</text>
+  <text class="ok" x="384.8" y="220.0" text-anchor="end" font-weight="700">model podceňuje</text>
+  <text class="ink2" x="452.0" y="296.0" text-anchor="end" font-size="16">skutečný závazek →</text>
+  <text class="ink2" x="16.0" y="20.0" text-anchor="start" font-size="16">predikce ↑</text>
+</svg>

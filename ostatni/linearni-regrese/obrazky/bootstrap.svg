@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 236" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif" font-size="19">
+  <style>
+    .ink { fill: #1a1f27; } .ink2 { fill: #4b5563; } .line { stroke: #1a1f27; } .faint { stroke: #d3d9e2; }
+    .keep { fill: #e3f1e6; } .reject { fill: #fbe7e5; stroke: #b3261e; } .rej { fill: #b3261e; } .ok { fill: #1f6b47; }
+    .beta { fill: #e6eefb; stroke: #1f56b8; } .acc { fill: #1f56b8; } .accl { stroke: #1f56b8; }
+    .okl { stroke: #1f6b47; } .rejl { stroke: #b3261e; } .ink2l { stroke: #4b5563; }
+    .box { fill: #ffffff; stroke: #4b5563; } .boxa { fill: #e6eefb; stroke: #1f56b8; } .boxok { fill: #e3f1e6; stroke: #1f6b47; } .boxbad { fill: #fbe7e5; stroke: #b3261e; }
+    @media (prefers-color-scheme: dark) {
+      .ink { fill: #e9ecf1; } .ink2 { fill: #aab2bf; } .line { stroke: #e9ecf1; } .faint { stroke: #333b47; }
+      .keep { fill: #1c3328; } .reject { fill: #3d2220; stroke: #ff9a92; } .rej { fill: #ff9a92; } .ok { fill: #7fd4a5; }
+      .beta { fill: #232d3f; stroke: #8db4ff; } .acc { fill: #8db4ff; } .accl { stroke: #8db4ff; }
+      .okl { stroke: #7fd4a5; } .rejl { stroke: #ff9a92; } .ink2l { stroke: #aab2bf; }
+      .box { fill: #1a1f26; stroke: #aab2bf; } .boxa { fill: #232d3f; stroke: #8db4ff; } .boxok { fill: #1c3328; stroke: #7fd4a5; } .boxbad { fill: #3d2220; stroke: #ff9a92; }
+    }
+  </style>
+  <rect class="box" stroke-width="1" x="18.3" y="198.3" width="23.2" height="1.7"/>
+  <rect class="box" stroke-width="1" x="41.5" y="195.7" width="23.2" height="4.3"/>
+  <rect class="box" stroke-width="1" x="64.7" y="190.2" width="23.2" height="9.8"/>
+  <rect class="box" stroke-width="1" x="87.9" y="179.9" width="23.2" height="20.1"/>
+  <rect class="boxa" stroke-width="1" x="111.1" y="163.2" width="23.2" height="36.8"/>
+  <rect class="boxa" stroke-width="1" x="134.3" y="139.6" width="23.2" height="60.4"/>
+  <rect class="boxa" stroke-width="1" x="157.5" y="111.3" width="23.2" height="88.7"/>
+  <rect class="boxa" stroke-width="1" x="180.7" y="83.2" width="23.2" height="116.8"/>
+  <rect class="boxa" stroke-width="1" x="203.9" y="62.2" width="23.2" height="137.8"/>
+  <rect class="boxa" stroke-width="1" x="227.1" y="54.4" width="23.2" height="145.6"/>
+  <rect class="boxa" stroke-width="1" x="250.3" y="62.2" width="23.2" height="137.8"/>
+  <rect class="boxa" stroke-width="1" x="273.5" y="83.2" width="23.2" height="116.8"/>
+  <rect class="boxa" stroke-width="1" x="296.7" y="111.3" width="23.2" height="88.7"/>
+  <rect class="boxa" stroke-width="1" x="319.9" y="139.6" width="23.2" height="60.4"/>
+  <rect class="boxa" stroke-width="1" x="343.1" y="163.2" width="23.2" height="36.8"/>
+  <rect class="box" stroke-width="1" x="366.3" y="179.9" width="23.2" height="20.1"/>
+  <rect class="box" stroke-width="1" x="389.5" y="190.2" width="23.2" height="9.8"/>
+  <rect class="box" stroke-width="1" x="412.7" y="195.7" width="23.2" height="4.3"/>
+  <rect class="box" stroke-width="1" x="435.9" y="198.3" width="23.2" height="1.7"/>
+  <line class="line" stroke-width="2" x1="10" y1="200" x2="470" y2="200"/>
+  <line class="accl" stroke-width="2" stroke-dasharray="5 4" x1="103.2" y1="200" x2="103.2" y2="48"/>
+  <text class="acc" x="107.2" y="224.0" text-anchor="start" font-weight="700">0,025</text>
+  <line class="accl" stroke-width="2" stroke-dasharray="5 4" x1="376.7" y1="200" x2="376.7" y2="48"/>
+  <text class="acc" x="376.7" y="224.0" text-anchor="middle" font-weight="700">0,245</text>
+  <line class="rejl" stroke-width="3" x1="72.2" y1="200" x2="72.2" y2="48"/>
+  <text class="rej" x="68.2" y="224.0" text-anchor="end" font-weight="700">0</text>
+  <text class="rej" x="10.0" y="30.0" text-anchor="start" font-size="16" font-weight="700">nula mimo interval</text>
+  <text class="acc" x="280.0" y="30.0" text-anchor="middle" font-size="17" font-weight="700">prostředních 95 %</text>
+</svg>
