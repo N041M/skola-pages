@@ -1,6 +1,6 @@
 # Testy hypotéz: studijní průvodce k midtermu
 
-Zdroje: přednášky 1 až 3 H. Skalské (APSTA, UHK FIM), dvě rozhodovací schémata (B1 jeden výběr, B2 dva výběry, studentský list A5), „Testy hypotéz - příklady s řešením“, „Souhrnný přehled Rozhodování o hypotéze a funkce MsExcelu“ a Groebnerovy příklady s mobilními telefony. Písemka je v češtině. Věty, které lze na písemce napsat, jsou označené ▶.
+Zdroje: přednášky 1 až 3 H. Skalské (APSTA, UHK FIM), dvě rozhodovací schémata (B1 jeden výběr, B2 dva výběry, studentský list A5), „Testy hypotéz - příklady s řešením“, „Souhrnný přehled Rozhodování o hypotéze a funkce MsExcelu“ a Groebnerovy příklady s mobilními telefony. Příklady v kapitole 8 pocházejí z neoficiálních poznámek „Statistika pro flákače“ a jejich výsledky jsou přepočítané. Písemka je v češtině. Věty, které lze na písemce napsat, jsou označené ▶.
 
 ## 0. Co písemka požaduje
 
@@ -212,7 +212,7 @@ Kvantitativní proměnná, střední hodnoty:
 - jeden výběr: σ známé → u-test; σ neznámé → t-test (df = n − 1)
 - dva závislé výběry → párový t-test (df = n − 1)
 - dva nezávislé výběry: σ₁, σ₂ známé → Z-test; neznámé → nejdřív F-test, potom t-test se sdruženým rozptylem (df = n₁ + n₂ − 2), pokud F nezamítne, a Welch, pokud zamítne
-- více než dva nezávislé výběry → ANOVA (další kapitola)
+- více než dva nezávislé výběry → ANOVA (kapitola 9)
 
 Kvantitativní proměnná, rozptyly: jeden výběr → χ²(n − 1); dva nezávislé výběry → F(n₁ − 1, n₂ − 1).
 
@@ -220,7 +220,10 @@ Dvouhodnotová proměnná, podíly:
 - jeden výběr: nπ₀ ≥ 5 a n(1 − π₀) ≥ 5 → limitní u-test; jinak binomický test
 - dva nezávislé výběry: CLV platí → limitní U test; jinak Fisherův exaktní test
 - dva závislé výběry → McNemarův test
-- závislost v tabulce r × c → χ² test (další kapitola)
+
+Kategoriální proměnná:
+- četnosti kategorií proti předpokládaným pravděpodobnostem → χ² test dobré shody (kapitola 8)
+- závislost dvou proměnných v tabulce r × c → χ² test nezávislosti (kapitola 8)
 
 Proměnná není normální a n je malé → neparametrický test (není na písemce).
 
@@ -254,6 +257,8 @@ Když písemka zadá kvantil a ptá se, zda stačí k rozhodnutí, je třeba poj
 - „H0 nezamítáme“ neznamená „H0 platí“. Nezamítnutí znamená, že data H0 neodporují.
 - Menší α znamená větší β. Větší n zmenšuje β.
 - Statistická významnost není věcná důležitost.
+- χ² test dobré shody a test nezávislosti jsou vždy pravostranné. Kritická hodnota je χ²₁₋α;df a v Excelu CHISQ.INV.RT(α; df).
+- U kontingenční tabulky je df = (r − 1)(c − 1). Pravidlo „počet sloupců minus 1“ dává správné df jen u tabulky se dvěma řádky.
 
 ## 7. Příklady k procvičení
 
@@ -297,6 +302,78 @@ Když písemka zadá kvantil a ptá se, zda stačí k rozhodnutí, je třeba poj
 
 **P9.** Levene Sig. = 0,002 < 0,05, rozptyly se tedy liší a čte se „Equal variances not assumed“: t = 2,450, df = 44,55, p = 0,018 < 0,05. H0 o shodě průměrných výdajů se zamítá. Muži v průměru utrácejí významně více (rozdíl průměrů 38,38 USD). Kdyby alternativa byla jednostranná v pozorovaném směru, bylo by p = 0,009.
 
-## 8. Další kapitoly (nejsou v tomto midtermu, ale jsou na souhrnném přehledu)
+## 8. χ² testy dobré shody a nezávislosti (nejsou v midtermu)
 
-ANOVA pro jeden faktor testuje H0: μ₁ = μ₂ = … = μᵣ pomocí F = MSTR/MSE a df (r − 1, n − r). χ² test nezávislosti v kontingenční tabulce r × c používá χ² = Σ (nᵢⱼ − nᵢⱼᵀ)²/nᵢⱼᵀ s df (r − 1)(c − 1) a pravostrannou kritickou hodnotou CHISQ.INV.RT(α; df).
+Oba testy porovnávají pozorované četnosti s teoretickými četnostmi, které by vyšly za platnosti H0. Testové kritérium je v obou případech χ² = Σ (pozorovaná − teoretická)² / teoretická. Velké χ² znamená velký rozdíl mezi daty a H0, proto je kritický obor jen vpravo: Wα = {χ² > χ²₁₋α;df}.
+
+Předpoklad: všechny teoretické četnosti jsou alespoň 5. Když některá vyjde menší, sousední kategorie se sloučí.
+
+### Test dobré shody
+
+Jedna kategoriální proměnná s k kategoriemi. Zadání určí pravděpodobnosti π₁, …, πₖ, které kategoriím přiřazuje předpoklad (marketingový plán, rovnoměrné rozdělení, férová kostka).
+
+- H0: rozdělení odpovídá předpokladu, tedy P(kategorie i) = πᵢ pro všechna i.
+- H1: H0 neplatí, alespoň jedna pravděpodobnost je jiná.
+- Teoretická četnost: nᵢᵀ = n·πᵢ, kde n je součet pozorovaných četností nᵢ.
+- χ² = Σ (nᵢ − nᵢᵀ)² / nᵢᵀ, za platnosti H0 přibližně χ²(k − 1).
+- Když se parametry předpokládaného rozdělení odhadují z dat (například průměr u normálního rozdělení), df se zmenší o počet odhadnutých parametrů.
+
+Příklad (kostka): 30 hodů, ověřuje se, zda je kostka férová. H0: πᵢ = 1/6 pro všechna čísla, α = 0,05.
+
+| Číslo | 1 | 2 | 3 | 4 | 5 | 6 |
+|---|---|---|---|---|---|---|
+| nᵢ | 4 | 6 | 7 | 2 | 5 | 6 |
+| nᵢᵀ = 30·1/6 | 5 | 5 | 5 | 5 | 5 | 5 |
+| (nᵢ − nᵢᵀ)²/nᵢᵀ | 0,2 | 0,2 | 0,8 | 1,8 | 0 | 0,2 |
+
+χ² = 3,2, df = 6 − 1 = 5, KH = χ²₀,₉₅;₅ = 11,07. 3,2 < 11,07, H0 nezamítáme (p = 0,67). ▶ „Na hladině 0,05 nebylo prokázáno, že kostka není férová. Odchylky od 5 hodů na číslo lze vysvětlit náhodou.“
+
+### Test nezávislosti v kontingenční tabulce
+
+Dvě kategoriální proměnné zjištěné na jednom výběru. Tabulka má r řádků a c sloupců s pozorovanými četnostmi nᵢⱼ, řádkovými součty nᵢ., sloupcovými součty n.ⱼ a celkovým počtem n.
+
+- H0: proměnné jsou nezávislé.
+- H1: proměnné jsou závislé.
+- Teoretická četnost: nᵢⱼᵀ = nᵢ.·n.ⱼ / n (řádkový součet krát sloupcový součet děleno celkovým počtem). Za nezávislosti má každý řádek stejné rozložení do sloupců jako celá tabulka.
+- χ² = Σᵢ Σⱼ (nᵢⱼ − nᵢⱼᵀ)² / nᵢⱼᵀ, za platnosti H0 přibližně χ²((r − 1)(c − 1)).
+- Tabulka 2 × 2 dává stejné rozhodnutí jako limitní test shody dvou podílů. Platí χ² = u².
+
+Příklad (jakost a směna): závisí jakost výrobků na směně? α = 0,05. V buňkách jsou pozorované četnosti a v závorce teoretické.
+
+| Směna | Jakost I | Jakost II | Zmetky | Celkem |
+|---|---|---|---|---|
+| dopolední | 170 (163,37) | 250 (272,28) | 80 (64,36) | 500 |
+| odpolední | 160 (166,63) | 300 (277,72) | 50 (65,64) | 510 |
+| Celkem | 330 | 550 | 130 | 1010 |
+
+Například n₁₁ᵀ = 500·330/1010 = 163,37. Příspěvky buněk: 0,269 + 1,823 + 3,803 + 0,264 + 1,787 + 3,728 = 11,67. df = (2 − 1)(3 − 1) = 2, KH = χ²₀,₉₅;₂ = 5,991. 11,67 > 5,991, H0 zamítáme (p = 0,003). ▶ „Jakost výrobků statisticky významně závisí na směně. Dopolední směna vyrábí víc zmetků, než by odpovídalo nezávislosti (80 proti 64,4).“
+
+### Příklady k procvičení
+
+Potřebné kvantily: χ²₀,₉₅;₁ = 3,841, χ²₀,₉₅;₂ = 5,991, χ²₀,₉₅;₃ = 7,815. Ve všech úlohách je α = 0,05.
+
+**P10.** Plán počítal s prodejem záznamu koncertu v poměru 50 % CD, 30 % DVD a 20 % kazety. Za měsíc se prodalo 2552 CD, 923 DVD a 384 kazet. Odpovídá prodej plánu?
+
+**P11.** V průzkumu bylo 25 lidí malé postavy, 53 střední a 42 velké. Jsou všechny tři velikosti zastoupené rovnoměrně?
+
+**P12.** Plán počítal s prodejem praček v poměru 40 % USA, 30 % Evropa, 20 % Asie a 10 % zbytek světa. Prodalo se 4210, 3180, 1020 a 1020 kusů. Odpovídá prodej plánu?
+
+**P13.** Na otázku odpovědělo ano 25 mužů a 35 žen, ne 40 mužů a 40 žen. Závisí odpověď na pohlaví?
+
+**P14.** Ze 40 velkých firem exportuje 15, ze 75 středních 25 a z 60 malých 30. Závisí export na velikosti firmy?
+
+### Řešení (χ² testy)
+
+**P10.** Dobrá shoda, k = 3, n = 3859. nᵢᵀ = 1929,5; 1157,7; 771,8. χ² = 200,83 + 47,58 + 194,86 = 443,27. df = 2, KH = 5,991. H0 zamítáme. Prodej neodpovídá plánu: CD se prodalo víc a kazet méně, než plán čekal.
+
+**P11.** Dobrá shoda, H0: πᵢ = 1/3. n = 120, nᵢᵀ = 40. χ² = 225/40 + 169/40 + 4/40 = 9,95. df = 2, KH = 5,991. H0 zamítáme (p = 0,007). Velikosti nejsou zastoupené rovnoměrně, nejvíc je lidí střední postavy.
+
+**P12.** Dobrá shoda, k = 4, n = 9430. nᵢᵀ = 3772; 2829; 1886; 943. χ² = 50,86 + 43,55 + 397,64 + 6,29 = 498,34. df = 3, KH = 7,815. H0 zamítáme. Největší odchylka je v Asii, kde se prodalo 1020 praček místo očekávaných 1886.
+
+**P13.** Tabulka 2 × 2, řádkové součty 65 a 75, sloupcové 60 a 80, n = 140. nᵢⱼᵀ = 27,86; 37,14; 32,14; 42,86. χ² = 0,957. df = 1, KH = 3,841. H0 nezamítáme (p = 0,33). Závislost odpovědi na pohlaví nebyla prokázána. Limitní test shody podílů dá u = (25/65 − 35/75)/√(0,4286·0,5714·(1/65 + 1/75)) = −0,978 a u² = 0,957.
+
+**P14.** Tabulka 3 × 2 (velikost × exportuje ano/ne). Neexportuje 25, 50 a 30 firem. Sloupcové součty 70 a 105, n = 175. nᵢⱼᵀ: velké 16 a 24, střední 30 a 45, malé 24 a 36. χ² = 0,063 + 0,042 + 0,833 + 0,556 + 1,5 + 1 = 3,99. df = (3 − 1)(2 − 1) = 2, KH = 5,991. H0 nezamítáme (p = 0,14). Závislost exportu na velikosti firmy nebyla prokázána.
+
+## 9. Analýza rozptylu (není v midtermu)
+
+ANOVA pro jeden faktor testuje H0: μ₁ = μ₂ = … = μᵣ pomocí F = MSTR/MSE a df (r − 1, n − r).

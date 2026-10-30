@@ -102,7 +102,7 @@
   <h1>Kvíz: testy hypotéz</h1>
 
   <section id="start" class="panel">
-    <p class="muted">Otázky pokrývají přednášky 1 až 3 předmětu APSTA: pojmy, zápis hypotéz, volbu testu, výpočet testového kritéria, rozhodnutí podle kvantilu a interpretaci. Každá otázka se vyhodnotí hned a ukáže vysvětlení.</p>
+    <p class="muted">Otázky pokrývají přednášky 1 až 3 předmětu APSTA a χ² testy dobré shody a nezávislosti. Každá otázka se vyhodnotí hned a ukáže vysvětlení.</p>
     <fieldset>
       <legend>Okruhy</legend>
       <div class="choices" id="topics"></div>
@@ -164,6 +164,7 @@ const TOPICS = {
   vypocet: "Výpočet",
   rozhodnuti: "Rozhodnutí a kvantily",
   interpretace: "Interpretace, předpoklady, software",
+  chi2: "χ² testy dobré shody a nezávislosti",
 };
 
 // Otázka: t okruh, k druh (single = jedna správná, multi = všechny správné, num = číslo),
@@ -425,6 +426,42 @@ const BANK = [
     e: "Tvar t-rozdělení závisí na df. Jeden stupeň volnosti se ztrácí odhadem průměru." },
   { t: "interpretace", k: "single", q: "U párového t-testu z přednášky SPSS vypsal Sig. = 0,000. Správné čtení:", o: ["p je menší než 0,0005, po zaokrouhlení na tři místa 0,000; H<sub>0</sub> se zamítá", "p je přesně nula, H<sub>0</sub> je vyvrácena s jistotou", "test selhal", "p = 0, takže H<sub>0</sub> platí"], a: 0,
     e: "Skutečná hodnota byla 7·10<sup>−21</sup>. Hodnota p je vždy kladná, jen zaokrouhlená." },
+
+  // χ² testy dobré shody a nezávislosti
+  { t: "chi2", k: "single", q: "Kritický obor χ² testu dobré shody a χ² testu nezávislosti:", o: ["pravostranný: χ² > χ²<sub>1−α;df</sub>", "oboustranný: χ² < χ²<sub>α/2;df</sub> nebo χ² > χ²<sub>1−α/2;df</sub>", "levostranný: χ² < χ²<sub>α;df</sub>", "závisí na tvaru H<sub>1</sub>"], a: 0,
+    e: "Malé χ² znamená, že pozorované četnosti jsou blízko teoretickým. Proti H<sub>0</sub> mluví jen velké hodnoty. V Excelu je kritická hodnota CHISQ.INV.RT(α; df)." },
+  { t: "chi2", k: "single", q: "Test dobré shody má k kategorií a všechny pravděpodobnosti π<sub>i</sub> jsou zadané předem. Počet stupňů volnosti:", o: ["k − 1", "k", "n − 1", "(k − 1)(n − 1)"], a: 0,
+    e: "Teoretické četnosti musí dát dohromady n, takže volných je k − 1. Když se parametr rozdělení odhaduje z dat, df se zmenší o počet odhadnutých parametrů." },
+  { t: "chi2", k: "num", q: "Počet stupňů volnosti χ² testu nezávislosti v kontingenční tabulce se 3 řádky a 4 sloupci:", a: 6, tol: 0, hint: "celé číslo",
+    e: "df = (r − 1)(c − 1) = 2·3 = 6." },
+  { t: "chi2", k: "single", q: "Pravidlo „počet sloupců minus 1“ pro stupně volnosti kontingenční tabulky platí:", o: ["jen u tabulky se dvěma řádky, obecně je df = (r − 1)(c − 1)", "u každé tabulky", "jen u tabulky se dvěma sloupci", "u každé čtvercové tabulky"], a: 0,
+    e: "Při r = 2 je (r − 1)(c − 1) = c − 1. U tabulky 3 × 4 by pravidlo dalo 3, správně je 6." },
+  { t: "chi2", k: "single", q: "Teoretická četnost buňky v testu nezávislosti se počítá jako:", o: ["řádkový součet · sloupcový součet / n", "n / (r·c)", "pozorovaná četnost · (r − 1)(c − 1)", "řádkový součet / počet sloupců"], a: 0,
+    e: "Za nezávislosti má každý řádek stejné rozložení do sloupců jako celá tabulka: n<sub>ij</sub><sup>T</sup> = n<sub>i.</sub>·n<sub>.j</sub>/n." },
+  { t: "chi2", k: "num", q: "Dopolední směna vyrobila 500 kusů, ze všech 1010 kusů obou směn bylo 330 jakosti I. Teoretická četnost dopoledních kusů jakosti I za nezávislosti jakosti na směně:", a: 163.37, tol: 0.1, hint: "na 2 desetinná místa",
+    e: "n<sub>11</sub><sup>T</sup> = 500·330/1010 = 163,37. Pozorováno bylo 170." },
+  { t: "chi2", k: "single", q: "Hlavní předpoklad χ² testu dobré shody a testu nezávislosti:", o: ["všechny teoretické četnosti jsou alespoň 5", "všechny pozorované četnosti jsou alespoň 5", "proměnná má normální rozdělení", "n ≥ 30"], a: 0,
+    e: "Rozdělení χ² platí pro testové kritérium jen přibližně a při malých teoretických četnostech přestává sedět. Malé kategorie se sloučí se sousedními." },
+  { t: "chi2", k: "multi", q: "Kdy se χ² test dobré shody nedá použít bez úpravy? (Všechny správné možnosti.)", o: ["některá teoretická četnost je menší než 5", "data jsou zadaná v procentech místo počtů", "proměnná má jen dvě kategorie", "výběr má víc než 1000 jednotek"], a: [0, 1],
+    e: "Kritérium se počítá z počtů. Z procent vyjde jiné číslo, protože χ² roste s n. Dvě kategorie nevadí, test je pak rovnocenný limitnímu testu o podílu." },
+  { t: "chi2", k: "single", q: "Ve výběru 120 lidí se zjistilo, kolik je malé, střední a velké postavy. Ověřuje se, zda jsou všechny velikosti zastoupené stejně. Vhodný test:", o: ["χ² test dobré shody", "χ² test nezávislosti", "χ² test rozptylu", "limitní test o podílu"], a: 0,
+    e: "Jedna kategoriální proměnná a předpokládané pravděpodobnosti 1/3, 1/3, 1/3." },
+  { t: "chi2", k: "single", q: "U firem tří velikostí se zjišťuje, zda exportují. Ověřuje se, zda export závisí na velikosti firmy. Vhodný test:", o: ["χ² test nezávislosti v tabulce 3 × 2", "χ² test dobré shody", "analýza rozptylu", "limitní test shody dvou podílů"], a: 0,
+    e: "Dvě kategoriální proměnné na jednom výběru. Test shody dvou podílů porovnává jen dvě skupiny." },
+  { t: "chi2", k: "single", q: "Nulová hypotéza χ² testu nezávislosti:", o: ["proměnné jsou nezávislé", "proměnné jsou závislé", "všechny buňky mají stejnou četnost", "řádkové součty jsou stejné"], a: 0,
+    e: "Jako u ostatních testů vyjadřuje H<sub>0</sub> stav bez vztahu. Teoretické četnosti se počítají za předpokladu nezávislosti." },
+  { t: "chi2", k: "num", q: "Kostka hozená 30krát: čísla 1 až 6 padla 4, 6, 7, 2, 5 a 6krát. Hodnota χ² testu dobré shody s rovnoměrným rozdělením:", a: 3.2, tol: 0.01, hint: "na 2 desetinná místa",
+    e: "Teoretická četnost je 30/6 = 5 u každého čísla. χ² = (1 + 1 + 4 + 9 + 0 + 1)/5 = 3,2." },
+  { t: "chi2", k: "single", q: "Kostka: χ² = 3,2, df = 5, χ²<sub>0,95;5</sub> = 11,07. Správný závěr:", o: ["H<sub>0</sub> nezamítáme, nebylo prokázáno, že kostka není férová", "H<sub>0</sub> přijímáme, kostka je prokazatelně férová", "H<sub>0</sub> zamítáme, kostka není férová", "test nelze použít, protože teoretické četnosti jsou jen 5"], a: 0,
+    e: "3,2 < 11,07, kritérium neleží v kritickém oboru. Nezamítnutí neprokazuje platnost H<sub>0</sub>. Teoretické četnosti 5 předpoklad splňují." },
+  { t: "chi2", k: "num", q: "Postava: 25 malých, 53 středních a 42 velkých. Hodnota χ² testu rovnoměrného zastoupení:", a: 9.95, tol: 0.02, hint: "na 2 desetinná místa",
+    e: "Teoretická četnost je 120/3 = 40. χ² = (225 + 169 + 4)/40 = 9,95." },
+  { t: "chi2", k: "single", q: "Postava: χ² = 9,95, α = 0,05. Kritická hodnota a rozhodnutí:", o: ["χ²<sub>0,95;2</sub> = 5,991, H<sub>0</sub> zamítáme", "χ²<sub>0,95;3</sub> = 7,815, H<sub>0</sub> zamítáme", "χ²<sub>0,975;2</sub> = 7,378, H<sub>0</sub> nezamítáme", "χ²<sub>0,95;119</sub>, H<sub>0</sub> nezamítáme"], a: 0,
+    e: "Tři kategorie dávají df = 2. Test je pravostranný, takže se bere kvantil 0,95. 9,95 > 5,991 (p = 0,007)." },
+  { t: "chi2", k: "num", q: "Plán: 40 % USA, 30 % Evropa, 20 % Asie, 10 % zbytek světa. Prodalo se celkem 9430 praček. Teoretická četnost pro Asii:", a: 1886, tol: 0.5, hint: "celé číslo",
+    e: "n·π = 9430·0,2 = 1886. Skutečně se v Asii prodalo 1020 kusů, což dává příspěvek 397,6 z celkového χ² = 498,3." },
+  { t: "chi2", k: "num", q: "Tabulka 2 × 2 (pohlaví × odpověď ano/ne). Limitní test shody podílů dal u = −0,978. Hodnota χ² testu nezávislosti pro stejná data:", a: 0.957, tol: 0.01, hint: "na 2 desetinná místa",
+    e: "U tabulky 2 × 2 platí χ² = u² = 0,978² = 0,957. Oba testy vedou ke stejnému rozhodnutí, χ²<sub>0,95;1</sub> = 3,841 = 1,96²." },
 ];
 
 const $ = (id) => document.getElementById(id);
