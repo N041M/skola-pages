@@ -1,4 +1,4 @@
-// Tahák: testy hypotéz (APSTA, přednášky 1 až 3). Kompilace: typst compile tahak-testy-hypotez.typ
+// Tahák: testy hypotéz, ANOVA a kontingenční tabulky (APSTA, test 1). Kompilace: typst compile tahak-testy-hypotez.typ
 // Strana 1: přehled testů. Strana 2: rozhodovací schémata a výpočet na kalkulačce.
 #set page(paper: "a4", margin: 5mm)
 #set text(font: ("Helvetica Neue", "Arial"), size: 7pt, lang: "cs")
@@ -11,6 +11,7 @@
 #let purple = rgb("#5a3d8f")
 #let slate = rgb("#4d4d4d")
 #let tailc = rgb("#2d6fc0")
+#let teal = rgb("#0f6e73")
 #let zebra = rgb("#eef2f8")
 #let tints = (
   mu: (rgb("#e2ecf8"), rgb("#7fa3d4")),
@@ -20,9 +21,9 @@
 )
 #set table(stroke: 0.35pt + luma(120), inset: (x: 1.6pt, y: 1.1pt), align: horizon)
 
-#let sec(title, color) = block(width: 100%, fill: color, inset: (x: 3pt, y: 1.8pt), above: 4.5pt, below: 2.5pt,
+#let sec(title, color) = block(width: 100%, fill: color, inset: (x: 3pt, y: 1.8pt), above: 4.5pt, below: 2.5pt, sticky: true,
   text(fill: white, weight: "bold", size: 8pt, title))
-#let sub(title) = block(above: 3pt, below: 1.2pt, text(weight: "bold", size: 7.4pt, title))
+#let sub(title) = block(above: 3pt, below: 1.2pt, sticky: true, text(weight: "bold", size: 7.4pt, title))
 #let tbox(kind, title, body) = {
   let (fill, border) = tints.at(kind)
   block(width: 100%, fill: fill, stroke: 0.5pt + border, inset: (x: 3pt, y: 2.5pt), breakable: false, above: 3pt, below: 3pt,
@@ -71,7 +72,7 @@
 #block(width: 100%, fill: navy, inset: (x: 5pt, y: 3pt), below: 4pt,
   grid(columns: (auto, 1fr, auto), align: horizon, gutter: 8pt,
     text(fill: white, weight: "bold", size: 10pt)[Testy hypotéz],
-    text(fill: white, size: 7.2pt)[APSTA, přednášky 1 až 3. Barva rámečku = testovaný parametr. Vybarvená plocha pod křivkou = oblast zamítání $W_alpha$. $H_0$ vždy obsahuje „=“. Druhá strana: rozhodovací schémata a výpočet na kalkulačce.],
+    text(fill: white, size: 7.2pt)[APSTA, test 1. Barva rámečku = testovaný parametr. Vybarvená plocha pod křivkou = oblast zamítání $W_alpha$. $H_0$ vždy obsahuje „=“. Druhá strana: rozhodovací schémata a výpočet na kalkulačce.],
     block(fill: white, inset: (x: 4pt, y: 2pt), text(size: 7.2pt)[#sw(tints.mu) $mu$ střední hodnota #h(5pt) #sw(tints.var) $sigma^2$ rozptyl #h(5pt) #sw(tints.pi) $pi$ podíl])
   ))
 
@@ -131,9 +132,8 @@ $x_p$: $P(X < x_p) = p = F(x_p)$, $P(X > x_p) = 1 - p$. Index = percentil. Pří
 )
 - $alpha$ = hladina významnosti = P(nesprávného zamítnutí $H_0$). Volíme ji.
 - $beta$ nevolíme, závisí na skutečné hodnotě parametru. Lze spočítat jen pro konkrétní alternativu, často neznámá, proto „nezamítáme“.
-- Při stejném $n$: menší $alpha$ → větší $beta$. Proto $alpha$ ne příliš malé.
-- Větší $n$ → menší $beta$, větší síla. Menší variabilita znaku → menší $beta$. Simulace: rozdíl 3, $n$ = 30: $H_0$ nezamítnuta ve 47 % výběrů; $n$ = 100: ve 3 %.
-- Statistická vs. věcná významnost: při velkém $n$ je i malý, věcně nepodstatný rozdíl statisticky významný. Vždy uvést velikost rozdílu.
+- Při stejném $n$: menší $alpha$ → větší $beta$. Větší $n$ nebo menší variabilita znaku → menší $beta$, větší síla.
+- Při velkém $n$ je i věcně nepodstatný rozdíl statisticky významný. Vždy uvést velikost rozdílu.
 
 #sec([Jeden výběr (B1)], green)
 #tbox("mu", [Střední hodnota, $sigma$ známé (u-test)])[
@@ -183,17 +183,32 @@ $x_p$: $P(X < x_p) = p = F(x_p)$, $P(X > x_p) = 1 - p$. Index = percentil. Pří
   #f[$ T = (overline(x)_1 - overline(x)_2) / sqrt(s_1^2 / n_1 + s_2^2 / n_2), quad "df" = (s_1^2 / n_1 + s_2^2 / n_2)^2 / ((s_1^2 \/ n_1)^2 / (n_1 - 1) + (s_2^2 \/ n_2)^2 / (n_2 - 1)) $]
   df zaokrouhlit dolů na celé číslo.
 ]
-#tbox("mu", [Dvouvýběrový Z-test, $sigma_1$ a $sigma_2$ známé])[
-  $H_0: mu_1 = mu_2$
-  #f[$ Z = (overline(x)_1 - overline(x)_2 - Delta_0) / sqrt(sigma_1^2 / n_1 + sigma_2^2 / n_2) tilde.op N(0,1) $]
-]
 #tbox("pi", [Shoda podílů (dva parametry binomického rozdělení)])[
   $H_0: pi_1 = pi_2$, $p_1 = m_1\/n_1$, $p_2 = m_2\/n_2$, $overline(p) = (m_1 + m_2)/(n_1 + n_2)$
   #f[$ U = (p_1 - p_2) / sqrt(overline(p)(1 - overline(p)) (1/n_1 + 1/n_2)) tilde.op N(0,1) $
   $ = (p_1 - p_2) / sqrt(overline(p)(1 - overline(p))) sqrt((n_1 n_2) / (n_1 + n_2)) $]
   Předpoklad CLV: $n_i p_i >= 5$, $n_i (1 - p_i) >= 5$ pro oba výběry. Jinak přesný Fisherův test. Párová binární data: McNemarův test. Ekvivalent: $chi^2$ test tabulky 2×2.
 ]
-Volba testu: schéma 1 na druhé straně. Více než 2 průměry: ANOVA. Nenormální znak a malé $n$: neparametrický test.
+Volba testu: schéma 1 na druhé straně. Nenormální znak a malé $n$: neparametrický test.
+
+#sec([Více skupin a kontingenční tabulky (A6, A7)], teal)
+#tbox("mu", [ANOVA, jeden faktor: shoda $k$ středních hodnot])[
+  $H_0: mu_1 = mu_2 = dots = mu_k$, $H_1: mu_i != mu_j$ aspoň pro jednu dvojici.
+  #table(columns: (auto, auto, auto, auto, auto), fill: (x, y) => if y == 0 { luma(225) },
+    [Zdroj], [SS], [df], [MS], [F],
+    [mezi (faktor)], [SSTR], [$k - 1$], [SSTR/($k - 1$)], [MSTR/MSE],
+    [uvnitř (chyba)], [SSE], [$n - k$], [SSE/($n - k$)], [],
+    [celkem], [SSTO], [$n - 1$], [], [],
+  )
+  $F tilde.op F(k - 1, n - k)$, $W$: $F > F_(1-alpha; k-1; n-k)$. SSTO = SSTR + SSE. Z tabulky SPSS: $n$ = df celkem + 1, $k$ = df mezi + 1. Z průměrů skupin: $overline(x) = sum n_i overline(x)_i \/ n$, SSTR $= sum n_i (overline(x)_i - overline(x))^2$.
+  Předpoklady: nezávislé výběry, normalita v každé skupině, shodné rozptyly. Levene: $H_0: sigma_1^2 = dots = sigma_k^2$, Sig. $> alpha$ → rozptyly shodné, ANOVA platí. Levene F není ANOVA F.
+  Post-hoc testy po zamítnutí $H_0$ hledají, které dvojice se liší. Bonferroni: $H_0: mu_i = mu_j$ pro každou dvojici, hladina $alpha^* = alpha \/ (k(k-1)\/2) = 2 alpha \/ (k(k-1))$ ($k$ = 3: 0,05/3, $k$ = 4: 0,05/6), $t_(i j) = abs(overline(x)_i - overline(x)_j) \/ sqrt("MSE" (1\/n_i + 1\/n_j))$, df $= n - k$.
+]
+#tbox("pi", [$chi^2$ test nezávislosti v kontingenční tabulce $r times c$])[
+  $H_0: pi_(i j) = pi_(i dot.c) pi_(dot.c j)$ pro všechna $i, j$ (znaky jsou nezávislé), $H_1$: neplatí aspoň pro jednu dvojici.
+  #f[$ chi^2 = sum_i sum_j (n_(i j) - n_(i j)^T)^2 / n_(i j)^T tilde.op chi^2 ((r-1)(c-1)), quad n_(i j)^T = (n_(i dot.c) n_(dot.c j)) / n $]
+  $n^T$ = očekávaná (teoretická) četnost = řádkový součet × sloupcový součet / $n$. Vždy pravostranný: $W$: $chi^2 > chi^2_(1-alpha; (r-1)(c-1))$. SPSS: řádek Pearson Chi-Square, Asymp. Sig. Předpoklady: nejvýše 20 % polí s $n^T < 5$ a žádné $n^T < 1$ (poznámka pod tabulkou SPSS); jinak sloučit řídké řádky nebo sloupce. Zamítnutí: znaky spolu souvisí. Nezamítnutí: souvislost nebyla prokázána. Tabulka 2×2 = test shody dvou podílů; jednostranná $H_1$: $p$ = Sig./2, pokud podíly míří ve směru $H_1$.
+]
 
 #sec([Excel], slate)
 INV: z pravděpodobnosti kvantil. DIST: z hodnoty $P(X <= x)$. RT = pravý ocas ($1 - F$), 2T = oba ocasy.
@@ -203,7 +218,6 @@ INV: z pravděpodobnosti kvantil. DIST: z hodnoty $P(X <= x)$. RT = pravý ocas 
   [F], [F.INV(q;df1;df2); F.INV.RT($alpha$;df1;df2) = $F_(1-alpha)$; F.DIST.RT(F;df1;df2)],
   [$chi^2$], [CHISQ.INV(q;df); CHISQ.INV.RT($alpha$;df); CHISQ.DIST.RT(x;df)],
 )
-*Hodnota $p$:* U: $!=$ 2·(1 − NORM.S.DIST(|u|;1)); $<$ NORM.S.DIST(u;1); $>$ 1 − NORM.S.DIST(u;1). T: $!=$ T.DIST.2T(|t|;df); $<$ T.DIST(t;df;1); $>$ T.DIST.RT(t;df). F (větší nahoře): $!=$ 2·F.DIST.RT(F;df1;df2); $>$ F.DIST.RT(F;df1;df2).
 
 #sec([Kvantily], slate)
 *N(0,1):* $u_("0,90")$ = 1,2816; $u_("0,95")$ = 1,6449; $u_("0,975")$ = 1,9600; $u_("0,99")$ = 2,3263; $u_("0,995")$ = 2,5758. Levostranné KH jsou záporné.
@@ -212,12 +226,8 @@ INV: z pravděpodobnosti kvantil. DIST: z hodnoty $P(X <= x)$. RT = pravý ocas 
   ("4", "2,132", "2,776", "3,747", "4,604"), ("5", "2,015", "2,571", "3,365", "4,032"), ("6", "1,943", "2,447", "3,143", "3,707"),
   ("7", "1,895", "2,365", "2,998", "3,499"), ("8", "1,860", "2,306", "2,896", "3,355"), ("9", "1,833", "2,262", "2,821", "3,250"),
   ("10", "1,812", "2,228", "2,764", "3,169"), ("11", "1,796", "2,201", "2,718", "3,106"), ("12", "1,782", "2,179", "2,681", "3,055"),
-  ("13", "1,771", "2,160", "2,650", "3,012"), ("14", "1,761", "2,145", "2,624", "2,977"), ("15", "1,753", "2,131", "2,602", "2,947"),
-  ("16", "1,746", "2,120", "2,583", "2,921"), ("17", "1,740", "2,110", "2,567", "2,898"), ("18", "1,734", "2,101", "2,552", "2,878"),
-  ("19", "1,729", "2,093", "2,539", "2,861"), ("20", "1,725", "2,086", "2,528", "2,845"), ("21", "1,721", "2,080", "2,518", "2,831"),
-  ("22", "1,717", "2,074", "2,508", "2,819"), ("23", "1,714", "2,069", "2,500", "2,807"), ("24", "1,711", "2,064", "2,492", "2,797"),
-  ("25", "1,708", "2,060", "2,485", "2,787"), ("26", "1,706", "2,056", "2,479", "2,779"), ("27", "1,703", "2,052", "2,473", "2,771"),
-  ("28", "1,701", "2,048", "2,467", "2,763"), ("29", "1,699", "2,045", "2,462", "2,756"), ("30", "1,697", "2,042", "2,457", "2,750"),
+  ("15", "1,753", "2,131", "2,602", "2,947"), ("20", "1,725", "2,086", "2,528", "2,845"), ("25", "1,708", "2,060", "2,485", "2,787"),
+  ("30", "1,697", "2,042", "2,457", "2,750"),
   ("40", "1,684", "2,021", "2,423", "2,704"), ("60", "1,671", "2,000", "2,390", "2,660"), ("120", "1,658", "1,980", "2,358", "2,617"),
   ("∞", "1,645", "1,960", "2,326", "2,576"),
 )
@@ -244,8 +254,8 @@ Kvantily F: ze zadání nebo Excel.
 
 #sec([Formulace závěru], slate)
 *Zamítnutí:* „$H_0$ zamítáme na hladině významnosti $alpha$ ($p$ = …), přijímáme $H_1$. Rozdíl (změna) je statisticky významný: … (věcně).“ \
-*Nezamítnutí:* „$H_0$ nezamítáme na hladině významnosti $alpha$ ($p$ = …). Statisticky významný rozdíl nebyl prokázán, pozorovaný rozdíl lze vysvětlit výběrovou (náhodnou) chybou.“ \
-Vždy uvést parametr, směr, hladinu, hodnotu $p$ a kritickou hodnotu. Jednostranné $p$ ze SPSS = Sig./2, pokud rozdíl míří ve směru $H_1$.
+*Nezamítnutí:* „$H_0$ nezamítáme na hladině významnosti $alpha$ ($p$ = …). Statisticky významný rozdíl nebyl prokázán.“ \
+Vždy uvést parametr, směr, hladinu $alpha$, hodnotu $p$ a KH.
 
 ]
 
@@ -264,7 +274,7 @@ Vždy uvést parametr, směr, hladinu, hodnotu $p$ a kritickou hodnotu. Jednostr
   place(dx: w - 1.5mm, dy: 2.5mm, polygon(fill: black, (0mm, 0mm), (1.5mm, 0.8mm), (0mm, 1.6mm)))
   place(dx: 0mm, dy: -0.2mm, box(width: w - 1.5mm, align(center, text(size: 6.3pt, label))))
 })
-#let varrow(label, h: 5.2mm) = box(width: 100%, height: h, {
+#let varrow(label, h: 4.2mm) = box(width: 100%, height: h, {
   place(dx: 50%, dy: 0mm, line(angle: 90deg, length: h - 1.4mm, stroke: 0.6pt))
   place(dx: 50%, dy: h - 1.5mm, move(dx: -0.8mm, polygon(fill: black, (0mm, 0mm), (1.6mm, 0mm), (0.8mm, 1.5mm))))
   place(dx: 50%, dy: 0.5mm, move(dx: 1mm, text(size: 6.3pt, label)))
@@ -301,11 +311,10 @@ Vždy uvést parametr, směr, hladinu, hodnotu $p$ a kritickou hodnotu. Jednostr
     #ladder((
       (q: [Testuje se shoda rozptylů?], kind: "var", leaf: [F-test], note: [větší $s^2$ nahoře, df = ($n_1 - 1$, $n_2 - 1$)]),
       (q: [Testuje se $mu$. Jsou výběry závislé (párové)?], kind: "mu", leaf: [Párový t-test], note: [rozdíly $d_i$, df = $n - 1$]),
-      (q: [Jsou $sigma_1$, $sigma_2$ známé?], kind: "mu", leaf: [Z-test], note: [N(0,1)]),
       (q: [F-test: rozptyly shodné? ($F < F_(1-alpha\/2)$)], kind: "mu", leaf: [t-test pooled], note: [df = $n_1 + n_2 - 2$]),
     ), (kind: "mu", leaf: [Welch t-test], note: [df ze vzorce, dolů]))
     #v(2pt)
-    Více než 2 nezávislé výběry: ANOVA.
+    Více než 2 nezávislé výběry: ANOVA (F-test), po zamítnutí Bonferroni. Vzorce na první straně.
   ],
   [
     #head([Binární znak (podíl $pi$)], rgb("#8a6d1a"))
@@ -319,6 +328,8 @@ Vždy uvést parametr, směr, hladinu, hodnotu $p$ a kritickou hodnotu. Jednostr
       (q: [Jsou výběry závislé (párové)?], kind: "other", leaf: [McNemarův test]),
       (q: [$n_i p_i >= 5$ a $n_i (1 - p_i) >= 5$ pro oba?], kind: "pi", leaf: [U-test shody podílů], note: [N(0,1), $overline(p)$ společné]),
     ), (kind: "other", leaf: [Fisherův přesný test]))
+    #v(2pt)
+    Dva kategoriální znaky v tabulce $r times c$: $chi^2$ test nezávislosti. Vzorce na první straně.
   ],
 )
 
@@ -327,9 +338,9 @@ Vždy uvést parametr, směr, hladinu, hodnotu $p$ a kritickou hodnotu. Jednostr
   dbox[*1.* Zápis $H_0$: $theta = theta_0$ \ a $H_1$ (podle slov zadání)],
   harrow([]),
   grid(columns: (1fr), row-gutter: 2pt,
-    lbox("other", [$H_1: theta != theta_0$ oboustranná], note: [KH = $plus.minus x_(1-alpha\/2)$ #h(3pt) $W$: $abs("TK") >$ KH #h(3pt) #bell("two", h: 11pt)]),
-    lbox("other", [$H_1: theta < theta_0$ levostranná], note: [KH = $x_alpha = -x_(1-alpha)$ #h(3pt) $W$: TK $<$ KH #h(3pt) #bell("left", h: 11pt)]),
-    lbox("other", [$H_1: theta > theta_0$ pravostranná], note: [KH = $x_(1-alpha)$ #h(3pt) $W$: TK $>$ KH #h(3pt) #bell("right", h: 11pt)]),
+    lbox("other", [$H_1: theta != theta_0$ oboustranná], note: [KH = $plus.minus x_(1-alpha\/2)$ #h(3pt) $W$: $abs("TK") >$ KH #h(3pt) #bell("two", h: 9pt)]),
+    lbox("other", [$H_1: theta < theta_0$ levostranná], note: [KH = $x_alpha = -x_(1-alpha)$ #h(3pt) $W$: TK $<$ KH #h(3pt) #bell("left", h: 9pt)]),
+    lbox("other", [$H_1: theta > theta_0$ pravostranná], note: [KH = $x_(1-alpha)$ #h(3pt) $W$: TK $>$ KH #h(3pt) #bell("right", h: 9pt)]),
   ),
   harrow([]),
   dbox[*2.* Spočítat TK ze vzorce testu. Zapsat df a rozdělení TK.],
@@ -370,8 +381,7 @@ Vždy uvést parametr, směr, hladinu, hodnotu $p$ a kritickou hodnotu. Jednostr
 *Obecně*
 - Nejdřív jmenovatel (směrodatná chyba SE), uložit do paměti (STO / M+), pak čitatel, pak dělit.
 - Počítat na 4 desetinná místa, zaokrouhlit až výsledek.
-- Procenta převést na podíl: 56 % = 0,56. Zadáno $s$, nebo $s^2$? Do $s^2$ ve vzorcích dosadit druhou mocninu, do $s\/sqrt(n)$ samotné $s$.
-- $sqrt(n)$ spočítat zvlášť: $sqrt(50)$ = 7,0711.
+- Procenta převést na podíl: 56 % = 0,56.
 - Znaménko TK: u jednostranné $H_1$ rozhoduje; u oboustranné porovnat $abs("TK")$ s KH.
 
 ]
@@ -380,8 +390,7 @@ Vždy uvést parametr, směr, hladinu, hodnotu $p$ a kritickou hodnotu. Jednostr
 1. $sum x$ a $sum x^2$ (každou hodnotu umocnit a přičíst).
 2. $overline(x) = sum x \/ n$.
 3. $s^2 = (sum x^2 - n overline(x)^2) \/ (n - 1)$, $s = sqrt(s^2)$.
-Příklad 12, 15, 18: $sum x$ = 45, $sum x^2$ = 144 + 225 + 324 = 693, $overline(x)$ = 15, $s^2$ = (693 − 3·225)/2 = 9, $s$ = 3. \
-Režim STAT: zadat data, číst $overline(x)$ a $s_x$ (dělí $n - 1$, výběrová). $sigma_x$ (dělí $n$) nepoužívat.
+Příklad 12, 15, 18: $sum x$ = 45, $sum x^2$ = 144 + 225 + 324 = 693, $overline(x)$ = 15, $s^2$ = (693 − 3·225)/2 = 9, $s$ = 3.
 
 ]
 #rec[
@@ -398,14 +407,14 @@ Příklad (koření, $mu_0$ = 16, n = 50, $overline(x)$ = 14,9, s = 3,9, $H_1: m
 2. Ověřit $n pi_0 >= 5$ a $n(1 - pi_0) >= 5$.
 3. SE = $sqrt(pi_0 (1 - pi_0) ÷ n)$: součin, ÷ n, odmocnina.
 4. u = $(p - pi_0)$ ÷ SE.
-Příklad ($pi_0$ = 0,56, m = 298, n = 500, $H_1: pi != "0,56"$): 298 ÷ 500 = 0,596; 0,56·0,44 = 0,2464; ÷ 500 = 0,0004928; √ = 0,0222; (0,596 − 0,56) ÷ 0,0222 = 1,62 (s korekcí 1,58) $<$ 1,96 → nezamítáme, p = 0,10. Pravostranně: KH 1,645, také nezamítáme.
+Příklad ($pi_0$ = 0,56, m = 298, n = 500, $H_1: pi != "0,56"$): 298 ÷ 500 = 0,596; 0,56·0,44 = 0,2464; ÷ 500 = 0,0004928; √ = 0,0222; (0,596 − 0,56) ÷ 0,0222 = 1,62 $<$ 1,96 → nezamítáme, p = 0,10.
 
 ]
 #rec[
 #sw(tints.mu) *Párový t-test*
 1. $d_i = x_i^((1)) - x_i^((2))$ pro každou dvojici, se znaménkem.
 2. $overline(d)$ a $s_d$ jako $overline(x)$ a $s$ z dat ($sum d$, $sum d^2$).
-3. SE = $s_d ÷ sqrt(n)$; t = $(overline(d) - Delta_0)$ ÷ SE; df = $n - 1$.
+3. SE = $s_d ÷ sqrt(n)$; t = $(overline(d) - Delta_0)$ ÷ SE; df = $n - 1$. SPSS Paired Samples Test: Mean = $overline(d)$, Std. Error Mean = SE.
 Příklad (hypermarkety, $overline(d)$ = 3,57, $s_d$ = 2,99, n = 100, $H_1: Delta > 0$, $alpha$ = 0,01): 2,99 ÷ 10 = 0,299; 3,57 ÷ 0,299 = 11,94 $> t_("0,99"; 99)$ = 2,364 → zamítáme.
 
 ]
@@ -419,16 +428,11 @@ Příklad (ohřívače, n = 13 a 15, $H_1: sigma_1^2 > sigma_2^2$): 8,354 ÷ 2,3
 
 ]
 #rec[
-#sw(tints.var) *$chi^2$ test rozptylu*
-$chi^2 = (n - 1) dot s^2 ÷ sigma_0^2$. Zadáno $sigma_0$? Umocnit.
-
-]
-#rec[
 #sw(tints.mu) *Nepárový t-test, shodné rozptyly*
 1. $s^2 = [(n_1 - 1) s_1^2 + (n_2 - 1) s_2^2] ÷ (n_1 + n_2 - 2)$, $s = sqrt(s^2)$.
 2. k = $sqrt(1\/n_1 + 1\/n_2)$.
 3. SE = $s dot k$; t = $(overline(x)_1 - overline(x)_2)$ ÷ SE; df = $n_1 + n_2 - 2$.
-Příklad (autobazary A, B: n = 36 a 34, $overline(x)$ = 169,417 a 162,068, $s^2$ = 1442,99 a 1022,6; F = 1,41 $< F_("0,975"; 35; 33)$ = 1,99 → rozptyly shodné): (35·1442,99 + 33·1022,6) ÷ 68 = (50 504,7 + 33 745,8) ÷ 68 = 1238,98; s = 35,20. √(1/36 + 1/34) = √(0,02778 + 0,02941) = 0,2391. SE = 35,20·0,2391 = 8,417. t = 7,349 ÷ 8,417 = 0,873 $< t_("0,975"; 68)$ = 1,995 → nezamítáme, p = 0,386.
+Příklad (autobazary A, B: n = 36 a 34, $overline(x)$ = 169,417 a 162,068, $s^2$ = 1442,99 a 1022,6, F-test nezamítl): $s^2$ = (35·1442,99 + 33·1022,6) ÷ 68 = 1238,98, s = 35,20; k = √(1/36 + 1/34) = 0,2391; SE = 8,417; t = 7,349 ÷ 8,417 = 0,873 $< t_("0,975"; 68)$ = 1,995 → nezamítáme, p = 0,386.
 
 ]
 #rec[
@@ -436,7 +440,7 @@ Příklad (autobazary A, B: n = 36 a 34, $overline(x)$ = 169,417 a 162,068, $s^2
 1. a = $s_1^2 ÷ n_1$, b = $s_2^2 ÷ n_2$.
 2. SE = $sqrt(a + b)$; t = $(overline(x)_1 - overline(x)_2)$ ÷ SE.
 3. df = $(a + b)^2 ÷ [a^2 ÷ (n_1 - 1) + b^2 ÷ (n_2 - 1)]$, zaokrouhlit dolů.
-Příklad: a = 1442,99 ÷ 36 = 40,083; b = 636,004 ÷ 36 = 17,667; SE = √57,750 = 7,599; t = 20,823 ÷ 7,599 = 2,740. df = 57,75² ÷ (40,083² ÷ 35 + 17,667² ÷ 35) = 3335,1 ÷ (45,90 + 8,92) = 60,8 → 60. (Autobazary A, C: n = 36 a 36, F = 2,27 $> F_("0,975"; 35; 35)$ = 1,96 → rozptyly neshodné; $H_1: mu_1 > mu_3$: 2,740 $> t_("0,95"; 60)$ = 1,671 → zamítáme, p = 0,004.)
+Příklad (autobazary A, C: n = 36 a 36, rozdíl průměrů 20,823, $s^2$ = 1442,99 a 636,004, F-test zamítl): a = 40,083; b = 17,667; SE = √57,750 = 7,599; t = 2,740. df = 57,75² ÷ (40,083² ÷ 35 + 17,667² ÷ 35) = 60,8 → 60. $H_1: mu_1 > mu_3$: 2,740 $> t_("0,95"; 60)$ = 1,671 → zamítáme, p = 0,004.
 
 ]
 #rec[
@@ -445,7 +449,25 @@ Příklad: a = 1442,99 ÷ 36 = 40,083; b = 636,004 ÷ 36 = 17,667; SE = √57,75
 2. Ověřit $n_i p_i >= 5$ a $n_i (1 - p_i) >= 5$.
 3. SE = $sqrt(overline(p)(1 - overline(p)) dot (1\/n_1 + 1\/n_2))$.
 4. u = $(p_1 - p_2)$ ÷ SE.
-Příklad: $overline(p)$ = 103 ÷ 404 = 0,2550; 0,255·0,745 = 0,1900; 1/231 + 1/173 = 0,004329 + 0,005780 = 0,010109; 0,1900·0,010109 = 0,001921; √ = 0,04383; (0,2338 − 0,2832) ÷ 0,04383 = −1,13; $abs(u)$ $<$ 1,96 → nezamítáme, p = 0,26. (Věkové skupiny: 54 z 231 a 49 ze 173.)
+Příklad (54 z 231 a 49 ze 173): $overline(p)$ = 103 ÷ 404 = 0,2550; 0,255·0,745 = 0,1900; 1/231 + 1/173 = 0,004329 + 0,005780 = 0,010109; 0,1900·0,010109 = 0,001921; √ = 0,04383; (0,2338 − 0,2832) ÷ 0,04383 = −1,13; $abs(u)$ $<$ 1,96 → nezamítáme, p = 0,26.
+
+]
+#rec[
+#sw(tints.mu) *ANOVA z tabulky SPSS*
+1. Chybějící SS: SSTR = SSTO − SSE, nebo SSE = SSTO − SSTR.
+2. df: mezi $k - 1$, uvnitř $n - k$, celkem $n - 1$. $n$ = df celkem + 1, $k$ = df mezi + 1.
+3. MS = SS ÷ df v každém řádku. 4. F = MSTR ÷ MSE.
+5. Rozhodnout podle Sig. (= $p$) nebo $F_(1-alpha; k-1; n-k)$.
+Příklad (test 1 2025/26): SSTO = 3 295 120, SSE = 2 908 972, df 2 a 448. SSTR = 386 148; df uvnitř 446; MSTR = 193 074; MSE = 6 522,4; F = 29,60; $n$ = 449, $k$ = 3.
+
+]
+#rec[
+#sw(tints.pi) *$chi^2$ test nezávislosti*
+1. Řádkové a sloupcové součty a $n$.
+2. $n^T$ = řádkový součet × sloupcový součet ÷ $n$ pro každé pole.
+3. Ověřit: nejvýše 20 % polí s $n^T < 5$, žádné $< 1$.
+4. Příspěvek pole $(n - n^T)^2 ÷ n^T$, sečíst. df = $(r - 1)(c - 1)$.
+Příklad (vzdělání × splácení, 3×2, $n$ = 466): pole základní/ne: 126 · 149 ÷ 466 = 40,29; příspěvek (52 − 40,29)² ÷ 40,29 = 3,40. Celkem $chi^2$ = 10,66 $> chi^2_("0,95"; 2)$ = 5,99 → zamítáme, p = 0,005.
 
 ]
 #rec[
@@ -456,5 +478,8 @@ Příklad: $overline(p)$ = 103 ÷ 404 = 0,2550; 0,255·0,745 = 0,1900; 1/231 + 1
 - Welch df zaokrouhlený nahoru; správně dolů.
 - Jednostranná $H_1$ s oboustranným kvantilem (1,96 místo 1,645).
 - Párová data počítaná jako dva nezávislé výběry.
+- Hypotézy ANOVY psané o rozptylech. ANOVA testuje $mu$, o $sigma^2$ je Levene.
+- Nezamítnutá nezávislost vyložena jako „znaky souvisí“.
+- Jednostranná $H_1$, ale rozdíl výběrů míří proti ní: $H_0$ nelze zamítnout ani při velkém $abs("TK")$.
 ]
 ]

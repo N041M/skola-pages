@@ -1,6 +1,6 @@
-# Testy hypotéz: studijní průvodce k midtermu
+# Testy hypotéz a analýza rozptylu: studijní průvodce k prvnímu testu
 
-Zdroje: přednášky 1 až 3 H. Skalské (APSTA, UHK FIM), dvě rozhodovací schémata (B1 jeden výběr, B2 dva výběry, studentský list A5), „Testy hypotéz - příklady s řešením“, „Souhrnný přehled Rozhodování o hypotéze a funkce MsExcelu“ a Groebnerovy příklady s mobilními telefony. Příklady v kapitole 8 pocházejí z neoficiálních poznámek „Statistika pro flákače“ a jejich výsledky jsou přepočítané. Písemka je v češtině. Věty, které lze na písemce napsat, jsou v zelených rámečcích „Na písemku“.
+Zdroje: přednášky 1 až 3 H. Skalské (APSTA, UHK FIM), dvě rozhodovací schémata (B1 jeden výběr, B2 dva výběry, studentský list A5), „Testy hypotéz - příklady s řešením“, „Souhrnný přehled Rozhodování o hypotéze a funkce MsExcelu“ a Groebnerovy příklady s mobilními telefony. Příklady v kapitole 8 pocházejí z neoficiálních poznámek „Statistika pro flákače“ a jejich výsledky jsou přepočítané. Kapitoly 8 a 9 vycházejí také z přehledových tabulek A6 a A7 ve skriptech (strany 226 a 227) a ze zadání prvního testu z let 2016 až 2025/26. Písemka je v češtině. Věty, které lze na písemce napsat, jsou v zelených rámečcích „Na písemku“.
 
 ## 0. Co písemka požaduje
 
@@ -13,6 +13,8 @@ Poznámky k předmětu uvádějí pět věcí, které je potřeba zvládnout u k
 5. Přečíst **kvantil**, například t₀.₉₇₅;₆ = 2,45, a říct, zda stačí k rozhodnutí úlohy.
 
 Zbytek průvodce slouží těmto pěti bodům.
+
+Zadání prvního testu z let 2016 až 2025/26 kladou navíc tři typy úloh, které těchto pět bodů nepokrývá: doplnění tabulky analýzy rozptylu z výstupu SPSS s otázkami k Levenovu a Bonferroniho testu (v sedmi z deseti zadání), χ² test nezávislosti v kontingenční tabulce včetně předpokladů (v pěti) a test shody dvou podílů s výběrem kritické hodnoty ze zadaného seznamu (ve čtyřech). Test z roku 2025/26 měl tři úlohy za 50 bodů: test shody dvou podílů, tabulku ANOVA a χ² test nezávislosti. Kapitolám 8 a 9 proto patří stejná pozornost jako kapitolám 3 a 4.
 
 ## 1. Značení
 
@@ -394,12 +396,12 @@ Když písemka zadá kvantil a ptá se, zda stačí k rozhodnutí, je třeba poj
 > | P8 | pojmová úloha | |
 > | P9 | Welchův t-test podle Levenova testu | zamítáme (p = 0,018) |
 
-## 8. χ² testy dobré shody a nezávislosti (nejsou v midtermu)
+## 8. χ² testy dobré shody a nezávislosti
 
 Oba testy porovnávají ==pozorované četnosti== s ==teoretickými četnostmi==, které by vyšly za platnosti H0. Testové kritérium je v obou případech χ² = Σ (pozorovaná − teoretická)² / teoretická. Velké χ² znamená velký rozdíl mezi daty a H0, proto je kritický obor **jen vpravo**: Wα = {χ² > χ²₁₋α;df}.
 
 > Pozor
-> Předpoklad: **všechny teoretické četnosti jsou alespoň 5**. Když některá vyjde menší, sousední kategorie se sloučí.
+> Předpoklad: **nejvýše 20 % teoretických četností smí být menších než 5 a žádná nesmí být menší než 1**. Přísnější učebnicová verze žádá všechny alespoň 5. Když předpoklad neplatí, sousední kategorie se sloučí a test se přepočítá. SPSS kontrolu vypisuje v poznámce pod tabulkou Chi-Square Tests.
 
 ### Test dobré shody
 
@@ -492,6 +494,94 @@ Potřebné kvantily: χ²₀,₉₅;₁ = 3,841, χ²₀,₉₅;₂ = 5,991, χ�
 > | P13 | nezávislost 2 × 2 | 1 | nezamítáme (0,957 < 3,841) |
 > | P14 | nezávislost 3 × 2 | 2 | nezamítáme (3,99 < 5,991) |
 
-## 9. Analýza rozptylu (není v midtermu)
+### Čtení výstupu SPSS (Chi-Square Tests)
 
-ANOVA pro jeden faktor testuje H0: μ₁ = μ₂ = … = μᵣ pomocí F = MSTR/MSE a df (r − 1, n − r).
+Tabulka Crosstab obsahuje pozorované četnosti se součty řádků a sloupců. Tabulka Chi-Square Tests má řádky Pearson Chi-Square, Likelihood Ratio (u tabulky 2 × 2 také Continuity Correction) a N of Valid Cases a sloupce Value, df a Asymp. Sig. (2-sided). Na písemce se čte řádek Pearson Chi-Square: Value je testové kritérium χ², df = (r − 1)(c − 1) a Asymp. Sig. je hodnota p. Poznámka pod tabulkou („0 cells (0,0 %) have expected count less than 5. The minimum expected count is 40,29.“) je kontrola předpokladů.
+
+Když je tvrzení v zadání jednostranné (podíl chlapců s aktivitou je vyšší než u dívek) a tabulka je 2 × 2, test nezávislosti odpovídá testu shody dvou podílů. Hodnota p je pak Asymp. Sig./2, pokud výběrové podíly míří ve směru H1.
+
+> Na písemku
+> - „H0: πᵢⱼ = πᵢ. · π.ⱼ pro všechna i, j (znaky jsou nezávislé). H1: rovnost neplatí aspoň pro jednu dvojici i, j.“
+> - „Teoretická četnost pole muž/domov: řádkový součet · sloupcový součet / n = 187 · 109 / 395 = 51,6.“
+> - „Předpoklady: nejvýše 20 % teoretických četností pod 5 a žádná pod 1. Podle poznámky pod tabulkou splněno (0 polí pod 5, minimum 17,04).“
+> - „Asymp. Sig. = 0,176 > α = 0,05, H0 nezamítáme. Souvislost mezi pohlavím a důvodem studia nebyla prokázána.“ / „Sig. = 0,005 < 0,05, H0 zamítáme. Schopnost splácet souvisí se vzděláním.“
+
+## 9. Analýza rozptylu (ANOVA)
+
+Analýza rozptylu pro jeden faktor porovnává ==střední hodnoty k skupin== najednou. Nahrazuje k(k − 1)/2 dvouvýběrových t-testů, u kterých by s každým dalším testem rostla pravděpodobnost chyby I. druhu. Faktor je kategoriální proměnná, která data dělí do skupin (velikost obce, směr šíření znečištění, jak často student chodí ven). Sledovaný znak je kvantitativní (výše úvěru, počet absencí).
+
+### Hypotézy
+
+H0: μ₁ = μ₂ = … = μₖ. H1: μᵢ ≠ μⱼ aspoň pro jednu dvojici i, j. ANOVA neřekne, která dvojice se liší. Na to jsou post-hoc testy.
+
+> Pozor
+> Hypotézy ANOVY jsou o středních hodnotách. Hypotéza o shodě rozptylů σ₁² = … = σₖ² patří Levenovu testu, který ověřuje předpoklad. Záměna těchto dvou hypotéz je v řešeních starších zadání častá chyba.
+
+### Tabulka ANOVA
+
+| Zdroj rozptylu | Součet čtverců | Stupně volnosti | Průměrný čtverec | F |
+|---|---|---|---|---|
+| mezi skupinami (Between Groups, faktor) | SSTR | k − 1 | MSTR = SSTR/(k − 1) | F = MSTR/MSE |
+| uvnitř skupin (Within Groups, chyba) | SSE | n − k | MSE = SSE/(n − k) | |
+| celkem (Total) | SSTO | n − 1 | | |
+
+Platí SSTO = SSTR + SSE a (k − 1) + (n − k) = n − 1. Z každé neúplné tabulky se dá dopočítat zbytek:
+
+- Chybějící součet čtverců: SSTR = SSTO − SSE.
+- Rozsah výběru n = df celkem + 1. Počet skupin k = df mezi skupinami + 1. Tabulka Levenova testu dává totéž: k = df1 + 1, n = df1 + df2 + 1.
+- Průměrné čtverce: každý součet čtverců dělený svými stupni volnosti. Řádek Total průměrný čtverec nemá.
+- F = MSTR/MSE.
+
+Ze skupinových průměrů a rozsahů: celkový průměr x̄ = Σ nᵢ x̄ᵢ / n je vážený průměr skupinových průměrů (prostý průměr průměrů platí jen při stejných rozsazích) a SSTR = Σ nᵢ (x̄ᵢ − x̄)².
+
+### Testové kritérium a rozhodnutí
+
+F = MSTR/MSE má při platnosti H0 Fisherovo-Snedecorovo rozdělení s (k − 1; n − k) stupni volnosti. Rozdíly mezi skupinami zvětšují MSTR, proto je kritický obor jen vpravo: Wα = {F > F₁₋α(k − 1; n − k)}. V Excelu F.INV.RT(α; k − 1; n − k). Ve výstupu SPSS stačí sloupec Sig. v řádku Between Groups: Sig. ≤ α znamená zamítnutí H0.
+
+### Předpoklady a Levenův test
+
+- Nezávislé náhodné výběry z jednotlivých skupin.
+- Přibližně normální rozdělení znaku v každé skupině (spojitý znak).
+- Shodné rozptyly ve všech skupinách.
+
+Shodu rozptylů ověřuje ==Levenův test==, v SPSS tabulka Test of Homogeneity of Variances. H0: σ₁² = σ₂² = … = σₖ². Když je jeho Sig. > α, rozptyly lze považovat za shodné a předpoklad ANOVY platí. Levenovo F je jiná statistika než F v tabulce ANOVA a má vlastní Sig.
+
+### Post-hoc testy a Bonferroniho test
+
+Po zamítnutí H0 se hledá, které dvojice skupin se liší. Bonferroniho test testuje pro každou dvojici H0: μᵢ = μⱼ proti H1: μᵢ ≠ μⱼ. Celkovou chybu I. druhu drží tím, že každé porovnání dělá na snížené hladině α* = α / (počet dvojic) = α / (k(k − 1)/2) = 2α / (k(k − 1)). Při k = 3 a α = 0,05 je α* = 0,05/3 = 0,0167, při k = 4 je 0,05/6 = 1/120 ≈ 0,0083, při k = 5 je 0,05/10 = 1/200 = 0,005.
+
+Testové kritérium pro dvojici i, j používá společný vnitroskupinový rozptyl MSE z tabulky ANOVA: tᵢⱼ = |x̄ᵢ − x̄ⱼ| / √(MSE/nᵢ + MSE/nⱼ) se stupni volnosti n − k. Příklad ze zadání 2016 1E: x̄₂ = 23,22, x̄₄ = 21,49, n₂ = 7, n₄ = 12, MSE = 1864,331/46 = 40,53. t₂₄ = 1,73 / √(40,53/7 + 40,53/12) = 1,73 / 3,03 = **0,571**.
+
+### Čtení výstupu SPSS (One-Way ANOVA)
+
+| Tabulka | Co se čte |
+|---|---|
+| Test of Homogeneity of Variances | Levene Statistic, df1 = k − 1, df2 = n − k, Sig. Předpoklad shodných rozptylů platí při Sig. > α. |
+| ANOVA | Řádky Between Groups, Within Groups, Total. Sloupce Sum of Squares, df, Mean Square, F, Sig. Hodnota p ANOVY je Sig. v řádku Between Groups. |
+| Multiple Comparisons (Bonferroni) | Pro každou dvojici Mean Difference, Std. Error, Sig. Dvojice se Sig. ≤ α se liší. |
+
+### Řešený příklad (test 1 z roku 2025/26)
+
+Zadání: průměrná výše úvěru se liší podle velikosti obce. Tabulka obsahuje Within Groups Sum of Squares = 2 908 972, Total Sum of Squares = 3 295 120, df mezi skupinami 2 a df celkem 448.
+
+| | Sum of Squares | df | Mean Square | F |
+|---|---|---|---|---|
+| Between Groups | 3 295 120 − 2 908 972 = **386 148** | 2 | 386 148/2 = **193 074** | 193 074/6 522,4 = **29,60** |
+| Within Groups | 2 908 972 | 448 − 2 = **446** | 2 908 972/446 = **6 522,4** | |
+| Total | 3 295 120 | 448 | | |
+
+Rozsah výběru n = 449, počet kategorií velikosti obce k = 3. F = 29,60 s (2; 446) stupni volnosti je daleko nad kritickou hodnotou F₀,₉₅(2; 446) ≈ 3,0, H0 se zamítá: průměrná výše úvěru se aspoň u jedné kategorie obcí liší. Bonferroniho test pak porovná tři dvojice, každou na hladině 0,05/3 = 0,0167.
+
+> Na písemku
+> - „H0: μ₁ = μ₂ = μ₃. H1: aspoň jedna dvojice středních hodnot se liší.“
+> - „Testové kritérium F = MSTR/MSE má při platnosti H0 rozdělení F s (k − 1; n − k) stupni volnosti.“
+> - „Sig. = 0,006 < α = 0,05, H0 zamítáme. Úroveň absencí se liší aspoň u jedné skupiny.“ / „Sig. = 0,492 > 0,05, H0 nezamítáme, rozdíl středních hodnot nebyl prokázán.“
+> - „Předpoklady: nezávislé výběry, normální rozdělení v každé skupině, shodné rozptyly (Levenův test: Sig. = 0,506 > 0,05, předpoklad splněn).“
+> - „Post-hoc testy po zamítnutí H0 zjišťují, které dvojice skupin se liší. Bonferroniho test testuje H0: μᵢ = μⱼ na hladině α/(k(k − 1)/2).“
+
+> Pozor
+> - Hypotézy ANOVY napsané o rozptylech. ANOVA testuje střední hodnoty, o rozptylech je Levenův test.
+> - n = df celkem + 1, ne df celkem. Ve výstupu s Total df = 50 je n = 51.
+> - Prostý průměr skupinových průměrů místo váženého, když mají skupiny různé rozsahy.
+> - Levenovo F čtené jako testové kritérium ANOVY.
+> - Při k = 4 jsou indexy dvojic i, j = 1, 2, 3, 4, ne 1 až 5.

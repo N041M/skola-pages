@@ -16,7 +16,7 @@ Soubory jsou ve složkách `předmět/téma/`, například `apsta/testy-hypotez/
 - Studijní průvodce je soubor Markdown. Stránka `apsta/testy-hypotez/pruvodce.html` ho zobrazí a umí nadpisy, odstavce, seznamy, tabulky, tučné písmo a kód.
 - Text webu je neutrální a neoslovuje čtenáře.
 
-Kopie souborů z `~/Desktop/APSTA` jsou v `apsta/testy-hypotez/` z 25. 10. 2026. Pozdější změny v původní složce je nutné zkopírovat znovu.
+Kopie souborů z `~/Desktop/APSTA` jsou v `apsta/testy-hypotez/` z 30. 10. 2026. Pozdější změny v původní složce je nutné zkopírovat znovu.
 
 ## Spuštění na počítači
 

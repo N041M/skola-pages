@@ -102,7 +102,7 @@
   <h1>Kvíz: testy hypotéz</h1>
 
   <section id="start" class="panel">
-    <p class="muted">Otázky pokrývají přednášky 1 až 3 předmětu APSTA a χ² testy dobré shody a nezávislosti. Každá otázka se vyhodnotí hned a ukáže vysvětlení.</p>
+    <p class="muted">Otázky pokrývají látku prvního testu APSTA: testy hypotéz pro jeden a dva výběry, analýzu rozptylu a χ² testy dobré shody a nezávislosti. Každá otázka se vyhodnotí hned a ukáže vysvětlení.</p>
     <fieldset>
       <legend>Okruhy</legend>
       <div class="choices" id="topics"></div>
@@ -164,6 +164,7 @@ const TOPICS = {
   vypocet: "Výpočet",
   rozhodnuti: "Rozhodnutí a kvantily",
   interpretace: "Interpretace, předpoklady, software",
+  anova: "Analýza rozptylu (ANOVA)",
   chi2: "χ² testy dobré shody a nezávislosti",
 };
 
@@ -539,6 +540,89 @@ const BANK = [
   { t: "interpretace", k: "single", q: "U párového t-testu z přednášky SPSS vypsal Sig. = 0,000. Správné čtení:", o: ["p je menší než 0,0005, po zaokrouhlení na tři místa 0,000; H<sub>0</sub> se zamítá", "p je přesně nula, H<sub>0</sub> je vyvrácena s jistotou", "test selhal", "p = 0, takže H<sub>0</sub> platí"], a: 0,
     e: "Skutečná hodnota byla 7·10<sup>−21</sup>. Hodnota p je vždy kladná, jen zaokrouhlená." },
 
+  // Analýza rozptylu (ANOVA)
+  { t: "anova", k: "single", q: "Nulová hypotéza analýzy rozptylu pro jeden faktor s k skupinami:", o: ["μ<sub>1</sub> = μ<sub>2</sub> = … = μ<sub>k</sub>", "σ<sub>1</sub>² = σ<sub>2</sub>² = … = σ<sub>k</sub>²", "π<sub>1</sub> = π<sub>2</sub> = … = π<sub>k</sub>", "μ<sub>1</sub> ≠ μ<sub>2</sub> ≠ … ≠ μ<sub>k</sub>"], a: 0,
+    e: "ANOVA porovnává střední hodnoty skupin. Hypotéza o shodě rozptylů patří Levenovu testu, který se dělá před ANOVOU jako kontrola předpokladu." },
+  { t: "anova", k: "single", q: "Alternativní hypotéza analýzy rozptylu:", o: ["aspoň jedna dvojice středních hodnot se liší", "všechny střední hodnoty se navzájem liší", "střední hodnoty rostou s pořadím skupin", "rozptyly skupin se liší"], a: 0,
+    e: "Stačí jedna odlišná skupina. Zápis: μ<sub>i</sub> ≠ μ<sub>j</sub> aspoň pro jednu dvojici i, j. Která dvojice to je, ANOVA neříká, na to jsou post-hoc testy." },
+  { t: "anova", k: "single", q: "Proč se při k skupinách nedělá k(k − 1)/2 dvouvýběrových t-testů místo ANOVY?", o: ["s počtem testů roste pravděpodobnost chyby I. druhu v celé sadě porovnání", "t-test nelze použít pro víc než dvě skupiny kvůli stupňům volnosti", "ANOVA nepotřebuje předpoklad normality", "t-testy dávají jiné střední hodnoty"], a: 0,
+    e: "Každý test má chybu I. druhu α. Při šesti testech na hladině 0,05 je pravděpodobnost aspoň jednoho nesprávného zamítnutí přibližně 0,26. ANOVA testuje shodu všech středních hodnot jedním testem." },
+  { t: "anova", k: "single", q: "Testové kritérium ANOVY je F = MSTR/MSE. Při platnosti H<sub>0</sub> má rozdělení:", o: ["F s k − 1 a n − k stupni volnosti", "t s n − 1 stupni volnosti", "χ² s k − 1 stupni volnosti", "N(0, 1)"], a: 0,
+    e: "Stupně volnosti čitatele jsou df mezi skupinami (k − 1), stupně volnosti jmenovatele df uvnitř skupin (n − k). Na písemce se píše: „F s (k − 1; n − k) stupni volnosti“." },
+  { t: "anova", k: "single", q: "Kritický obor ANOVY:", o: ["pravostranný: F > F<sub>1−α</sub>(k − 1; n − k)", "oboustranný: F < F<sub>α/2</sub> nebo F > F<sub>1−α/2</sub>", "levostranný: F < F<sub>α</sub>", "podle tvaru H<sub>1</sub>"], a: 0,
+    e: "Rozdíly mezi skupinami zvětšují MSTR, a tím F. Proti H<sub>0</sub> svědčí jen velké F. V Excelu je kritická hodnota F.INV.RT(α; k − 1; n − k)." },
+  { t: "anova", k: "single", q: "Sloupec Mean Square ve výstupu SPSS vznikne jako:", o: ["Sum of Squares děleno df ve stejném řádku", "Sum of Squares krát df", "Sum of Squares děleno n", "odmocnina ze Sum of Squares"], a: 0,
+    e: "MSTR = SSTR/(k − 1), MSE = SSE/(n − k). Řádek Total nemá Mean Square. F je pak podíl MSTR/MSE." },
+  { id: "anova-n", t: "anova", k: "num", gen() {
+    const k = randInt(3, 6), n = randInt(30, 500);
+    return { q: `Tabulka ANOVA ve výstupu SPSS má df = ${k - 1} v řádku Between Groups a df = ${n - 1} v řádku Total. Celkový rozsah výběru n:`, a: n, dp: 0,
+      e: `Celkové df = n − 1, tedy n = ${n - 1} + 1 = ${n}. Počet skupin je k = df mezi + 1 = ${k}.` };
+  } },
+  { id: "anova-k", t: "anova", k: "num", gen() {
+    const k = randInt(3, 7), n = randInt(30, 300);
+    return { q: `Levenův test ve výstupu One-Way ANOVA má df1 = ${k - 1} a df2 = ${n - k}. Kolik skupin se porovnává?`, a: k, dp: 0,
+      e: `df1 = k − 1, tedy k = ${k}. Rozsah výběru je n = df1 + df2 + 1 = ${n}.` };
+  } },
+  { id: "anova-sstr", t: "anova", k: "num", gen() {
+    const sse = randInt(1000, 9000) * 100, sstr = randInt(50, 900) * 100;
+    return { q: `V tabulce ANOVA je Within Groups Sum of Squares = ${cz(sse, 0)} a Total Sum of Squares = ${cz(sse + sstr, 0)}. Between Groups Sum of Squares:`, a: sstr, dp: 0,
+      e: `SSTO = SSTR + SSE, tedy SSTR = ${cz(sse + sstr, 0)} − ${cz(sse, 0)} = ${cz(sstr, 0)}.` };
+  } },
+  { id: "anova-ms", t: "anova", k: "num", gen() {
+    const k = randInt(3, 6), n = randInt(20, 100), sse = randDec(200, 3000, 1);
+    return { q: `ANOVA s k = ${k} skupinami a n = ${n} pozorováními má SSE = ${cz(sse, 1)}. Hodnota MSE:`, a: sse / (n - k), dp: 2,
+      e: `MSE = SSE/(n − k) = ${cz(sse, 1)}/${n - k} = ${cz(sse / (n - k), 2)}.` };
+  } },
+  { id: "anova-f", t: "anova", k: "num", gen() {
+    const k = randInt(3, 5), n = randInt(20, 60), mse = randDec(5, 60, 2), mstr = Number((around(3.0) * mse).toFixed(2));
+    return { q: `Tabulka ANOVA: Between Groups SS = ${cz(mstr * (k - 1), 2)}, df = ${k - 1}; Within Groups SS = ${cz(mse * (n - k), 2)}, df = ${n - k}. Hodnota testového kritéria F:`, a: mstr / mse, dp: 2,
+      e: `MSTR = ${cz(mstr * (k - 1), 2)}/${k - 1} = ${cz(mstr, 2)}, MSE = ${cz(mse * (n - k), 2)}/${n - k} = ${cz(mse, 2)}, F = ${cz(mstr, 2)}/${cz(mse, 2)} = ${cz(mstr / mse, 2)}.` };
+  } },
+  { id: "anova-gm", t: "anova", k: "num", gen() {
+    const k = randInt(3, 4), ns = Array.from({ length: k }, () => randInt(4, 12)), ms = Array.from({ length: k }, () => randDec(40, 70, 1));
+    const n = ns.reduce((a, b) => a + b, 0), gm = ms.reduce((a, m, i) => a + m * ns[i], 0) / n;
+    return { q: `Skupinové průměry ${ms.map((m) => cz(m, 1)).join(", ")} s rozsahy ${ns.join(", ")}. Celkový průměr všech ${n} pozorování:`, a: gm, dp: 2,
+      e: `Celkový průměr je vážený průměr skupinových průměrů: (${ms.map((m, i) => `${cz(m, 1)}·${ns[i]}`).join(" + ")})/${n} = ${cz(gm, 2)}. Prostý průměr průměrů platí jen při stejných rozsazích.` };
+  } },
+  { id: "anova-sstr-means", t: "anova", k: "num", gen() {
+    const ns = [randInt(4, 10), randInt(4, 10), randInt(4, 10)], ms = [randDec(40, 60, 1), randDec(40, 60, 1), randDec(40, 60, 1)];
+    const n = ns[0] + ns[1] + ns[2], gm = (ms[0] * ns[0] + ms[1] * ns[1] + ms[2] * ns[2]) / n, sstr = ns.reduce((a, ni, i) => a + ni * (ms[i] - gm) ** 2, 0);
+    return { q: `Tři skupiny: průměry ${ms.map((m) => cz(m, 1)).join(", ")}, rozsahy ${ns.join(", ")}, celkový průměr ${cz(gm, 3)}. Součet čtverců mezi skupinami SSTR:`, a: sstr, dp: 1,
+      e: `SSTR = Σ n<sub>i</sub>(x̄<sub>i</sub> − x̄)² = ${ns.map((ni, i) => `${ni}·(${cz(ms[i], 1)} − ${cz(gm, 3)})²`).join(" + ")} = ${cz(sstr, 1)}.` };
+  } },
+  { t: "anova", k: "single", q: "Výstup SPSS: F = 0,72, Sig. = 0,492, α = 0,05. Rozhodnutí a závěr:", o: ["H<sub>0</sub> nezamítáme, rozdíl středních hodnot mezi skupinami nebyl prokázán", "H<sub>0</sub> zamítáme, skupiny se liší", "H<sub>0</sub> přijímáme, střední hodnoty jsou shodné", "nelze rozhodnout bez kritické hodnoty"], a: 0,
+    e: "Sig. je hodnota p. 0,492 > 0,05, takže testové kritérium není v kritickém oboru. Hodnota p stačí k rozhodnutí, kritická hodnota není potřeba. „Přijímáme H<sub>0</sub>“ se nepíše." },
+  { t: "anova", k: "single", q: "Výstup SPSS: F = 4,114, Sig. = 0,006, α = 0,05. Závěr:", o: ["H<sub>0</sub> zamítáme, aspoň jedna skupina má jinou střední hodnotu", "H<sub>0</sub> zamítáme, všechny skupiny se navzájem liší", "H<sub>0</sub> nezamítáme, protože F < 5", "H<sub>0</sub> nezamítáme, protože Sig. < α"], a: 0,
+    e: "0,006 < 0,05, H<sub>0</sub> o shodě všech středních hodnot se zamítá. Které dvojice se liší, ukáže až post-hoc test (například Bonferroniho)." },
+  { t: "anova", k: "multi", q: "Předpoklady analýzy rozptylu. (Všechny správné možnosti.)", o: ["nezávislé náhodné výběry ze skupin", "přibližně normální rozdělení znaku v každé skupině", "shodné rozptyly ve všech skupinách", "stejné rozsahy všech skupin", "shodné střední hodnoty skupin"], a: [0, 1, 2],
+    e: "Shoda rozptylů se ověřuje Levenovým testem. Stejné rozsahy nejsou nutné. Shoda středních hodnot je testovaná hypotéza, ne předpoklad." },
+  { t: "anova", k: "single", q: "Tabulka Test of Homogeneity of Variances (Levene Statistic, df1, df2, Sig.) ve výstupu One-Way ANOVA testuje:", o: ["H<sub>0</sub>: σ<sub>1</sub>² = σ<sub>2</sub>² = … = σ<sub>k</sub>², tedy shodu rozptylů skupin", "shodu středních hodnot skupin", "normalitu rozdělení v každé skupině", "nezávislost výběrů"], a: 0,
+    e: "Levenův test kontroluje předpoklad shodných rozptylů. Když Sig. > α, rozptyly lze považovat za shodné a ANOVA je v pořádku. Levenovo F není testové kritérium ANOVY." },
+  { t: "anova", k: "single", q: "Levene Statistic = 0,692, df1 = 2, df2 = 48, Sig. = 0,506, α = 0,05. Co z toho plyne?", o: ["H<sub>0</sub> o shodě rozptylů nezamítáme, předpoklad ANOVY je splněn", "H<sub>0</sub> o shodě rozptylů zamítáme, ANOVA se nesmí použít", "střední hodnoty skupin jsou shodné", "ANOVA zamítá shodu středních hodnot"], a: 0,
+    e: "0,506 > 0,05. Tabulka říká jen to, že rozptyly tří skupin (df1 + 1 = 3) z 51 pozorování (df1 + df2 + 1) se významně neliší. O středních hodnotách rozhoduje tabulka ANOVA." },
+  { t: "anova", k: "single", q: "K čemu slouží post-hoc testy (Bonferroni, Scheffé, Tukey)?", o: ["po zamítnutí H<sub>0</sub> v ANOVĚ zjistit, které dvojice skupin se liší", "ověřit předpoklad normality před ANOVOU", "nahradit ANOVU, když má malé n", "spočítat F z tabulky"], a: 0,
+    e: "ANOVA řekne jen, že se aspoň jedna skupina liší. Post-hoc testy porovnávají dvojice středních hodnot a hlídají přitom celkovou chybu I. druhu." },
+  { t: "anova", k: "single", q: "Hypotézy Bonferroniho testu pro dvojici skupin i a j:", o: ["H<sub>0</sub>: μ<sub>i</sub> = μ<sub>j</sub>, H<sub>1</sub>: μ<sub>i</sub> ≠ μ<sub>j</sub>", "H<sub>0</sub>: μ<sub>1</sub> = … = μ<sub>k</sub>, H<sub>1</sub>: aspoň jedna dvojice se liší", "H<sub>0</sub>: σ<sub>i</sub>² = σ<sub>j</sub>², H<sub>1</sub>: σ<sub>i</sub>² ≠ σ<sub>j</sub>²", "H<sub>0</sub>: π<sub>i</sub> = π<sub>j</sub>, H<sub>1</sub>: π<sub>i</sub> ≠ π<sub>j</sub>"], a: 0,
+    e: "Bonferroniho test je sada dvouvýběrových porovnání středních hodnot, každé na snížené hladině α*. Sdruženou hypotézu testuje ANOVA." },
+  { t: "anova", k: "single", q: "Hladina významnosti pro jedno porovnání v Bonferroniho testu při k skupinách a celkové hladině α:", o: ["α děleno počtem dvojic, tedy α/(k(k − 1)/2) = 2α/(k(k − 1))", "α krát počet dvojic", "α/k", "α/2"], a: 0,
+    e: "Počet dvojic je k(k − 1)/2. Při k = 4 a α = 0,05 je to 0,05/6 = 1/120 ≈ 0,0083, při k = 5 je to 0,05/10 = 1/200 = 0,005." },
+  { id: "bonf-alpha", t: "anova", k: "num", gen() {
+    const k = randInt(3, 6), alpha = pick([0.05, 0.01]), pairs = k * (k - 1) / 2;
+    return { q: `ANOVA s k = ${k} skupinami na hladině α = ${cz(alpha, 2)} zamítla H<sub>0</sub>. Hladina významnosti pro jedno porovnání v Bonferroniho testu:`, a: alpha / pairs, dp: 4,
+      e: `Počet dvojic k(k − 1)/2 = ${k}·${k - 1}/2 = ${pairs}. α* = ${cz(alpha, 2)}/${pairs} = ${cz(alpha / pairs, 4)}.` };
+  } },
+  { t: "anova", k: "single", q: "Testové kritérium Bonferroniho testu pro skupiny i a j:", o: ["t<sub>ij</sub> = |x̄<sub>i</sub> − x̄<sub>j</sub>| / √(MSE/n<sub>i</sub> + MSE/n<sub>j</sub>)", "t<sub>ij</sub> = (x̄<sub>i</sub> − x̄<sub>j</sub>) / √(s<sub>i</sub>²/n<sub>i</sub> + s<sub>j</sub>²/n<sub>j</sub>)", "F<sub>ij</sub> = s<sub>i</sub>²/s<sub>j</sub>²", "t<sub>ij</sub> = (x̄<sub>i</sub> − x̄<sub>j</sub>) / MSE"], a: 0,
+    e: "Místo rozptylů obou skupin se dosazuje společný vnitroskupinový rozptyl MSE z tabulky ANOVA. Stupně volnosti jsou n − k, tedy df řádku Within Groups." },
+  { id: "bonf-t", t: "anova", k: "num", gen() {
+    const ni = randInt(5, 15), nj = randInt(5, 15), mse = randDec(20, 60, 2), xi = randDec(20, 30, 2), xj = randDec(20, 30, 2);
+    const t = Math.abs(xi - xj) / Math.sqrt(mse / ni + mse / nj);
+    return { q: `Bonferroniho test pro skupiny 2 a 4: x̄<sub>2</sub> = ${cz(xi, 2)}, x̄<sub>4</sub> = ${cz(xj, 2)}, n<sub>2</sub> = ${ni}, n<sub>4</sub> = ${nj}, MSE = ${cz(mse, 2)}. Hodnota testového kritéria t<sub>24</sub>:`, a: t, dp: 3,
+      e: `t = |${cz(xi, 2)} − ${cz(xj, 2)}| / √(${cz(mse, 2)}/${ni} + ${cz(mse, 2)}/${nj}) = ${cz(Math.abs(xi - xj), 2)} / ${cz(Math.sqrt(mse / ni + mse / nj), 3)} = ${cz(t, 3)}.` };
+  } },
+  { t: "anova", k: "single", q: "Zadání: „Průměrná výše úvěru se liší podle velikosti obce (malá, střední, velká).“ Vhodný test:", o: ["analýza rozptylu pro jeden faktor", "dvouvýběrový t-test", "χ² test nezávislosti", "test shody tří podílů"], a: 0,
+    e: "Kvantitativní znak (výše úvěru) a tři nezávislé skupiny. Tři t-testy po dvojicích by zvýšily chybu I. druhu. χ² test by vyžadoval kategoriální znak." },
+  { t: "anova", k: "single", q: "Ve výstupu ANOVY je F = 4,114 a Sig. = 0,006; v tabulce Levenova testu je F = 2,334 a Sig. = 0,070. Které F je testové kritérium ANOVY?", o: ["4,114; Levenovo F = 2,334 se týká shody rozptylů", "2,334; je to první tabulka ve výstupu", "obě, stačí jedno", "ani jedno, F je potřeba dopočítat z MS"], a: 0,
+    e: "SPSS ukazuje dvě statistiky F. Testové kritérium ANOVY je podíl MSTR/MSE v tabulce ANOVA. Levenovo F s vlastní Sig. rozhoduje jen o předpokladu shodných rozptylů." },
   // χ² testy dobré shody a nezávislosti
   { t: "chi2", k: "single", q: "Kritický obor χ² testu dobré shody a χ² testu nezávislosti:", o: ["pravostranný: χ² > χ²<sub>1−α;df</sub>", "oboustranný: χ² < χ²<sub>α/2;df</sub> nebo χ² > χ²<sub>1−α/2;df</sub>", "levostranný: χ² < χ²<sub>α;df</sub>", "závisí na tvaru H<sub>1</sub>"], a: 0,
     e: "Malé χ² znamená, že pozorované četnosti jsou blízko teoretickým. Proti H<sub>0</sub> mluví jen velké hodnoty. V Excelu je kritická hodnota CHISQ.INV.RT(α; df)." },
@@ -559,7 +643,7 @@ const BANK = [
       e: `n<sub>11</sub><sup>T</sup> = řádkový součet · sloupcový součet / n = ${n1}·${col}/${n} = ${cz(e, 2)}.` };
   } },
   { t: "chi2", k: "single", q: "Hlavní předpoklad χ² testu dobré shody a testu nezávislosti:", o: ["všechny teoretické četnosti jsou alespoň 5", "všechny pozorované četnosti jsou alespoň 5", "proměnná má normální rozdělení", "n ≥ 30"], a: 0,
-    e: "Rozdělení χ² platí pro testové kritérium jen přibližně a při malých teoretických četnostech přestává sedět. Malé kategorie se sloučí se sousedními." },
+    e: "Rozdělení χ² platí pro testové kritérium jen přibližně a při malých teoretických četnostech přestává sedět. Malé kategorie se sloučí se sousedními. Zadání písemek připouštějí mírnější verzi: nejvýše 20 % teoretických četností pod 5 a žádná pod 1." },
   { t: "chi2", k: "multi", q: "Kdy se χ² test dobré shody nedá použít bez úpravy? (Všechny správné možnosti.)", o: ["některá teoretická četnost je menší než 5", "data jsou zadaná v procentech místo počtů", "proměnná má jen dvě kategorie", "výběr má víc než 1000 jednotek"], a: [0, 1],
     e: "Kritérium se počítá z počtů. Z procent vyjde jiné číslo, protože χ² roste s n. Dvě kategorie nevadí, test je pak rovnocenný limitnímu testu o podílu." },
   { t: "chi2", k: "single", q: "Ve výběru 120 lidí se zjistilo, kolik je malé, střední a velké postavy. Ověřuje se, zda jsou všechny velikosti zastoupené stejně. Vhodný test:", o: ["χ² test dobré shody", "χ² test nezávislosti", "χ² test rozptylu", "limitní test o podílu"], a: 0,
@@ -604,6 +688,33 @@ const BANK = [
     return { q: `Tabulka 2 × 2 (pohlaví × odpověď ano/ne). Limitní test shody podílů dal u = ${cz(u, 3)}. Hodnota χ² testu nezávislosti pro stejná data:`, a: chi, dp: 3,
       e: `U tabulky 2 × 2 platí χ² = u² = ${cz(Math.abs(u), 3)}² = ${cz(chi, 4)}. Oba testy vedou ke stejnému rozhodnutí, protože χ²<sub>0,95;1</sub> = 3,841 = 1,96². ${decide(chi, c, "χ²", "χ²<sub>0,95;1</sub>")}` };
   } },
+  // χ² test nezávislosti: čtení výstupu SPSS a zadání písemek
+  { t: "chi2", k: "single", q: "Ve výstupu SPSS Chi-Square Tests je hodnota p testu nezávislosti:", o: ["Asymp. Sig. (2-sided) v řádku Pearson Chi-Square", "Value v řádku Pearson Chi-Square", "df", "N of Valid Cases"], a: 0,
+    e: "Value je testové kritérium χ², df jsou jeho stupně volnosti (r − 1)(c − 1). Řádky Likelihood Ratio a Continuity Correction jsou jiné varianty testu, na písemce se čte Pearson." },
+  { t: "chi2", k: "single", q: "Poznámka pod tabulkou: „0 cells (0,0 %) have expected count less than 5. The minimum expected count is 40,29.“ Co říká o předpokladech testu nezávislosti?", o: ["předpoklady jsou splněny, žádná teoretická četnost není pod 5", "předpoklady jsou porušeny, protože 40,29 není celé číslo", "o předpokladech neříká nic, týká se pozorovaných četností", "test nelze použít, protože 0 polí má četnost 5"], a: 0,
+    e: "Poznámka počítá pole s teoretickou (expected) četností pod 5. Nejvýše 20 % polí smí být pod 5 a žádné pod 1. Zde to splňuje každé pole, nejmenší je 40,29." },
+  { t: "chi2", k: "single", q: "Poznámka pod tabulkou: „5 cells (55,6 %) have expected count less than 5. The minimum expected count is 0,41.“ Správný postup:", o: ["předpoklad je porušen, řídké kategorie (řádky nebo sloupce) sloučit a test přepočítat", "předpoklad je splněn, protože Sig. = 0,000", "vynechat pole s malými četnostmi a zbytek ponechat", "použít místo toho t-test"], a: 0,
+    e: "Víc než 20 % polí má teoretickou četnost pod 5 a jedno pole je pod 1. Sloučením sousedních kategorií (například „týdně“ s „čtvrtletně“) se teoretické četnosti zvětší. Pole se nevynechávají, protože by přestaly platit součty." },
+  { t: "chi2", k: "single", q: "Test nezávislosti pohlaví a důvodu studia: χ² = 4,939, df = 3, Asymp. Sig. = 0,176, α = 0,05. Závěr:", o: ["H<sub>0</sub> nezamítáme, souvislost mezi pohlavím a důvodem nebyla prokázána", "H<sub>0</sub> nezamítáme, takže muži a ženy mají různé důvody", "H<sub>0</sub> zamítáme, protože χ² > df", "H<sub>0</sub> zamítáme, souvislost je prokázána"], a: 0,
+    e: "0,176 > 0,05. Nezamítnutí nezávislosti znamená, že rozdíly v tabulce lze vysvětlit náhodou. Závěr „jsou rozdíly“ by platil jen při zamítnutí H<sub>0</sub>." },
+  { t: "chi2", k: "single", q: "Předpoklad testu nezávislosti tak, jak ho uvádějí zadání písemek:", o: ["nejvýše 20 % teoretických četností smí být menších než 5 a žádná nesmí být menší než 1", "všechny pozorované četnosti musí být alespoň 5", "tabulka musí mít stejný počet řádků a sloupců", "n musí být alespoň 100"], a: 0,
+    e: "Přísnější učebnicová verze žádá všechny teoretické četnosti alespoň 5. Obě verze se týkají teoretických, ne pozorovaných četností. Při porušení se kategorie slučují." },
+  { id: "chi2-prispevek", t: "chi2", k: "num", gen() {
+    const e = randDec(20, 80, 2), o = Math.round(e + sign() * randInt(2, 12));
+    return { q: `Pole kontingenční tabulky má pozorovanou četnost ${o} a teoretickou četnost ${cz(e, 2)}. Příspěvek tohoto pole k testovému kritériu χ²:`, a: (o - e) ** 2 / e, dp: 3,
+      e: `(n − n<sup>T</sup>)²/n<sup>T</sup> = (${o} − ${cz(e, 2)})²/${cz(e, 2)} = ${cz((o - e) ** 2, 3)}/${cz(e, 2)} = ${cz((o - e) ** 2 / e, 3)}. Testové kritérium je součet příspěvků všech polí.` };
+  } },
+  { t: "chi2", k: "single", q: "Tvrzení „podíl chlapců s mimoškolní aktivitou je vyšší než u dívek“ se ověřuje tabulkou 2 × 2; SPSS dává Asymp. Sig. (2-sided) = 0,047 a podíl chlapců je v datech vyšší. Hodnota p pro toto jednostranné tvrzení:", o: ["0,047/2 = 0,0235", "0,047", "2 · 0,047 = 0,094", "1 − 0,047 = 0,953"], a: 0,
+    e: "Tabulka 2 × 2 odpovídá testu shody dvou podílů. Oboustranná Sig. se pro jednostrannou alternativu půlí, pokud výběrové podíly míří ve směru H<sub>1</sub>. Při α = 0,05 se H<sub>0</sub> zamítá." },
+  // Doplnění podle zadání písemek: volba testu a rozhodnutí
+  { t: "volba", k: "single", q: "Zadání: „Proces učení závisí na věku.“ Dvě nezávislé skupiny osob (30 až 40 let, 60 až 70 let), měří se čas, za který se naučí odstavec textu. Vhodný test a parametr:", o: ["dvouvýběrový t-test o středních hodnotách μ<sub>1</sub> = μ<sub>2</sub> (po F-testu shody rozptylů)", "test shody dvou podílů π<sub>1</sub> = π<sub>2</sub>", "párový t-test", "χ² test nezávislosti"], a: 0,
+    e: "Čas je kvantitativní znak, takže hypotézy jsou o středních hodnotách, ne o podílech. Skupiny jsou různé osoby, tedy nezávislé výběry." },
+  { t: "rozhodnuti", k: "single", q: "Jednostranný test shody dvou podílů na hladině 5 %. Zadané kvantily: t<sub>0,95;452</sub> = 1,648, t<sub>0,975;452</sub> = 1,965, u<sub>0,95</sub> = 1,645, u<sub>0,975</sub> = 1,960. Správná kritická hodnota:", o: ["u<sub>0,95</sub> = 1,645", "u<sub>0,975</sub> = 1,960", "t<sub>0,95;452</sub> = 1,648", "t<sub>0,975;452</sub> = 1,965"], a: 0,
+    e: "Testové kritérium U má při platnosti H<sub>0</sub> rozdělení N(0, 1), takže se čte kvantil u. Jednostranná alternativa při α = 0,05 potřebuje u<sub>0,95</sub>. Kvantily t jsou v zadání jako past, při velkých df se od u téměř neliší." },
+  { t: "rozhodnuti", k: "single", q: "Tvrzení: „Pražští klienti volí letecké zájezdy častěji než mimopražští“ (H<sub>1</sub>: π<sub>1</sub> > π<sub>2</sub>). Výběrové podíly p<sub>1</sub> = 0,60 a p<sub>2</sub> = 0,72, U = −1,86, u<sub>0,90</sub> = 1,28. Rozhodnutí:", o: ["H<sub>0</sub> nezamítáme, výběrový rozdíl míří proti H<sub>1</sub> a U není v pravostranném kritickém oboru", "H<sub>0</sub> zamítáme, protože |U| = 1,86 > 1,28", "H<sub>0</sub> zamítáme, protože p<sub>2</sub> > p<sub>1</sub>", "nelze rozhodnout bez hodnoty p"], a: 0,
+    e: "Pravostranný kritický obor je U > 1,28. Záporné U do něj nepadne. Absolutní hodnota se používá jen u oboustranné alternativy. Data tvrzení nepodporují, mimopražští volili letecké zájezdy častěji." },
+  { t: "rozhodnuti", k: "single", q: "Independent Samples Test: Levene Sig. = 0,002; řádek „Equal variances not assumed“ t = −2,075, Sig. (2-tailed) = 0,048. H<sub>1</sub> je jednostranná a výběrový rozdíl míří jejím směrem, α = 0,05. Hodnota p a rozhodnutí:", o: ["p = 0,024, H<sub>0</sub> zamítáme", "p = 0,048, H<sub>0</sub> zamítáme", "p = 0,025, H<sub>0</sub> zamítáme podle prvního řádku", "p = 0,096, H<sub>0</sub> nezamítáme"], a: 0,
+    e: "Levene Sig. 0,002 < 0,05, čte se druhý řádek. Oboustranná Sig. 0,048 se pro jednostrannou alternativu půlí na 0,024 < 0,05." },
 ];
 
 // Losování čísel pro šablony číselných otázek.
