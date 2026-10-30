@@ -168,8 +168,9 @@ const TOPICS = {
 };
 
 // Otázka: t okruh, k druh (single = jedna správná, multi = všechny správné, num = číslo),
-// q text, o možnosti, a správná odpověď (index, pole indexů, nebo číslo), tol tolerance,
-// e vysvětlení, fixed = možnosti se nemíchají.
+// q text, o možnosti, a správná odpověď (index nebo pole indexů), e vysvětlení, fixed = možnosti se nemíchají.
+// Otázka druhu num je šablona. Pole id je stálý klíč historie zadání a gen() při každém zobrazení vylosuje čísla
+// a vrátí q, a (číslo), dp (počet desetinných míst v odpovědi, 0 = přesné celé číslo) a e.
 const BANK = [
   // Základní pojmy
   { t: "pojmy", k: "single", q: "Nulová hypotéza H<sub>0</sub> vždy obsahuje relaci:", o: ["=", ">", "≠", "<"], a: 0,
@@ -286,56 +287,167 @@ const BANK = [
     e: "Limitní test shody podílů vyžaduje n<sub>i</sub>·p<sub>i</sub> ≥ 5 a n<sub>i</sub>·(1 − p<sub>i</sub>) ≥ 5 v obou výběrech." },
 
   // Výpočet
-  { t: "vypocet", k: "num", q: "Call-centrum: μ<sub>0</sub> = 540 s, n = 16, x̄ = 510 s, s = 45 s. Hodnota testového kritéria t jednovýběrového t-testu:", a: -2.667, tol: 0.02, hint: "na 2 desetinná místa",
-    e: "t = (x̄ − μ<sub>0</sub>)/(s/√n) = (510 − 540)/(45/4) = −30/11,25 = −2,667. Stupně volnosti df = 15." },
-  { t: "vypocet", k: "num", q: "Kurz: π<sub>0</sub> = 0,7, n = 100, m = 63. Hodnota testového kritéria u limitního testu o podílu:", a: -1.528, tol: 0.02, hint: "na 2 desetinná místa",
-    e: "p = 0,63. u = (p − π<sub>0</sub>)/√(π<sub>0</sub>(1 − π<sub>0</sub>)/n) = −0,07/√(0,21/100) = −0,07/0,04583 = −1,528." },
-  { t: "vypocet", k: "num", q: "Cartridge: s<sub>1</sub> = 48,3 (n<sub>1</sub> = 10), s<sub>2</sub> = 53,3 (n<sub>2</sub> = 8). Hodnota testového kritéria F (větší rozptyl v čitateli):", a: 1.218, tol: 0.01, hint: "na 2 desetinná místa",
-    e: "Zadány jsou směrodatné odchylky, takže se umocní: F = 53,3²/48,3² = 2840,89/2332,89 = 1,218. Stupně volnosti (7, 9): čitatel patří výběru 2." },
-  { t: "vypocet", k: "num", q: "Cartridge: n<sub>1</sub> = 10, s<sub>1</sub> = 48,3, n<sub>2</sub> = 8, s<sub>2</sub> = 53,3. Společný odhad rozptylu s² pro t-test se shodnými rozptyly:", a: 2555.14, tol: 1, hint: "na celé číslo",
-    e: "s² = [(n<sub>1</sub> − 1)s<sub>1</sub>² + (n<sub>2</sub> − 1)s<sub>2</sub>²]/(n<sub>1</sub> + n<sub>2</sub> − 2) = (9·2332,89 + 7·2840,89)/16 = 2555,14." },
-  { t: "vypocet", k: "num", q: "Cartridge: x̄<sub>1</sub> = 322,5, x̄<sub>2</sub> = 298,3, s² = 2555,14, n<sub>1</sub> = 10, n<sub>2</sub> = 8. Hodnota t nepárového t-testu se shodnými rozptyly:", a: 1.009, tol: 0.02, hint: "na 2 desetinná místa",
-    e: "s = √2555,14 = 50,55. t = (322,5 − 298,3)/(50,55·√(1/10 + 1/8)) = 24,2/(50,55·0,4743) = 24,2/23,98 = 1,009. df = 16." },
-  { t: "vypocet", k: "num", q: "Krevní tlak: průměr rozdílů d̄ = 4,133, s<sub>d</sub> = 5,436, n = 15, Δ<sub>0</sub> = 0. Hodnota t párového t-testu:", a: 2.945, tol: 0.02, hint: "na 2 desetinná místa",
-    e: "t = (d̄ − Δ<sub>0</sub>)/(s<sub>d</sub>/√n) = 4,133/(5,436/3,873) = 4,133/1,4036 = 2,945. df = 14." },
-  { t: "vypocet", k: "num", q: "Pizza: m<sub>1</sub> = 81, n<sub>1</sub> = 280, m<sub>2</sub> = 74, n<sub>2</sub> = 280. Společný odhad podílu p̄:", a: 0.2768, tol: 0.002, hint: "na 3 desetinná místa",
-    e: "p̄ = (m<sub>1</sub> + m<sub>2</sub>)/(n<sub>1</sub> + n<sub>2</sub>) = 155/560 = 0,277." },
-  { t: "vypocet", k: "num", q: "Pizza: p<sub>1</sub> = 0,289, p<sub>2</sub> = 0,264, p̄ = 0,277, n<sub>1</sub> = n<sub>2</sub> = 280. Hodnota testového kritéria u testu shody podílů:", a: 0.661, tol: 0.02, hint: "na 2 desetinná místa",
-    e: "u = (p<sub>1</sub> − p<sub>2</sub>)/√(p̄(1 − p̄)(1/n<sub>1</sub> + 1/n<sub>2</sub>)) = 0,025/√(0,277·0,723·0,007143) = 0,025/0,03783 = 0,661." },
-  { t: "vypocet", k: "num", q: "Platy: s<sub>1</sub> = 3519, n<sub>1</sub> = 110, s<sub>2</sub> = 4495, n<sub>2</sub> = 124. Stupně volnosti Welchova t-testu zaokrouhlené dolů na celé číslo:", a: 228, tol: 0.5, hint: "celé číslo",
-    e: "a = s<sub>1</sub>²/n<sub>1</sub> = 112 578, b = s<sub>2</sub>²/n<sub>2</sub> = 162 943. df = (a + b)²/(a²/109 + b²/123) = 228,6 → 228." },
-  { t: "vypocet", k: "num", q: "Koření: s = 3,9, n = 50. Směrodatná chyba průměru s/√n:", a: 0.5515, tol: 0.003, hint: "na 3 desetinná místa",
-    e: "√50 = 7,0711, 3,9/7,0711 = 0,5515. Je to jmenovatel testového kritéria t." },
-  { t: "vypocet", k: "num", q: "Stroj má mít směrodatnou odchylku σ<sub>0</sub> = 2,0 mm. Ve výběru n = 10 je s = 2,9 mm. Hodnota testového kritéria χ²:", a: 18.92, tol: 0.05, hint: "na 2 desetinná místa",
-    e: "χ² = (n − 1)s²/σ<sub>0</sub>² = 9·8,41/4 = 18,92. Zadané σ<sub>0</sub> se umocní na rozptyl 4. df = 9." },
-  { t: "vypocet", k: "num", q: "Z hodnot 12, 15, 18 se počítá výběrová směrodatná odchylka s (dělí se n − 1). Výsledek:", a: 3, tol: 0.01, hint: "na 2 desetinná místa",
-    e: "Σx = 45, Σx² = 693, x̄ = 15. s² = (Σx² − n·x̄²)/(n − 1) = (693 − 675)/2 = 9, s = 3." },
-  { t: "vypocet", k: "num", q: "μ<sub>0</sub> = 100, σ = 15 (známé), n = 36, x̄ = 104. Hodnota testového kritéria u-testu:", a: 1.6, tol: 0.01, hint: "na 2 desetinná místa",
-    e: "u = (x̄ − μ<sub>0</sub>)/(σ/√n) = 4/(15/6) = 4/2,5 = 1,6." },
-  { t: "vypocet", k: "num", q: "Nepárový t-test se shodnými rozptyly, n<sub>1</sub> = 10, n<sub>2</sub> = 8. Počet stupňů volnosti:", a: 16, tol: 0.5, hint: "celé číslo",
-    e: "df = n<sub>1</sub> + n<sub>2</sub> − 2 = 16." },
-  { t: "vypocet", k: "num", q: "Věkové skupiny: 54 z 231 a 49 ze 173 osob uvedlo zhoršení. Společný odhad podílu p̄:", a: 0.255, tol: 0.002, hint: "na 3 desetinná místa",
-    e: "p̄ = (54 + 49)/(231 + 173) = 103/404 = 0,255." },
+  { id: "call-t", t: "vypocet", k: "num", gen() {
+    const n = randInt(9, 30), s = randInt(20, 80), mu0 = randInt(300, 700), df = n - 1, c = tQ(0.975, df);
+    const se = s / Math.sqrt(n), xbar = Math.round(mu0 + sign() * around(c) * se), t = (xbar - mu0) / se;
+    return { q: `Call-centrum: μ<sub>0</sub> = ${mu0} s, n = ${n}, x̄ = ${xbar} s, s = ${s} s. Hodnota testového kritéria t jednovýběrového t-testu:`, a: t, dp: 2,
+      e: `t = (x̄ − μ<sub>0</sub>)/(s/√n) = (${xbar} − ${mu0})/(${s}/√${n}) = ${cz(xbar - mu0, 0)}/${cz(se, 4)} = ${cz(t, 3)}. Stupně volnosti df = ${df}. ${decide(Math.abs(t), c, "|t|", `t<sub>0,975;${df}</sub>`, "oboustranné alternativě a ")}` };
+  } },
+  { id: "kurz-u", t: "vypocet", k: "num", gen() {
+    const pi0 = pick([0.3, 0.4, 0.5, 0.6, 0.7, 0.8]), n = 10 * randInt(10, 40);
+    const se = Math.sqrt(pi0 * (1 - pi0) / n), m = Math.round(n * (pi0 + sign() * around(1.96) * se)), p = m / n, u = (p - pi0) / se;
+    return { q: `Kurz: π<sub>0</sub> = ${cz(pi0, 1)}, n = ${n}, m = ${m}. Hodnota testového kritéria u limitního testu o podílu:`, a: u, dp: 2,
+      e: `p = ${cz(p, 4)}. u = (p − π<sub>0</sub>)/√(π<sub>0</sub>(1 − π<sub>0</sub>)/n) = ${cz(p - pi0, 4)}/√(${cz(pi0 * (1 - pi0), 2)}/${n}) = ${cz(p - pi0, 4)}/${cz(se, 5)} = ${cz(u, 3)}. ${decide(Math.abs(u), 1.96, "|u|", "u<sub>0,975</sub>", "oboustranné alternativě a ")}` };
+  } },
+  { id: "cartridge-f", t: "vypocet", k: "num", gen() {
+    const n = [randInt(8, 16), randInt(8, 16)], big = randInt(0, 1), small = 1 - big;
+    const d1 = n[big] - 1, d2 = n[small] - 1, c = fQ(0.975, d1, d2);
+    const s = [];
+    s[small] = randDec(30, 70, 1);
+    s[big] = Number((s[small] * Math.sqrt(around(c))).toFixed(1));
+    const F = s[big] ** 2 / s[small] ** 2;
+    return { q: `Cartridge: s<sub>1</sub> = ${cz(s[0], 1)} (n<sub>1</sub> = ${n[0]}), s<sub>2</sub> = ${cz(s[1], 1)} (n<sub>2</sub> = ${n[1]}). Hodnota testového kritéria F (větší rozptyl v čitateli):`, a: F, dp: 2,
+      e: `Zadány jsou směrodatné odchylky, takže se umocní: F = ${cz(s[big], 1)}²/${cz(s[small], 1)}² = ${cz(s[big] ** 2, 2)}/${cz(s[small] ** 2, 2)} = ${cz(F, 3)}. Stupně volnosti (${d1}, ${d2}): čitatel patří výběru ${big + 1}. ${decide(F, c, "F", `F<sub>0,975;${d1};${d2}</sub>`, "oboustranné alternativě a ")}` };
+  } },
+  { id: "cartridge-s2", t: "vypocet", k: "num", gen() {
+    const n1 = randInt(8, 20), n2 = randInt(8, 20), s1 = randDec(30, 70, 1), s2 = randDec(30, 70, 1), df = n1 + n2 - 2;
+    const sp2 = ((n1 - 1) * s1 ** 2 + (n2 - 1) * s2 ** 2) / df;
+    return { q: `Cartridge: n<sub>1</sub> = ${n1}, s<sub>1</sub> = ${cz(s1, 1)}, n<sub>2</sub> = ${n2}, s<sub>2</sub> = ${cz(s2, 1)}. Společný odhad rozptylu s² pro t-test se shodnými rozptyly:`, a: sp2, dp: 1,
+      e: `s² = [(n<sub>1</sub> − 1)s<sub>1</sub>² + (n<sub>2</sub> − 1)s<sub>2</sub>²]/(n<sub>1</sub> + n<sub>2</sub> − 2) = (${n1 - 1}·${cz(s1 ** 2, 2)} + ${n2 - 1}·${cz(s2 ** 2, 2)})/${df} = ${cz(sp2, 2)}.` };
+  } },
+  { id: "cartridge-t", t: "vypocet", k: "num", gen() {
+    const n1 = randInt(8, 20), n2 = randInt(8, 20), df = n1 + n2 - 2, c = tQ(0.975, df);
+    const s2 = randDec(400, 4900, 2), s = Math.sqrt(s2), k = Math.sqrt(1 / n1 + 1 / n2);
+    const x2 = randDec(200, 400, 1), x1 = Number((x2 + sign() * around(c) * s * k).toFixed(1)), t = (x1 - x2) / (s * k);
+    return { q: `Cartridge: x̄<sub>1</sub> = ${cz(x1, 1)}, x̄<sub>2</sub> = ${cz(x2, 1)}, s² = ${cz(s2, 2)}, n<sub>1</sub> = ${n1}, n<sub>2</sub> = ${n2}. Hodnota t nepárového t-testu se shodnými rozptyly:`, a: t, dp: 2,
+      e: `s = √${cz(s2, 2)} = ${cz(s, 2)}. t = (${cz(x1, 1)} − ${cz(x2, 1)})/(${cz(s, 2)}·√(1/${n1} + 1/${n2})) = ${cz(x1 - x2, 1)}/(${cz(s, 2)}·${cz(k, 4)}) = ${cz(x1 - x2, 1)}/${cz(s * k, 2)} = ${cz(t, 3)}. df = ${df}. ${decide(Math.abs(t), c, "|t|", `t<sub>0,975;${df}</sub>`, "oboustranné alternativě a ")}` };
+  } },
+  { id: "tlak-par", t: "vypocet", k: "num", gen() {
+    const n = randInt(8, 25), df = n - 1, c = tQ(0.975, df), sd = randDec(2, 12, 2), se = sd / Math.sqrt(n);
+    const d = Number((sign() * around(c) * se).toFixed(2)), t = d / se;
+    return { q: `Krevní tlak: průměr rozdílů d̄ = ${cz(d, 2)}, s<sub>d</sub> = ${cz(sd, 2)}, n = ${n}, Δ<sub>0</sub> = 0. Hodnota t párového t-testu:`, a: t, dp: 2,
+      e: `t = (d̄ − Δ<sub>0</sub>)/(s<sub>d</sub>/√n) = ${cz(d, 2)}/(${cz(sd, 2)}/${cz(Math.sqrt(n), 3)}) = ${cz(d, 2)}/${cz(se, 4)} = ${cz(t, 3)}. df = ${df}. ${decide(Math.abs(t), c, "|t|", `t<sub>0,975;${df}</sub>`, "oboustranné alternativě a ")}` };
+  } },
+  { id: "pizza-p", t: "vypocet", k: "num", gen() {
+    const n = randInt(150, 400), m1 = randInt(Math.round(0.15 * n), Math.round(0.45 * n)), m2 = randInt(Math.round(0.15 * n), Math.round(0.45 * n));
+    const pb = (m1 + m2) / (2 * n);
+    return { q: `Pizza: m<sub>1</sub> = ${m1}, n<sub>1</sub> = ${n}, m<sub>2</sub> = ${m2}, n<sub>2</sub> = ${n}. Společný odhad podílu p̄:`, a: pb, dp: 3,
+      e: `p̄ = (m<sub>1</sub> + m<sub>2</sub>)/(n<sub>1</sub> + n<sub>2</sub>) = ${m1 + m2}/${2 * n} = ${cz(pb, 4)}.` };
+  } },
+  { id: "pizza-u", t: "vypocet", k: "num", gen() {
+    const n = randInt(150, 400), p0 = randDec(0.15, 0.45, 2), diff = sign() * around(1.96) * Math.sqrt(p0 * (1 - p0) * 2 / n);
+    const m1 = Math.round(n * (p0 + diff / 2)), m2 = Math.round(n * (p0 - diff / 2));
+    const p1 = Number((m1 / n).toFixed(3)), p2 = Number((m2 / n).toFixed(3)), pb = Number(((m1 + m2) / (2 * n)).toFixed(3));
+    const se = Math.sqrt(pb * (1 - pb) * 2 / n), u = (p1 - p2) / se;
+    return { q: `Pizza: p<sub>1</sub> = ${cz(p1, 3)}, p<sub>2</sub> = ${cz(p2, 3)}, p̄ = ${cz(pb, 3)}, n<sub>1</sub> = n<sub>2</sub> = ${n}. Hodnota testového kritéria u testu shody podílů:`, a: u, dp: 2,
+      e: `u = (p<sub>1</sub> − p<sub>2</sub>)/√(p̄(1 − p̄)(1/n<sub>1</sub> + 1/n<sub>2</sub>)) = ${cz(p1 - p2, 3)}/√(${cz(pb, 3)}·${cz(1 - pb, 3)}·${cz(2 / n, 6)}) = ${cz(p1 - p2, 3)}/${cz(se, 5)} = ${cz(u, 3)}. ${decide(Math.abs(u), 1.96, "|u|", "u<sub>0,975</sub>", "oboustranné alternativě a ")}` };
+  } },
+  { id: "platy-welch-df", t: "vypocet", k: "num", gen() {
+    let n1, n2, s1, s2, a, b, df;
+    do {
+      n1 = randInt(10, 130); n2 = randInt(10, 130); s1 = randInt(1500, 6000); s2 = randInt(1500, 6000);
+      a = s1 ** 2 / n1; b = s2 ** 2 / n2;
+      df = (a + b) ** 2 / (a ** 2 / (n1 - 1) + b ** 2 / (n2 - 1));
+    } while (df % 1 < 0.05 || df % 1 > 0.95);
+    return { q: `Platy: s<sub>1</sub> = ${s1}, n<sub>1</sub> = ${n1}, s<sub>2</sub> = ${s2}, n<sub>2</sub> = ${n2}. Stupně volnosti Welchova t-testu zaokrouhlené dolů na celé číslo:`, a: Math.floor(df), dp: 0,
+      e: `a = s<sub>1</sub>²/n<sub>1</sub> = ${cz(a, 1)}, b = s<sub>2</sub>²/n<sub>2</sub> = ${cz(b, 1)}. df = (a + b)²/(a²/${n1 - 1} + b²/${n2 - 1}) = ${cz(df, 2)} → ${Math.floor(df)}.` };
+  } },
+  { id: "koreni-se", t: "vypocet", k: "num", gen() {
+    const s = randDec(1, 9.9, 1), n = randInt(10, 120), se = s / Math.sqrt(n);
+    return { q: `Koření: s = ${cz(s, 1)}, n = ${n}. Směrodatná chyba průměru s/√n:`, a: se, dp: 3,
+      e: `√${n} = ${cz(Math.sqrt(n), 4)}, ${cz(s, 1)}/${cz(Math.sqrt(n), 4)} = ${cz(se, 4)}. Je to jmenovatel testového kritéria t.` };
+  } },
+  { id: "stroj-chi2", t: "vypocet", k: "num", gen() {
+    const n = randInt(8, 30), df = n - 1, c = chiQ(0.95, df), sigma0 = randDec(1, 5, 1);
+    const s = Number((sigma0 * Math.sqrt(around(c) / df)).toFixed(1)), chi = df * s ** 2 / sigma0 ** 2;
+    return { q: `Stroj má mít směrodatnou odchylku σ<sub>0</sub> = ${cz(sigma0, 1)} mm. Ve výběru n = ${n} je s = ${cz(s, 1)} mm. Hodnota testového kritéria χ²:`, a: chi, dp: 2,
+      e: `χ² = (n − 1)s²/σ<sub>0</sub>² = ${df}·${cz(s ** 2, 2)}/${cz(sigma0 ** 2, 2)} = ${cz(chi, 3)}. Zadané σ<sub>0</sub> se umocní na rozptyl ${cz(sigma0 ** 2, 2)}. df = ${df}. ${decide(chi, c, "χ²", `χ²<sub>0,95;${df}</sub>`, "alternativě σ > σ<sub>0</sub> a ")}` };
+  } },
+  { id: "hodnoty-s", t: "vypocet", k: "num", gen() {
+    const n = randInt(3, 5), mean = randInt(10, 40);
+    let dev;
+    do {
+      dev = Array.from({ length: n - 1 }, () => randInt(-9, 9));
+      dev.push(-dev.reduce((x, y) => x + y));
+    } while (Math.abs(dev[n - 1]) > 9 || dev.every((d) => d === 0));
+    const xs = dev.map((d) => mean + d), sxx = xs.reduce((x, y) => x + y * y, 0);
+    const s2 = dev.reduce((x, d) => x + d * d, 0) / (n - 1), s = Math.sqrt(s2);
+    return { q: `Z hodnot ${xs.join(", ")} se počítá výběrová směrodatná odchylka s (dělí se n − 1). Výsledek:`, a: s, dp: 2,
+      e: `Σx = ${n * mean}, Σx² = ${sxx}, x̄ = ${mean}. s² = (Σx² − n·x̄²)/(n − 1) = (${sxx} − ${n * mean * mean})/${n - 1} = ${cz(s2, 4)}, s = ${cz(s, 4)}.` };
+  } },
+  { id: "u-oboustranny", t: "vypocet", k: "num", gen() {
+    const n = pick([16, 25, 36, 49, 64, 81, 100]), sigma = randInt(4, 30), mu0 = randInt(20, 500), se = sigma / Math.sqrt(n);
+    const xbar = Number((mu0 + sign() * around(1.96) * se).toFixed(1)), u = (xbar - mu0) / se;
+    return { q: `μ<sub>0</sub> = ${mu0}, σ = ${sigma} (známé), n = ${n}, x̄ = ${cz(xbar, 1)}. Hodnota testového kritéria u-testu:`, a: u, dp: 2,
+      e: `u = (x̄ − μ<sub>0</sub>)/(σ/√n) = ${cz(xbar - mu0, 1)}/(${sigma}/${Math.sqrt(n)}) = ${cz(xbar - mu0, 1)}/${cz(se, 4)} = ${cz(u, 3)}. ${decide(Math.abs(u), 1.96, "|u|", "u<sub>0,975</sub>", "oboustranné alternativě a ")}` };
+  } },
+  { id: "df-nepar", t: "vypocet", k: "num", gen() {
+    const n1 = randInt(5, 40), n2 = randInt(5, 40);
+    return { q: `Nepárový t-test se shodnými rozptyly, n<sub>1</sub> = ${n1}, n<sub>2</sub> = ${n2}. Počet stupňů volnosti:`, a: n1 + n2 - 2, dp: 0,
+      e: `df = n<sub>1</sub> + n<sub>2</sub> − 2 = ${n1} + ${n2} − 2 = ${n1 + n2 - 2}.` };
+  } },
+  { id: "vek-p", t: "vypocet", k: "num", gen() {
+    const n1 = randInt(120, 300), n2 = randInt(120, 300), m1 = randInt(Math.round(0.1 * n1), Math.round(0.4 * n1)), m2 = randInt(Math.round(0.1 * n2), Math.round(0.4 * n2));
+    const pb = (m1 + m2) / (n1 + n2);
+    return { q: `Věkové skupiny: zhoršení uvedlo m<sub>1</sub> = ${m1} z n<sub>1</sub> = ${n1} a m<sub>2</sub> = ${m2} z n<sub>2</sub> = ${n2} osob. Společný odhad podílu p̄:`, a: pb, dp: 3,
+      e: `p̄ = (${m1} + ${m2})/(${n1} + ${n2}) = ${m1 + m2}/${n1 + n2} = ${cz(pb, 4)}.` };
+  } },
   { t: "vypocet", k: "single", q: "F-test s výběry n<sub>1</sub> = 13 (větší rozptyl) a n<sub>2</sub> = 15. Stupně volnosti F rozdělení (čitatel, jmenovatel):", o: ["(12, 14)", "(13, 15)", "(14, 12)", "(26, 1)"], a: 0,
     e: "df čitatele = n<sub>1</sub> − 1 = 12 patří k rozptylu v čitateli, df jmenovatele = n<sub>2</sub> − 1 = 14." },
-  { t: "vypocet", k: "num", q: "Ve vzorku 500 nákupů zakoupilo výrobek firmy 298 zákazníků. Relativní četnost p:", a: 0.596, tol: 0.001, hint: "na 3 desetinná místa",
-    e: "p = m/n = 298/500 = 0,596. Odhaduje neznámé π." },
-  { t: "vypocet", k: "num", q: "μ<sub>0</sub> = 250, n = 25, x̄ = 243, s = 20. Hodnota t jednovýběrového t-testu:", a: -1.75, tol: 0.01, hint: "na 2 desetinná místa",
-    e: "t = (243 − 250)/(20/√25) = −7/4 = −1,75. df = 24." },
-  { t: "vypocet", k: "num", q: "Ve městě A podpořilo projekt 45 ze 150 dotázaných, ve městě B 30 ze 150. Hodnota testového kritéria u testu shody podílů:", a: 2.0, tol: 0.02, hint: "na 2 desetinná místa",
-    e: "p<sub>1</sub> = 0,30, p<sub>2</sub> = 0,20, p̄ = 75/300 = 0,25. u = 0,10/√(0,25·0,75·(2/150)) = 0,10/0,05 = 2,0." },
-  { t: "vypocet", k: "num", q: "μ<sub>0</sub> = 50, σ = 8 (známé), n = 64, x̄ = 52,4. Hodnota testového kritéria u-testu:", a: 2.4, tol: 0.01, hint: "na 2 desetinná místa",
-    e: "u = (52,4 − 50)/(8/√64) = 2,4/1 = 2,4." },
-  { t: "vypocet", k: "num", q: "Výběr n = 16 má s² = 9, norma je σ<sub>0</sub>² = 4. Hodnota testového kritéria χ²:", a: 33.75, tol: 0.05, hint: "na 2 desetinná místa",
-    e: "χ² = (n − 1)s²/σ<sub>0</sub>² = 15·9/4 = 33,75. df = 15." },
-  { t: "vypocet", k: "num", q: "Hodnota testového kritéria je u = 1,5766 a Φ(1,5766) = 0,9426. Hodnota p pro oboustrannou alternativu:", a: 0.1148, tol: 0.002, hint: "na 3 desetinná místa",
-    e: "p = 2·[1 − Φ(|u|)] = 2·(1 − 0,9426) = 2·0,0574 = 0,1148. Pro pravostrannou alternativu by bylo p = 0,0574." },
-  { t: "vypocet", k: "num", q: "Welch: s<sub>1</sub>² = 1442,99, n<sub>1</sub> = 36, s<sub>2</sub>² = 636,004, n<sub>2</sub> = 36. Jmenovatel testového kritéria √(s<sub>1</sub>²/n<sub>1</sub> + s<sub>2</sub>²/n<sub>2</sub>):", a: 7.599, tol: 0.01, hint: "na 2 desetinná místa",
-    e: "a = 40,083, b = 17,667, a + b = 57,750, √57,750 = 7,599." },
-  { t: "vypocet", k: "num", q: "Dávkovač: μ<sub>0</sub> = 5, n = 10, x̄ = 5,3, s = 0,4. Hodnota t jednovýběrového t-testu:", a: 2.372, tol: 0.02, hint: "na 2 desetinná místa",
-    e: "t = (5,3 − 5)/(0,4/√10) = 0,3/0,1265 = 2,372. df = 9." },
-  { t: "vypocet", k: "num", q: "Zařízení: π<sub>0</sub> = 0,10, n = 200, m = 28. Hodnota testového kritéria u (bez korekce na nespojitost):", a: 1.886, tol: 0.02, hint: "na 2 desetinná místa",
-    e: "p = 0,14. u = 0,04/√(0,1·0,9/200) = 0,04/0,02121 = 1,886." },
+  { id: "nakupy-p", t: "vypocet", k: "num", gen() {
+    const n = pick([200, 250, 400, 500, 800, 1000]), m = randInt(0.2 * n, 0.8 * n), p = m / n;
+    return { q: `Ve vzorku ${n} nákupů zakoupilo výrobek firmy ${m} zákazníků. Relativní četnost p:`, a: p, dp: 3,
+      e: `p = m/n = ${m}/${n} = ${cz(p, 5)}. Odhaduje neznámé π.` };
+  } },
+  { id: "t-test-2", t: "vypocet", k: "num", gen() {
+    const n = pick([9, 16, 25, 36, 49, 64]), s = randInt(4, 40), mu0 = randInt(50, 500), df = n - 1, c = tQ(0.975, df);
+    const se = s / Math.sqrt(n), xbar = Math.round(mu0 + sign() * around(c) * se), t = (xbar - mu0) / se;
+    return { q: `μ<sub>0</sub> = ${mu0}, n = ${n}, x̄ = ${xbar}, s = ${s}. Hodnota t jednovýběrového t-testu:`, a: t, dp: 2,
+      e: `t = (${xbar} − ${mu0})/(${s}/√${n}) = ${cz(xbar - mu0, 0)}/${cz(se, 4)} = ${cz(t, 3)}. df = ${df}. ${decide(Math.abs(t), c, "|t|", `t<sub>0,975;${df}</sub>`, "oboustranné alternativě a ")}` };
+  } },
+  { id: "mesta-u", t: "vypocet", k: "num", gen() {
+    const n = pick([100, 120, 150, 200, 250, 300]), p0 = randDec(0.2, 0.5, 2), diff = sign() * around(1.96) * Math.sqrt(p0 * (1 - p0) * 2 / n);
+    const m1 = Math.round(n * (p0 + diff / 2)), m2 = Math.round(n * (p0 - diff / 2));
+    const p1 = m1 / n, p2 = m2 / n, pb = (m1 + m2) / (2 * n), se = Math.sqrt(pb * (1 - pb) * 2 / n), u = (p1 - p2) / se;
+    return { q: `Projekt podpořilo m<sub>1</sub> = ${m1} z n<sub>1</sub> = ${n} dotázaných ve městě A a m<sub>2</sub> = ${m2} z n<sub>2</sub> = ${n} dotázaných ve městě B. Hodnota testového kritéria u testu shody podílů:`, a: u, dp: 2,
+      e: `p<sub>1</sub> = ${cz(p1, 4)}, p<sub>2</sub> = ${cz(p2, 4)}, p̄ = ${m1 + m2}/${2 * n} = ${cz(pb, 4)}. u = ${cz(p1 - p2, 4)}/√(${cz(pb, 4)}·${cz(1 - pb, 4)}·2/${n}) = ${cz(p1 - p2, 4)}/${cz(se, 4)} = ${cz(u, 3)}. ${decide(Math.abs(u), 1.96, "|u|", "u<sub>0,975</sub>", "oboustranné alternativě a ")}` };
+  } },
+  { id: "u-pravostranny", t: "vypocet", k: "num", gen() {
+    const n = pick([16, 25, 36, 49, 64, 81, 100]), sigma = randInt(4, 30), mu0 = randInt(20, 500), se = sigma / Math.sqrt(n);
+    const xbar = Number((mu0 + around(1.645) * se).toFixed(1)), u = (xbar - mu0) / se;
+    return { q: `μ<sub>0</sub> = ${mu0}, σ = ${sigma} (známé), n = ${n}, x̄ = ${cz(xbar, 1)}. Hodnota testového kritéria u-testu:`, a: u, dp: 2,
+      e: `u = (${cz(xbar, 1)} − ${mu0})/(${sigma}/√${n}) = ${cz(xbar - mu0, 1)}/${cz(se, 4)} = ${cz(u, 3)}. ${decide(u, 1.645, "u", "u<sub>0,95</sub>", "alternativě μ > μ<sub>0</sub> a ")}` };
+  } },
+  { id: "norma-chi2", t: "vypocet", k: "num", gen() {
+    const n = randInt(8, 30), df = n - 1, c = chiQ(0.95, df), var0 = randInt(2, 20);
+    const s2 = Number((var0 * around(c) / df).toFixed(1)), chi = df * s2 / var0;
+    return { q: `Výběr n = ${n} má s² = ${cz(s2, 1)}, norma je σ<sub>0</sub>² = ${var0}. Hodnota testového kritéria χ²:`, a: chi, dp: 2,
+      e: `χ² = (n − 1)s²/σ<sub>0</sub>² = ${df}·${cz(s2, 1)}/${var0} = ${cz(chi, 3)}. df = ${df}. ${decide(chi, c, "χ²", `χ²<sub>0,95;${df}</sub>`, "alternativě σ² > σ<sub>0</sub>² a ")}` };
+  } },
+  { id: "p-hodnota", t: "vypocet", k: "num", gen() {
+    const u = randDec(0.8, 3.1, 2), phi = Number(Phi(u).toFixed(4)), p = Number((2 * (1 - phi)).toFixed(4));
+    return { q: `Hodnota testového kritéria je u = ${cz(u, 2)} a Φ(${cz(u, 2)}) = ${cz(phi, 4)}. Hodnota p pro oboustrannou alternativu:`, a: p, dp: 4,
+      e: `p = 2·[1 − Φ(|u|)] = 2·(1 − ${cz(phi, 4)}) = 2·${cz(1 - phi, 4)} = ${cz(p, 4)}. Pro pravostrannou alternativu by bylo p = ${cz(1 - phi, 4)}. Při α = 0,05 se H<sub>0</sub> ${p < 0.05 ? "zamítá" : "nezamítá"}, protože p ${p < 0.05 ? "<" : "≥"} 0,05.` };
+  } },
+  { id: "welch-se", t: "vypocet", k: "num", gen() {
+    const v1 = randDec(100, 2000, 2), v2 = randDec(100, 2000, 2), n1 = randInt(10, 60), n2 = randInt(10, 60);
+    const a = v1 / n1, b = v2 / n2, se = Math.sqrt(a + b);
+    return { q: `Welch: s<sub>1</sub>² = ${cz(v1, 2)}, n<sub>1</sub> = ${n1}, s<sub>2</sub>² = ${cz(v2, 2)}, n<sub>2</sub> = ${n2}. Jmenovatel testového kritéria √(s<sub>1</sub>²/n<sub>1</sub> + s<sub>2</sub>²/n<sub>2</sub>):`, a: se, dp: 2,
+      e: `a = ${cz(v1, 2)}/${n1} = ${cz(a, 3)}, b = ${cz(v2, 2)}/${n2} = ${cz(b, 3)}, a + b = ${cz(a + b, 3)}, √${cz(a + b, 3)} = ${cz(se, 3)}.` };
+  } },
+  { id: "davkovac-t", t: "vypocet", k: "num", gen() {
+    const mu0 = pick([2, 5, 10, 20]), n = randInt(6, 20), df = n - 1, c = tQ(0.975, df);
+    const s = Number((mu0 * randDec(0.04, 0.12, 3)).toFixed(2)), se = s / Math.sqrt(n);
+    const xbar = Number((mu0 + sign() * around(c) * se).toFixed(2)), t = (xbar - mu0) / se;
+    return { q: `Dávkovač: μ<sub>0</sub> = ${mu0}, n = ${n}, x̄ = ${cz(xbar, 2)}, s = ${cz(s, 2)}. Hodnota t jednovýběrového t-testu:`, a: t, dp: 2,
+      e: `t = (${cz(xbar, 2)} − ${mu0})/(${cz(s, 2)}/√${n}) = ${cz(xbar - mu0, 2)}/${cz(se, 4)} = ${cz(t, 3)}. df = ${df}. ${decide(Math.abs(t), c, "|t|", `t<sub>0,975;${df}</sub>`, "oboustranné alternativě a ")}` };
+  } },
+  { id: "zarizeni-u", t: "vypocet", k: "num", gen() {
+    const pi0 = randInt(5, 20) / 100, n = 50 * randInt(4, 12);
+    const se = Math.sqrt(pi0 * (1 - pi0) / n), m = Math.round(n * (pi0 + around(1.645) * se)), p = m / n, u = (p - pi0) / se;
+    return { q: `Zařízení: π<sub>0</sub> = ${cz(pi0, 2)}, n = ${n}, m = ${m}. Hodnota testového kritéria u (bez korekce na nespojitost):`, a: u, dp: 2,
+      e: `p = ${cz(p, 4)}. u = ${cz(p - pi0, 4)}/√(${cz(pi0, 2)}·${cz(1 - pi0, 2)}/${n}) = ${cz(p - pi0, 4)}/${cz(se, 5)} = ${cz(u, 3)}. ${decide(u, 1.645, "u", "u<sub>0,95</sub>", "alternativě π > π<sub>0</sub> a ")}` };
+  } },
 
   // Rozhodnutí a kvantily
   { t: "rozhodnuti", k: "single", q: "Call-centrum: t = −2,667, df = 15, H<sub>1</sub>: μ < 540, α = 0,01. Zadán kvantil t<sub>0,01;15</sub> = −2,602. Rozhodnutí:", o: ["H<sub>0</sub> zamítáme, školení hovory statisticky významně zkrátilo", "H<sub>0</sub> nezamítáme", "nelze rozhodnout, chybí t<sub>0,995;15</sub>", "H<sub>0</sub> přijímáme"], a: 0,
@@ -432,14 +544,20 @@ const BANK = [
     e: "Malé χ² znamená, že pozorované četnosti jsou blízko teoretickým. Proti H<sub>0</sub> mluví jen velké hodnoty. V Excelu je kritická hodnota CHISQ.INV.RT(α; df)." },
   { t: "chi2", k: "single", q: "Test dobré shody má k kategorií a všechny pravděpodobnosti π<sub>i</sub> jsou zadané předem. Počet stupňů volnosti:", o: ["k − 1", "k", "n − 1", "(k − 1)(n − 1)"], a: 0,
     e: "Teoretické četnosti musí dát dohromady n, takže volných je k − 1. Když se parametr rozdělení odhaduje z dat, df se zmenší o počet odhadnutých parametrů." },
-  { t: "chi2", k: "num", q: "Počet stupňů volnosti χ² testu nezávislosti v kontingenční tabulce se 3 řádky a 4 sloupci:", a: 6, tol: 0, hint: "celé číslo",
-    e: "df = (r − 1)(c − 1) = 2·3 = 6." },
+  { id: "df-tabulka", t: "chi2", k: "num", gen() {
+    const r = randInt(2, 8), c = randInt(2, 8);
+    return { q: `Počet stupňů volnosti χ² testu nezávislosti v kontingenční tabulce r × c = ${r} × ${c}:`, a: (r - 1) * (c - 1), dp: 0,
+      e: `df = (r − 1)(c − 1) = ${r - 1}·${c - 1} = ${(r - 1) * (c - 1)}.` };
+  } },
   { t: "chi2", k: "single", q: "Pravidlo „počet sloupců minus 1“ pro stupně volnosti kontingenční tabulky platí:", o: ["jen u tabulky se dvěma řádky, obecně je df = (r − 1)(c − 1)", "u každé tabulky", "jen u tabulky se dvěma sloupci", "u každé čtvercové tabulky"], a: 0,
     e: "Při r = 2 je (r − 1)(c − 1) = c − 1. U tabulky 3 × 4 by pravidlo dalo 3, správně je 6." },
   { t: "chi2", k: "single", q: "Teoretická četnost buňky v testu nezávislosti se počítá jako:", o: ["řádkový součet · sloupcový součet / n", "n / (r·c)", "pozorovaná četnost · (r − 1)(c − 1)", "řádkový součet / počet sloupců"], a: 0,
     e: "Za nezávislosti má každý řádek stejné rozložení do sloupců jako celá tabulka: n<sub>ij</sub><sup>T</sup> = n<sub>i.</sub>·n<sub>.j</sub>/n." },
-  { t: "chi2", k: "num", q: "Dopolední směna vyrobila 500 kusů, ze všech 1010 kusů obou směn bylo 330 jakosti I. Teoretická četnost dopoledních kusů jakosti I za nezávislosti jakosti na směně:", a: 163.37, tol: 0.1, hint: "na 2 desetinná místa",
-    e: "n<sub>11</sub><sup>T</sup> = 500·330/1010 = 163,37. Pozorováno bylo 170." },
+  { id: "smeny-nt", t: "chi2", k: "num", gen() {
+    const n1 = randInt(300, 700), n = n1 + randInt(300, 700), col = randInt(Math.round(0.2 * n), Math.round(0.6 * n)), e = n1 * col / n;
+    return { q: `Dopolední směna vyrobila ${n1} kusů, ze všech ${n} kusů obou směn bylo ${col} jakosti I. Teoretická četnost dopoledních kusů jakosti I za nezávislosti jakosti na směně:`, a: e, dp: 2,
+      e: `n<sub>11</sub><sup>T</sup> = řádkový součet · sloupcový součet / n = ${n1}·${col}/${n} = ${cz(e, 2)}.` };
+  } },
   { t: "chi2", k: "single", q: "Hlavní předpoklad χ² testu dobré shody a testu nezávislosti:", o: ["všechny teoretické četnosti jsou alespoň 5", "všechny pozorované četnosti jsou alespoň 5", "proměnná má normální rozdělení", "n ≥ 30"], a: 0,
     e: "Rozdělení χ² platí pro testové kritérium jen přibližně a při malých teoretických četnostech přestává sedět. Malé kategorie se sloučí se sousedními." },
   { t: "chi2", k: "multi", q: "Kdy se χ² test dobré shody nedá použít bez úpravy? (Všechny správné možnosti.)", o: ["některá teoretická četnost je menší než 5", "data jsou zadaná v procentech místo počtů", "proměnná má jen dvě kategorie", "výběr má víc než 1000 jednotek"], a: [0, 1],
@@ -450,19 +568,164 @@ const BANK = [
     e: "Dvě kategoriální proměnné na jednom výběru. Test shody dvou podílů porovnává jen dvě skupiny." },
   { t: "chi2", k: "single", q: "Nulová hypotéza χ² testu nezávislosti:", o: ["proměnné jsou nezávislé", "proměnné jsou závislé", "všechny buňky mají stejnou četnost", "řádkové součty jsou stejné"], a: 0,
     e: "Jako u ostatních testů vyjadřuje H<sub>0</sub> stav bez vztahu. Teoretické četnosti se počítají za předpokladu nezávislosti." },
-  { t: "chi2", k: "num", q: "Kostka hozená 30krát: čísla 1 až 6 padla 4, 6, 7, 2, 5 a 6krát. Hodnota χ² testu dobré shody s rovnoměrným rozdělením:", a: 3.2, tol: 0.01, hint: "na 2 desetinná místa",
-    e: "Teoretická četnost je 30/6 = 5 u každého čísla. χ² = (1 + 1 + 4 + 9 + 0 + 1)/5 = 3,2." },
+  { id: "kostka-chi2", t: "chi2", k: "num", gen() {
+    const n = pick([30, 36, 42, 48, 54, 60, 72, 90, 120]), e = n / 6, c = chiQ(0.95, 5), reject = Math.random() < 0.5;
+    let obs, chi;
+    do {
+      obs = drawCounts(6, n);
+      chi = obs.reduce((x, o) => x + (o - e) ** 2, 0) / e;
+    } while ((chi > c) !== reject);
+    return { q: `Kostka hozená ${n}krát: čísla 1 až 6 padla ${obs.slice(0, 5).join(", ")} a ${obs[5]}krát. Hodnota χ² testu dobré shody s rovnoměrným rozdělením:`, a: chi, dp: 2,
+      e: `Teoretická četnost je ${n}/6 = ${e} u každého čísla. χ² = (${obs.map((o) => (o - e) ** 2).join(" + ")})/${e} = ${cz(chi, 3)}. ${decide(chi, c, "χ²", "χ²<sub>0,95;5</sub>")}` };
+  } },
   { t: "chi2", k: "single", q: "Kostka: χ² = 3,2, df = 5, χ²<sub>0,95;5</sub> = 11,07. Správný závěr:", o: ["H<sub>0</sub> nezamítáme, nebylo prokázáno, že kostka není férová", "H<sub>0</sub> přijímáme, kostka je prokazatelně férová", "H<sub>0</sub> zamítáme, kostka není férová", "test nelze použít, protože teoretické četnosti jsou jen 5"], a: 0,
     e: "3,2 < 11,07, kritérium neleží v kritickém oboru. Nezamítnutí neprokazuje platnost H<sub>0</sub>. Teoretické četnosti 5 předpoklad splňují." },
-  { t: "chi2", k: "num", q: "Postava: 25 malých, 53 středních a 42 velkých. Hodnota χ² testu rovnoměrného zastoupení:", a: 9.95, tol: 0.02, hint: "na 2 desetinná místa",
-    e: "Teoretická četnost je 120/3 = 40. χ² = (225 + 169 + 4)/40 = 9,95." },
+  { id: "postava-chi2", t: "chi2", k: "num", gen() {
+    const n = 3 * randInt(20, 60), e = n / 3, c = chiQ(0.95, 2), reject = Math.random() < 0.5;
+    let obs, chi;
+    do {
+      obs = drawCounts(3, n);
+      chi = obs.reduce((x, o) => x + (o - e) ** 2, 0) / e;
+    } while ((chi > c) !== reject || Math.min(...obs) < 5);
+    return { q: `Postava: ${obs[0]} malých, ${obs[1]} středních a ${obs[2]} velkých. Hodnota χ² testu rovnoměrného zastoupení:`, a: chi, dp: 2,
+      e: `Teoretická četnost je ${n}/3 = ${e}. χ² = (${obs.map((o) => (o - e) ** 2).join(" + ")})/${e} = ${cz(chi, 3)}. ${decide(chi, c, "χ²", "χ²<sub>0,95;2</sub>")}` };
+  } },
   { t: "chi2", k: "single", q: "Postava: χ² = 9,95, α = 0,05. Kritická hodnota a rozhodnutí:", o: ["χ²<sub>0,95;2</sub> = 5,991, H<sub>0</sub> zamítáme", "χ²<sub>0,95;3</sub> = 7,815, H<sub>0</sub> zamítáme", "χ²<sub>0,975;2</sub> = 7,378, H<sub>0</sub> nezamítáme", "χ²<sub>0,95;119</sub>, H<sub>0</sub> nezamítáme"], a: 0,
     e: "Tři kategorie dávají df = 2. Test je pravostranný, takže se bere kvantil 0,95. 9,95 > 5,991 (p = 0,007)." },
-  { t: "chi2", k: "num", q: "Plán: 40 % USA, 30 % Evropa, 20 % Asie, 10 % zbytek světa. Prodalo se celkem 9430 praček. Teoretická četnost pro Asii:", a: 1886, tol: 0.5, hint: "celé číslo",
-    e: "n·π = 9430·0,2 = 1886. Skutečně se v Asii prodalo 1020 kusů, což dává příspěvek 397,6 z celkového χ² = 498,3." },
-  { t: "chi2", k: "num", q: "Tabulka 2 × 2 (pohlaví × odpověď ano/ne). Limitní test shody podílů dal u = −0,978. Hodnota χ² testu nezávislosti pro stejná data:", a: 0.957, tol: 0.01, hint: "na 2 desetinná místa",
-    e: "U tabulky 2 × 2 platí χ² = u² = 0,978² = 0,957. Oba testy vedou ke stejnému rozhodnutí, χ²<sub>0,95;1</sub> = 3,841 = 1,96²." },
+  { id: "pracky-nt", t: "chi2", k: "num", gen() {
+    const plan = pick([[40, 30, 20, 10], [35, 30, 25, 10], [50, 20, 20, 10], [45, 25, 15, 15], [30, 30, 25, 15], [40, 25, 25, 10]]);
+    const names = ["USA", "Evropa", "Asie", "zbytek světa"], forms = ["USA", "Evropu", "Asii", "zbytek světa"];
+    const i = randInt(0, 3), n = 20 * randInt(100, 600), e = n * plan[i] / 100;
+    return { q: `Plán: ${plan.map((p, j) => `${p} % ${names[j]}`).join(", ")}. Prodalo se celkem ${n} praček. Teoretická četnost pro ${forms[i]}:`, a: e, dp: 0,
+      e: `n·π = ${n}·${cz(plan[i] / 100, 2)} = ${e}.` };
+  } },
+  { id: "tabulka-u2", t: "chi2", k: "num", gen() {
+    const u = sign() * randDec(0.3, 3.6, 3), chi = u * u, c = chiQ(0.95, 1);
+    return { q: `Tabulka 2 × 2 (pohlaví × odpověď ano/ne). Limitní test shody podílů dal u = ${cz(u, 3)}. Hodnota χ² testu nezávislosti pro stejná data:`, a: chi, dp: 3,
+      e: `U tabulky 2 × 2 platí χ² = u² = ${cz(Math.abs(u), 3)}² = ${cz(chi, 4)}. Oba testy vedou ke stejnému rozhodnutí, protože χ²<sub>0,95;1</sub> = 3,841 = 1,96². ${decide(chi, c, "χ²", "χ²<sub>0,95;1</sub>")}` };
+  } },
 ];
+
+// Losování čísel pro šablony číselných otázek.
+const randInt = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+const randDec = (lo, hi, d) => Number((lo + Math.random() * (hi - lo)).toFixed(d));
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const sign = () => pick([-1, 1]);
+// Hodnota rovnoměrně mezi 0,4·c a 1,6·c. Testové kritérium tak leží v kritickém oboru zhruba v polovině pokusů.
+const around = (c) => c * (0.4 + 1.2 * Math.random());
+
+// Vylosuje četnosti k stejně pravděpodobných kategorií se součtem n. Skutečné pravděpodobnosti se od rovnoměrných odchylují o náhodně velký kus.
+function drawCounts(k, n) {
+  const spread = 0.8 * Math.random();
+  const w = Array.from({ length: k }, () => 1 + spread * (2 * Math.random() - 1));
+  const sum = w.reduce((x, y) => x + y);
+  const counts = w.map(() => 0);
+  for (let i = 0; i < n; i++) {
+    let u = Math.random() * sum, j = 0;
+    while (u > w[j] && j < k - 1) u -= w[j++];
+    counts[j]++;
+  }
+  return counts;
+}
+
+// Vypíše číslo zaokrouhlené na d desetinných míst s desetinnou čárkou a bez koncových nul.
+function cz(x, d) {
+  let s = Math.abs(x).toFixed(d);
+  if (d) s = s.replace(/\.?0+$/, "");
+  const [i, f] = s.split(".");
+  const neg = x < 0 && /[1-9]/.test(s);
+  return (neg ? "−" : "") + (i.length > 4 ? i.replace(/\B(?=(\d{3})+$)/g, " ") : i) + (f ? "," + f : "");
+}
+
+// Napíše větu o rozhodnutí při α = 0,05. Kritický obor je x > c.
+function decide(x, c, xs, cs, alt = "") {
+  const d = Math.abs(x - c) < 0.0005 ? 5 : 3;
+  return `Při ${alt}α = 0,05 je ${xs} = ${cz(x, d)} ${x > c ? ">" : "≤"} ${cs} = ${cz(c, 3)}, takže H<sub>0</sub> se ${x > c ? "zamítá" : "nezamítá"}.`;
+}
+
+// Kvantily t, χ² a F se hledají půlením intervalu na distribuční funkci.
+// Distribuční funkce stojí na regularizované neúplné funkci gama a beta (Numerical Recipes, kap. 6).
+function lnGamma(x) {
+  const c = [76.18009172947146, -86.50532032941677, 24.01409824083091, -1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5];
+  let y = x, ser = 1.000000000190015;
+  const tmp = x + 5.5 - (x + 0.5) * Math.log(x + 5.5);
+  for (const ci of c) ser += ci / ++y;
+  return -tmp + Math.log(2.5066282746310005 * ser / x);
+}
+
+function gammaP(a, x) {
+  if (x <= 0) return 0;
+  const lead = Math.exp(-x + a * Math.log(x) - lnGamma(a));
+  if (x < a + 1) {
+    let term = 1 / a, sum = term;
+    for (let n = 1; n < 500 && term > sum * 1e-15; n++) { term *= x / (a + n); sum += term; }
+    return sum * lead;
+  }
+  let b = x + 1 - a, c = 1e300, d = 1 / b, h = d;
+  for (let i = 1; i < 500; i++) {
+    const an = -i * (i - a);
+    b += 2;
+    d = 1 / (an * d + b);
+    c = b + an / c;
+    h *= d * c;
+    if (Math.abs(d * c - 1) < 1e-15) break;
+  }
+  return 1 - lead * h;
+}
+
+function betaI(a, b, x) {
+  if (x <= 0) return 0;
+  if (x >= 1) return 1;
+  if (x > (a + 1) / (a + b + 2)) return 1 - betaI(b, a, 1 - x);
+  let c = 1, d = 1 / (1 - (a + b) * x / (a + 1)), h = d;
+  for (let m = 1; m < 300; m++) {
+    let aa = m * (b - m) * x / ((a + 2 * m - 1) * (a + 2 * m));
+    d = 1 / (1 + aa * d); c = 1 + aa / c; h *= d * c;
+    aa = -(a + m) * (a + b + m) * x / ((a + 2 * m) * (a + 2 * m + 1));
+    d = 1 / (1 + aa * d); c = 1 + aa / c; h *= d * c;
+    if (Math.abs(d * c - 1) < 1e-15) break;
+  }
+  return h * Math.exp(lnGamma(a + b) - lnGamma(a) - lnGamma(b) + a * Math.log(x) + b * Math.log(1 - x)) / a;
+}
+
+function inverse(cdf, p) {
+  let lo = 0, hi = 1;
+  while (cdf(hi) < p) hi *= 2;
+  for (let i = 0; i < 60; i++) {
+    const mid = (lo + hi) / 2;
+    if (cdf(mid) < p) lo = mid; else hi = mid;
+  }
+  return (lo + hi) / 2;
+}
+
+// tQ platí jen pro p > 0,5.
+const tQ = (p, df) => inverse((x) => 1 - betaI(df / 2, 0.5, df / (df + x * x)) / 2, p);
+const chiQ = (p, df) => inverse((x) => gammaP(df / 2, x / 2), p);
+const fQ = (p, d1, d2) => inverse((x) => betaI(d1 / 2, d2 / 2, d1 * x / (d1 * x + d2)), p);
+const Phi = (z) => (1 + Math.sign(z) * gammaP(0.5, z * z / 2)) / 2;
+
+function hash(s) {
+  let h = 2166136261;
+  for (const ch of s) h = Math.imul(h ^ ch.codePointAt(0), 16777619);
+  return (h >>> 0).toString(36);
+}
+
+// Vytvoří ze šablony otázku s novými čísly. Zadání, které už v historii šablony je, se losuje znovu.
+// Když po 100 pokusech žádné nové nepadne, zopakuje se. To nastane jen u šablon s malým počtem kombinací.
+function instantiate(tpl, seen) {
+  const used = seen[tpl.id] || (seen[tpl.id] = []);
+  let out, key;
+  for (let i = 0; i < 100; i++) {
+    out = tpl.gen();
+    key = hash(out.q);
+    if (!used.includes(key)) break;
+  }
+  used.push(key);
+  if (used.length > 500) used.shift();
+  const tol = out.dp ? Math.max(Math.abs(out.a) / 100, 10 ** -out.dp) : 0;
+  const hint = out.dp === 0 ? "celé číslo" : out.dp === 1 ? "na 1 desetinné místo" : `na ${out.dp} desetinná místa`;
+  return { t: tpl.t, k: "num", tpl, ...out, tol, hint };
+}
 
 const $ = (id) => document.getElementById(id);
 const STORE = "kviz-testy-hypotez";
@@ -481,18 +744,13 @@ function shuffle(arr) {
   return a;
 }
 
-function prepare(q) {
-  if (q.k === "num") return { q, opts: null, correct: null };
+function prepare(q, seen) {
+  if (q.k === "num") return { q: instantiate(q, seen), opts: null, correct: null };
   const idx = q.fixed ? q.o.map((_, i) => i) : shuffle(q.o.map((_, i) => i));
   const opts = idx.map((i) => q.o[i]);
   const correctSet = new Set(Array.isArray(q.a) ? q.a : [q.a]);
   const correct = idx.map((orig, j) => correctSet.has(orig) ? j : -1).filter((j) => j >= 0);
   return { q, opts, correct };
-}
-
-function fmt(n) {
-  const s = Math.abs(n) >= 100 ? n.toFixed(2) : n.toFixed(4);
-  return s.replace(/\.?0+$/, "").replace(".", ",").replace("-", "−");
 }
 
 function loadStore() {
@@ -516,7 +774,10 @@ function renderStart() {
 }
 
 function startRound(questions) {
-  round = questions.map(prepare);
+  const s = loadStore();
+  s.seen = s.seen || {};
+  round = questions.map((q) => prepare(q, s.seen));
+  saveStore(s);
   pos = 0;
   results = [];
   $("start").hidden = true;
@@ -598,8 +859,8 @@ function check() {
     const v = parseNumber($("numIn").value);
     if (Number.isNaN(v)) { $("numIn").focus(); return; }
     ok = Math.abs(v - q.a) <= q.tol;
-    given = fmt(v);
-    correctText = fmt(q.a);
+    given = cz(v, 6);
+    correctText = cz(q.a, q.dp);
     $("numIn").className = ok ? "correct" : "wrong";
     $("numIn").disabled = true;
   } else {
@@ -644,7 +905,7 @@ function finish() {
   const s = loadStore();
   let note = "";
   if (s.best == null || pct > s.best || (pct === s.best && results.length > s.bestN)) {
-    saveStore({ best: pct, bestN: results.length });
+    saveStore({ ...s, best: pct, bestN: results.length });
     note = "Nový nejlepší výsledek.";
   } else {
     note = `Nejlepší výsledek: ${s.best} % (${s.bestN} otázek).`;
@@ -672,7 +933,7 @@ $("startBtn").addEventListener("click", startFromForm);
 $("checkBtn").addEventListener("click", check);
 $("nextBtn").addEventListener("click", next);
 $("quitBtn").addEventListener("click", () => { if (results.length) finish(); else { $("quiz").hidden = true; $("start").hidden = false; } });
-$("againWrong").addEventListener("click", () => startRound(results.filter((r) => !r.ok).map((r) => r.q)));
+$("againWrong").addEventListener("click", () => startRound(results.filter((r) => !r.ok).map((r) => r.q.tpl || r.q)));
 $("restart").addEventListener("click", () => { $("end").hidden = true; $("start").hidden = false; renderStart(); });
 $("numIn").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); answered ? next() : check(); } });
 document.addEventListener("keydown", (e) => {
