@@ -574,9 +574,9 @@ const BANK = [
       e: `MSE = SSE/(n − k) = ${cz(sse, 1)}/${n - k} = ${cz(sse / (n - k), 2)}.` };
   } },
   { id: "anova-f", t: "anova", k: "num", gen() {
-    const k = randInt(3, 5), n = randInt(20, 60), mse = randDec(5, 60, 2), mstr = Number((around(3.0) * mse).toFixed(2));
-    return { q: `Tabulka ANOVA: Between Groups SS = ${cz(mstr * (k - 1), 2)}, df = ${k - 1}; Within Groups SS = ${cz(mse * (n - k), 2)}, df = ${n - k}. Hodnota testového kritéria F:`, a: mstr / mse, dp: 2,
-      e: `MSTR = ${cz(mstr * (k - 1), 2)}/${k - 1} = ${cz(mstr, 2)}, MSE = ${cz(mse * (n - k), 2)}/${n - k} = ${cz(mse, 2)}, F = ${cz(mstr, 2)}/${cz(mse, 2)} = ${cz(mstr / mse, 2)}.` };
+    const k = randInt(3, 5), n = randInt(20, 60), c = fQ(0.95, k - 1, n - k), mse = randDec(5, 60, 2), mstr = Number((around(c) * mse).toFixed(2)), F = mstr / mse;
+    return { q: `Tabulka ANOVA: Between Groups SS = ${cz(mstr * (k - 1), 2)}, df = ${k - 1}; Within Groups SS = ${cz(mse * (n - k), 2)}, df = ${n - k}. Hodnota testového kritéria F:`, a: F, dp: 2,
+      e: `MSTR = ${cz(mstr * (k - 1), 2)}/${k - 1} = ${cz(mstr, 2)}, MSE = ${cz(mse * (n - k), 2)}/${n - k} = ${cz(mse, 2)}, F = ${cz(mstr, 2)}/${cz(mse, 2)} = ${cz(F, 3)}. ${decide(F, c, "F", `F<sub>0,95;${k - 1};${n - k}</sub>`)}` };
   } },
   { id: "anova-gm", t: "anova", k: "num", gen() {
     const k = randInt(3, 4), ns = Array.from({ length: k }, () => randInt(4, 12)), ms = Array.from({ length: k }, () => randDec(40, 70, 1));
@@ -607,9 +607,9 @@ const BANK = [
   { t: "anova", k: "single", q: "Hladina významnosti pro jedno porovnání v Bonferroniho testu při k skupinách a celkové hladině α:", o: ["α děleno počtem dvojic, tedy α/(k(k − 1)/2) = 2α/(k(k − 1))", "α krát počet dvojic", "α/k", "α/2"], a: 0,
     e: "Počet dvojic je k(k − 1)/2. Při k = 4 a α = 0,05 je to 0,05/6 = 1/120 ≈ 0,0083, při k = 5 je to 0,05/10 = 1/200 = 0,005." },
   { id: "bonf-alpha", t: "anova", k: "num", gen() {
-    const k = randInt(3, 6), alpha = pick([0.05, 0.01]), pairs = k * (k - 1) / 2;
+    const k = randInt(3, 8), alpha = pick([0.1, 0.05, 0.01]), pairs = k * (k - 1) / 2;
     return { q: `ANOVA s k = ${k} skupinami na hladině α = ${cz(alpha, 2)} zamítla H<sub>0</sub>. Hladina významnosti pro jedno porovnání v Bonferroniho testu:`, a: alpha / pairs, dp: 4,
-      e: `Počet dvojic k(k − 1)/2 = ${k}·${k - 1}/2 = ${pairs}. α* = ${cz(alpha, 2)}/${pairs} = ${cz(alpha / pairs, 4)}.` };
+      e: `Počet dvojic k(k − 1)/2 = ${k}·${k - 1}/2 = ${pairs}. α* = ${cz(alpha, 2)}/${pairs} = ${cz(alpha / pairs, 5)}.` };
   } },
   { t: "anova", k: "single", q: "Testové kritérium Bonferroniho testu pro skupiny i a j:", o: ["t<sub>ij</sub> = |x̄<sub>i</sub> − x̄<sub>j</sub>| / √(MSE/n<sub>i</sub> + MSE/n<sub>j</sub>)", "t<sub>ij</sub> = (x̄<sub>i</sub> − x̄<sub>j</sub>) / √(s<sub>i</sub>²/n<sub>i</sub> + s<sub>j</sub>²/n<sub>j</sub>)", "F<sub>ij</sub> = s<sub>i</sub>²/s<sub>j</sub>²", "t<sub>ij</sub> = (x̄<sub>i</sub> − x̄<sub>j</sub>) / MSE"], a: 0,
     e: "Místo rozptylů obou skupin se dosazuje společný vnitroskupinový rozptyl MSE z tabulky ANOVA. Stupně volnosti jsou n − k, tedy df řádku Within Groups." },
