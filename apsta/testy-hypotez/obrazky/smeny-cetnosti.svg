@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 285" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif" font-size="19">
+  <style>
+    .ink { fill: #1a1f27; } .ink2 { fill: #4b5563; } .line { stroke: #1a1f27; } .faint { stroke: #d3d9e2; }
+    .keep { fill: #e3f1e6; } .reject { fill: #fbe7e5; stroke: #b3261e; } .rej { fill: #b3261e; } .ok { fill: #1f6b47; }
+    .beta { fill: #e6eefb; stroke: #1f56b8; } .acc { fill: #1f56b8; } .accl { stroke: #1f56b8; }
+    .box { fill: #ffffff; stroke: #4b5563; } .boxa { fill: #e6eefb; stroke: #1f56b8; } .boxok { fill: #e3f1e6; stroke: #1f6b47; } .boxbad { fill: #fbe7e5; stroke: #b3261e; }
+    @media (prefers-color-scheme: dark) {
+      .ink { fill: #e9ecf1; } .ink2 { fill: #aab2bf; } .line { stroke: #e9ecf1; } .faint { stroke: #333b47; }
+      .keep { fill: #1c3328; } .reject { fill: #3d2220; stroke: #ff9a92; } .rej { fill: #ff9a92; } .ok { fill: #7fd4a5; }
+      .beta { fill: #232d3f; stroke: #8db4ff; } .acc { fill: #8db4ff; } .accl { stroke: #8db4ff; }
+      .box { fill: #1a1f26; stroke: #aab2bf; } .boxa { fill: #232d3f; stroke: #8db4ff; } .boxok { fill: #1c3328; stroke: #7fd4a5; } .boxbad { fill: #3d2220; stroke: #ff9a92; }
+    }
+  </style>
+  <line class="faint" stroke-width="1" x1="48" y1="250.0" x2="470" y2="250.0"/>
+  <text class="ink2" x="42.0" y="256.0" text-anchor="end" font-size="16">0</text>
+  <line class="faint" stroke-width="1" x1="48" y1="190.0" x2="470" y2="190.0"/>
+  <text class="ink2" x="42.0" y="196.0" text-anchor="end" font-size="16">100</text>
+  <line class="faint" stroke-width="1" x1="48" y1="130.0" x2="470" y2="130.0"/>
+  <text class="ink2" x="42.0" y="136.0" text-anchor="end" font-size="16">200</text>
+  <line class="faint" stroke-width="1" x1="48" y1="70.0" x2="470" y2="70.0"/>
+  <text class="ink2" x="42.0" y="76.0" text-anchor="end" font-size="16">300</text>
+  <rect class="boxa" stroke-width="1.5" x="74" y="148.0" width="52" height="102.0"/>
+  <line class="line" stroke-width="3" x1="70" y1="152.0" x2="130" y2="152.0"/>
+  <text class="acc" x="100.0" y="140.0" text-anchor="middle" font-weight="700" font-size="17">170</text>
+  <rect class="boxok" stroke-width="1.5" x="130" y="154.0" width="52" height="96.0"/>
+  <line class="line" stroke-width="3" x1="126" y1="150.0" x2="186" y2="150.0"/>
+  <text class="ok" x="156.0" y="142.0" text-anchor="middle" font-weight="700" font-size="17">160</text>
+  <text class="ink" x="128.0" y="274.0" text-anchor="middle">Jakost I</text>
+  <rect class="boxa" stroke-width="1.5" x="212" y="100.0" width="52" height="150.0"/>
+  <line class="line" stroke-width="3" x1="208" y1="86.6" x2="268" y2="86.6"/>
+  <text class="acc" x="238.0" y="78.6" text-anchor="middle" font-weight="700" font-size="17">250</text>
+  <rect class="boxok" stroke-width="1.5" x="268" y="70.0" width="52" height="180.0"/>
+  <line class="line" stroke-width="3" x1="264" y1="83.4" x2="324" y2="83.4"/>
+  <text class="ok" x="294.0" y="62.0" text-anchor="middle" font-weight="700" font-size="17">300</text>
+  <text class="ink" x="266.0" y="274.0" text-anchor="middle">Jakost II</text>
+  <rect class="boxa" stroke-width="1.5" x="350" y="202.0" width="52" height="48.0"/>
+  <line class="line" stroke-width="3" x1="346" y1="211.4" x2="406" y2="211.4"/>
+  <text class="acc" x="376.0" y="194.0" text-anchor="middle" font-weight="700" font-size="17">80</text>
+  <rect class="boxok" stroke-width="1.5" x="406" y="220.0" width="52" height="30.0"/>
+  <line class="line" stroke-width="3" x1="402" y1="210.6" x2="462" y2="210.6"/>
+  <text class="ok" x="432.0" y="202.6" text-anchor="middle" font-weight="700" font-size="17">50</text>
+  <text class="ink" x="404.0" y="274.0" text-anchor="middle">Zmetky</text>
+  <line class="line" stroke-width="2" x1="56" y1="250" x2="470" y2="250"/>
+  <rect class="boxa" stroke-width="1.5" x="56" y="8" width="16" height="16"/>
+  <text class="ink" x="78.0" y="22.0" text-anchor="start" font-size="17">dopolední</text>
+  <rect class="boxok" stroke-width="1.5" x="176" y="8" width="16" height="16"/>
+  <text class="ink" x="198.0" y="22.0" text-anchor="start" font-size="17">odpolední</text>
+  <line class="line" stroke-width="3" x1="306" y1="16" x2="328" y2="16"/>
+  <text class="ink" x="334.0" y="22.0" text-anchor="start" font-size="17">teoretická</text>
+</svg>

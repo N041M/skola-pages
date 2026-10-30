@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 374" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif" font-size="19">
+  <style>
+    .ink { fill: #1a1f27; } .ink2 { fill: #4b5563; } .line { stroke: #1a1f27; } .faint { stroke: #d3d9e2; }
+    .keep { fill: #e3f1e6; } .reject { fill: #fbe7e5; stroke: #b3261e; } .rej { fill: #b3261e; } .ok { fill: #1f6b47; }
+    .beta { fill: #e6eefb; stroke: #1f56b8; } .acc { fill: #1f56b8; } .accl { stroke: #1f56b8; }
+    .box { fill: #ffffff; stroke: #4b5563; } .boxa { fill: #e6eefb; stroke: #1f56b8; } .boxok { fill: #e3f1e6; stroke: #1f6b47; } .boxbad { fill: #fbe7e5; stroke: #b3261e; }
+    @media (prefers-color-scheme: dark) {
+      .ink { fill: #e9ecf1; } .ink2 { fill: #aab2bf; } .line { stroke: #e9ecf1; } .faint { stroke: #333b47; }
+      .keep { fill: #1c3328; } .reject { fill: #3d2220; stroke: #ff9a92; } .rej { fill: #ff9a92; } .ok { fill: #7fd4a5; }
+      .beta { fill: #232d3f; stroke: #8db4ff; } .acc { fill: #8db4ff; } .accl { stroke: #8db4ff; }
+      .box { fill: #1a1f26; stroke: #aab2bf; } .boxa { fill: #232d3f; stroke: #8db4ff; } .boxok { fill: #1c3328; stroke: #7fd4a5; } .boxbad { fill: #3d2220; stroke: #ff9a92; }
+    }
+  </style>
+  <rect class="boxa" stroke-width="1.5" x="60" y="4" width="360" height="60"/>
+  <text class="ink" x="240.0" y="29.0" text-anchor="middle">Dva výběry: jsou závislé</text>
+  <text class="ink" x="240.0" y="51.0" text-anchor="middle">(párové)?</text>
+  <line class="line" stroke-width="1.5" x1="150" y1="64" x2="104" y2="100"/>
+  <path class="ink" d="M104.0,100.0 L108.4,92.1 L112.7,97.7 Z"/>
+  <text class="ink2" x="106.0" y="82.0" text-anchor="middle" font-size="17" font-style="italic">ano</text>
+  <line class="line" stroke-width="1.5" x1="330" y1="64" x2="363" y2="100"/>
+  <path class="ink" d="M363.0,100.0 L354.8,96.3 L360.0,91.5 Z"/>
+  <text class="ink2" x="366.0" y="84.0" text-anchor="middle" font-size="17" font-style="italic">ne</text>
+  <rect class="boxok" stroke-width="1.5" x="4" y="100" width="200" height="70"/>
+  <text class="ink" x="104.0" y="130.0" text-anchor="middle" font-weight="700">párový t-test</text>
+  <text class="ink2" x="104.0" y="152.0" text-anchor="middle" font-size="17">t(n − 1) z rozdílů d</text>
+  <rect class="boxa" stroke-width="1.5" x="250" y="100" width="226" height="60"/>
+  <text class="ink" x="363.0" y="125.0" text-anchor="middle">Jsou σ₁ a σ₂</text>
+  <text class="ink" x="363.0" y="147.0" text-anchor="middle">známé?</text>
+  <line class="line" stroke-width="1.5" x1="300" y1="160" x2="220" y2="200"/>
+  <path class="ink" d="M220.0,200.0 L225.8,193.2 L229.0,199.4 Z"/>
+  <text class="ink2" x="238.0" y="176.0" text-anchor="middle" font-size="17" font-style="italic">ano</text>
+  <line class="line" stroke-width="1.5" x1="420" y1="160" x2="420" y2="200"/>
+  <path class="ink" d="M420.0,200.0 L416.5,191.7 L423.5,191.7 Z"/>
+  <text class="ink2" x="440.0" y="184.0" text-anchor="middle" font-size="17" font-style="italic">ne</text>
+  <rect class="boxok" stroke-width="1.5" x="4" y="200" width="200" height="60"/>
+  <text class="ink" x="104.0" y="225.0" text-anchor="middle" font-weight="700">Z-test</text>
+  <text class="ink2" x="104.0" y="247.0" text-anchor="middle" font-size="17">N(0,1)</text>
+  <rect class="boxa" stroke-width="1.5" x="250" y="200" width="226" height="50"/>
+  <text class="ink" x="363.0" y="231.0" text-anchor="middle">F-test shody rozptylů</text>
+  <line class="line" stroke-width="1.5" x1="320" y1="250" x2="160" y2="300"/>
+  <path class="ink" d="M160.0,300.0 L166.9,294.2 L169.0,300.9 Z"/>
+  <text class="ink2" x="88.0" y="290.0" text-anchor="middle" font-size="17" font-style="italic">F nezamítá</text>
+  <line class="line" stroke-width="1.5" x1="420" y1="250" x2="380" y2="300"/>
+  <path class="ink" d="M380.0,300.0 L382.4,291.3 L387.9,295.7 Z"/>
+  <text class="ink2" x="440.0" y="280.0" text-anchor="middle" font-size="17" font-style="italic">F zamítá</text>
+  <rect class="boxok" stroke-width="1.5" x="4" y="300" width="236" height="70"/>
+  <text class="ink" x="122.0" y="330.0" text-anchor="middle" font-weight="700">t-test, shodné rozptyly</text>
+  <text class="ink2" x="122.0" y="352.0" text-anchor="middle" font-size="17">t(n₁ + n₂ − 2)</text>
+  <rect class="boxok" stroke-width="1.5" x="250" y="300" width="226" height="70"/>
+  <text class="ink" x="363.0" y="330.0" text-anchor="middle" font-weight="700">Welchův t-test</text>
+  <text class="ink2" x="363.0" y="352.0" text-anchor="middle" font-size="17">df zaokrouhlit dolů</text>
+</svg>

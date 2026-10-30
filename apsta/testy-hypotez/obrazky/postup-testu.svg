@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 518" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif" font-size="19">
+  <style>
+    .ink { fill: #1a1f27; } .ink2 { fill: #4b5563; } .line { stroke: #1a1f27; } .faint { stroke: #d3d9e2; }
+    .keep { fill: #e3f1e6; } .reject { fill: #fbe7e5; stroke: #b3261e; } .rej { fill: #b3261e; } .ok { fill: #1f6b47; }
+    .beta { fill: #e6eefb; stroke: #1f56b8; } .acc { fill: #1f56b8; } .accl { stroke: #1f56b8; }
+    .box { fill: #ffffff; stroke: #4b5563; } .boxa { fill: #e6eefb; stroke: #1f56b8; } .boxok { fill: #e3f1e6; stroke: #1f6b47; } .boxbad { fill: #fbe7e5; stroke: #b3261e; }
+    @media (prefers-color-scheme: dark) {
+      .ink { fill: #e9ecf1; } .ink2 { fill: #aab2bf; } .line { stroke: #e9ecf1; } .faint { stroke: #333b47; }
+      .keep { fill: #1c3328; } .reject { fill: #3d2220; stroke: #ff9a92; } .rej { fill: #ff9a92; } .ok { fill: #7fd4a5; }
+      .beta { fill: #232d3f; stroke: #8db4ff; } .acc { fill: #8db4ff; } .accl { stroke: #8db4ff; }
+      .box { fill: #1a1f26; stroke: #aab2bf; } .boxa { fill: #232d3f; stroke: #8db4ff; } .boxok { fill: #1c3328; stroke: #7fd4a5; } .boxbad { fill: #3d2220; stroke: #ff9a92; }
+    }
+  </style>
+  <rect class="boxa" stroke-width="2" x="2" y="6" width="34" height="248"/>
+  <text class="acc" font-weight="700" font-size="17" text-anchor="middle" transform="translate(24 130.0) rotate(-90)">Příprava</text>
+  <rect class="boxa" stroke-width="1.5" x="46" y="6" width="432" height="56"/>
+  <text class="acc" x="70.0" y="41.0" text-anchor="middle" font-weight="700" font-size="20">1</text>
+  <text class="ink" x="96.0" y="41.0" text-anchor="start" font-weight="700">Zapsat H₀ a H₁</text>
+  <rect class="boxa" stroke-width="1.5" x="46" y="70" width="432" height="56"/>
+  <text class="acc" x="70.0" y="105.0" text-anchor="middle" font-weight="700" font-size="20">2</text>
+  <text class="ink" x="96.0" y="94.0" text-anchor="start" font-weight="700">Zvolit α</text>
+  <text class="ink2" x="96.0" y="116.0" text-anchor="start" font-size="17">obvykle 0,05</text>
+  <rect class="boxa" stroke-width="1.5" x="46" y="134" width="432" height="56"/>
+  <text class="acc" x="70.0" y="169.0" text-anchor="middle" font-weight="700" font-size="20">3</text>
+  <text class="ink" x="96.0" y="169.0" text-anchor="start" font-weight="700">Získat výběrová data</text>
+  <rect class="boxa" stroke-width="1.5" x="46" y="198" width="432" height="56"/>
+  <text class="acc" x="70.0" y="233.0" text-anchor="middle" font-weight="700" font-size="20">4</text>
+  <text class="ink" x="96.0" y="222.0" text-anchor="start" font-weight="700">Zvolit test</text>
+  <text class="ink2" x="96.0" y="244.0" text-anchor="start" font-size="17">proměnná, parametr, H₁, n, předpoklady</text>
+  <rect class="box" stroke-width="2" x="2" y="262" width="34" height="120"/>
+  <text class="ink" font-weight="700" font-size="17" text-anchor="middle" transform="translate(24 322.0) rotate(-90)">Výpočet</text>
+  <rect class="box" stroke-width="1.5" x="46" y="262" width="432" height="56"/>
+  <text class="ink" x="70.0" y="297.0" text-anchor="middle" font-weight="700" font-size="20">5</text>
+  <text class="ink" x="96.0" y="286.0" text-anchor="start" font-weight="700">Vypočítat TK</text>
+  <text class="ink2" x="96.0" y="308.0" text-anchor="start" font-size="17">z výběru</text>
+  <rect class="box" stroke-width="1.5" x="46" y="326" width="432" height="56"/>
+  <text class="ink" x="70.0" y="361.0" text-anchor="middle" font-weight="700" font-size="20">6</text>
+  <text class="ink" x="96.0" y="350.0" text-anchor="start" font-weight="700">Určit Wα</text>
+  <text class="ink2" x="96.0" y="372.0" text-anchor="start" font-size="17">pro zvolené α a tvar H₁</text>
+  <rect class="boxok" stroke-width="2" x="2" y="390" width="34" height="120"/>
+  <text class="ok" font-weight="700" font-size="17" text-anchor="middle" transform="translate(24 450.0) rotate(-90)">Závěr</text>
+  <rect class="boxok" stroke-width="1.5" x="46" y="390" width="432" height="56"/>
+  <text class="ok" x="70.0" y="425.0" text-anchor="middle" font-weight="700" font-size="20">7</text>
+  <text class="ink" x="96.0" y="414.0" text-anchor="start" font-weight="700">Rozhodnout</text>
+  <text class="ink2" x="96.0" y="436.0" text-anchor="start" font-size="17">TK ∈ Wα, nebo p ≤ α?</text>
+  <rect class="boxok" stroke-width="1.5" x="46" y="454" width="432" height="56"/>
+  <text class="ok" x="70.0" y="489.0" text-anchor="middle" font-weight="700" font-size="20">8</text>
+  <text class="ink" x="96.0" y="478.0" text-anchor="start" font-weight="700">Interpretovat</text>
+  <text class="ink2" x="96.0" y="500.0" text-anchor="start" font-size="17">slovy úlohy</text>
+</svg>
