@@ -12,8 +12,8 @@
     }
   </style>
   <rect class="boxa" stroke-width="1.5" x="60" y="4" width="360" height="60"/>
-  <text class="ink" x="240.0" y="29.0" text-anchor="middle">Přibližně normální rozdělení,</text>
-  <text class="ink" x="240.0" y="51.0" text-anchor="middle">nebo velké n (CLV)?</text>
+  <text class="ink" x="240.0" y="29.0" text-anchor="middle" font-size="19">Přibližně normální rozdělení,</text>
+  <text class="ink" x="240.0" y="51.0" text-anchor="middle" font-size="19">nebo velké n (CLV)?</text>
   <path class="line" fill="none" stroke-width="1.5" d="M12,110 L12,280 M12,140 L24,140 M12,210 L24,210 M12,280 L24,280"/>
   <line class="line" stroke-width="1.5" x1="150" y1="64" x2="14" y2="108"/>
   <path class="ink" d="M14.0,108.0 L20.8,102.1 L23.0,108.8 Z"/>
@@ -22,17 +22,17 @@
   <path class="ink" d="M362.0,108.0 L354.3,103.4 L360.0,99.2 Z"/>
   <text class="ink2" x="364.0" y="90.0" text-anchor="middle" font-size="17" font-style="italic">ne</text>
   <rect class="boxok" stroke-width="1.5" x="24" y="110" width="210" height="60"/>
-  <text class="ink" x="129.0" y="135.0" text-anchor="middle" font-weight="700">μ, σ známé</text>
+  <text class="ink" x="129.0" y="135.0" text-anchor="middle" font-weight="700" font-size="19">μ, σ známé</text>
   <text class="ink2" x="129.0" y="157.0" text-anchor="middle" font-size="17">u-test, N(0,1)</text>
   <rect class="boxok" stroke-width="1.5" x="24" y="180" width="210" height="60"/>
-  <text class="ink" x="129.0" y="205.0" text-anchor="middle" font-weight="700">μ, σ neznámé</text>
+  <text class="ink" x="129.0" y="205.0" text-anchor="middle" font-weight="700" font-size="19">μ, σ neznámé</text>
   <text class="ink2" x="129.0" y="227.0" text-anchor="middle" font-size="17">t-test, t(n − 1)</text>
   <rect class="boxok" stroke-width="1.5" x="24" y="250" width="210" height="60"/>
-  <text class="ink" x="129.0" y="275.0" text-anchor="middle" font-weight="700">σ²</text>
+  <text class="ink" x="129.0" y="275.0" text-anchor="middle" font-weight="700" font-size="19">σ²</text>
   <text class="ink2" x="129.0" y="297.0" text-anchor="middle" font-size="17">χ² test, χ²(n − 1)</text>
   <rect class="boxa" stroke-width="1.5" x="248" y="110" width="228" height="60"/>
-  <text class="ink" x="362.0" y="135.0" text-anchor="middle">Dvě hodnoty</text>
-  <text class="ink" x="362.0" y="157.0" text-anchor="middle">(má znak / nemá)?</text>
+  <text class="ink" x="362.0" y="135.0" text-anchor="middle" font-size="19">Dvě hodnoty</text>
+  <text class="ink" x="362.0" y="157.0" text-anchor="middle" font-size="19">(má znak / nemá)?</text>
   <line class="line" stroke-width="1.5" x1="307" y1="170" x2="307" y2="200"/>
   <path class="ink" d="M307.0,200.0 L303.5,191.7 L310.5,191.7 Z"/>
   <text class="ink2" x="282.0" y="192.0" text-anchor="middle" font-size="17" font-style="italic">ano</text>
@@ -40,11 +40,11 @@
   <path class="ink" d="M417.0,200.0 L413.5,191.7 L420.5,191.7 Z"/>
   <text class="ink2" x="440.0" y="192.0" text-anchor="middle" font-size="17" font-style="italic">ne</text>
   <rect class="boxok" stroke-width="1.5" x="248" y="200" width="110" height="110"/>
-  <text class="ink" x="303.0" y="239.0" text-anchor="middle" font-weight="700">π</text>
+  <text class="ink" x="303.0" y="239.0" text-anchor="middle" font-weight="700" font-size="19">π</text>
   <text class="ink2" x="303.0" y="261.0" text-anchor="middle" font-size="17">limitní</text>
   <text class="ink2" x="303.0" y="283.0" text-anchor="middle" font-size="17">u-test</text>
   <rect class="box" stroke-width="1.5" x="366" y="200" width="110" height="110"/>
-  <text class="ink" x="421.0" y="239.0" text-anchor="middle" font-weight="700">jiný test</text>
+  <text class="ink" x="421.0" y="239.0" text-anchor="middle" font-weight="700" font-size="19">jiný test</text>
   <text class="ink2" x="421.0" y="261.0" text-anchor="middle" font-size="17">není na</text>
   <text class="ink2" x="421.0" y="283.0" text-anchor="middle" font-size="17">písemce</text>
 </svg>

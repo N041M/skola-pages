@@ -19,12 +19,12 @@
   <text class="ink2" x="322.9" y="50.0" text-anchor="middle" font-size="17">KH = χ²₀,₉₅;₅</text>
   <line class="accl" stroke-width="3" x1="110.4" y1="190" x2="110.4" y2="26"/>
   <circle class="acc" cx="110.4" cy="26" r="5"/>
-  <text class="acc" x="120.4" y="30.0" text-anchor="start" font-weight="700">χ² = 3,2</text>
-  <text class="ok" x="199.5" y="160.0" text-anchor="middle" font-weight="700">V</text>
-  <text class="rej" x="402.0" y="140.0" text-anchor="middle" font-weight="700">Wα</text>
+  <text class="acc" x="120.4" y="30.0" text-anchor="start" font-weight="700" font-size="19">χ² = 3,2</text>
+  <text class="ok" x="199.5" y="160.0" text-anchor="middle" font-weight="700" font-size="19">V</text>
+  <text class="rej" x="402.0" y="140.0" text-anchor="middle" font-weight="700" font-size="19">Wα</text>
   <text class="rej" x="402.0" y="162.0" text-anchor="middle" font-size="17">α = 0,05</text>
-  <text class="ink" x="24.0" y="214.0" text-anchor="middle">0</text>
-  <text class="ink" x="110.4" y="214.0" text-anchor="middle">3,2</text>
-  <text class="ink" x="322.9" y="214.0" text-anchor="middle">11,07</text>
-  <text class="ink2" x="470.0" y="214.0" text-anchor="end" font-style="italic">χ²</text>
+  <text class="ink" x="24.0" y="214.0" text-anchor="middle" font-size="19">0</text>
+  <text class="ink" x="110.4" y="214.0" text-anchor="middle" font-size="19">3,2</text>
+  <text class="ink" x="322.9" y="214.0" text-anchor="middle" font-size="19">11,07</text>
+  <text class="ink2" x="470.0" y="214.0" text-anchor="end" font-style="italic" font-size="19">χ²</text>
 </svg>

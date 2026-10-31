@@ -34,11 +34,11 @@
   <rect class="box" stroke-width="1" x="435.9" y="198.3" width="23.2" height="1.7"/>
   <line class="line" stroke-width="2" x1="10" y1="200" x2="470" y2="200"/>
   <line class="accl" stroke-width="2" stroke-dasharray="5 4" x1="103.2" y1="200" x2="103.2" y2="48"/>
-  <text class="acc" x="107.2" y="224.0" text-anchor="start" font-weight="700">0,025</text>
+  <text class="acc" x="107.2" y="224.0" text-anchor="start" font-weight="700" font-size="19">0,025</text>
   <line class="accl" stroke-width="2" stroke-dasharray="5 4" x1="376.7" y1="200" x2="376.7" y2="48"/>
-  <text class="acc" x="376.7" y="224.0" text-anchor="middle" font-weight="700">0,245</text>
+  <text class="acc" x="376.7" y="224.0" text-anchor="middle" font-weight="700" font-size="19">0,245</text>
   <line class="rejl" stroke-width="3" x1="72.2" y1="200" x2="72.2" y2="48"/>
-  <text class="rej" x="68.2" y="224.0" text-anchor="end" font-weight="700">0</text>
+  <text class="rej" x="68.2" y="224.0" text-anchor="end" font-weight="700" font-size="19">0</text>
   <text class="rej" x="10.0" y="30.0" text-anchor="start" font-size="16" font-weight="700">nula mimo interval</text>
   <text class="acc" x="280.0" y="30.0" text-anchor="middle" font-size="17" font-weight="700">prostředních 95 %</text>
 </svg>

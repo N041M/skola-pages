@@ -19,13 +19,13 @@
   <text class="ink2" x="252.6" y="34.0" text-anchor="middle" font-size="17">KH = F₀,₉₅;₁₂;₁₄</text>
   <line class="accl" stroke-width="3" x1="340.6" y1="190" x2="340.6" y2="100"/>
   <circle class="acc" cx="340.6" cy="100" r="5"/>
-  <text class="acc" x="348.6" y="90.0" text-anchor="start" font-weight="700">F = 3,53</text>
-  <text class="ok" x="118.0" y="150.0" text-anchor="middle" font-weight="700">V</text>
-  <text class="rej" x="417.2" y="140.0" text-anchor="middle" font-weight="700">Wα</text>
+  <text class="acc" x="348.6" y="90.0" text-anchor="start" font-weight="700" font-size="19">F = 3,53</text>
+  <text class="ok" x="118.0" y="150.0" text-anchor="middle" font-weight="700" font-size="19">V</text>
+  <text class="rej" x="417.2" y="140.0" text-anchor="middle" font-weight="700" font-size="19">Wα</text>
   <text class="rej" x="417.2" y="162.0" text-anchor="middle" font-size="17">α = 0,05</text>
-  <text class="ink" x="30.0" y="214.0" text-anchor="middle">0</text>
-  <text class="ink" x="118.0" y="214.0" text-anchor="middle">1</text>
-  <text class="ink" x="252.6" y="214.0" text-anchor="middle">2,53</text>
-  <text class="ink" x="340.6" y="214.0" text-anchor="middle">3,53</text>
-  <text class="ink2" x="470.0" y="214.0" text-anchor="end" font-style="italic">F</text>
+  <text class="ink" x="30.0" y="214.0" text-anchor="middle" font-size="19">0</text>
+  <text class="ink" x="118.0" y="214.0" text-anchor="middle" font-size="19">1</text>
+  <text class="ink" x="252.6" y="214.0" text-anchor="middle" font-size="19">2,53</text>
+  <text class="ink" x="340.6" y="214.0" text-anchor="middle" font-size="19">3,53</text>
+  <text class="ink2" x="470.0" y="214.0" text-anchor="end" font-style="italic" font-size="19">F</text>
 </svg>

@@ -47,8 +47,8 @@
   <circle class="acc" cx="217.4" cy="151.6" r="7"/>
   <circle class="acc" cx="295.8" cy="126.7" r="7"/>
   <circle class="acc" cx="377.5" cy="87.1" r="7"/>
-  <text class="rej" x="70.0" y="52.0" text-anchor="start" font-weight="700">model přeceňuje</text>
-  <text class="ok" x="384.8" y="220.0" text-anchor="end" font-weight="700">model podceňuje</text>
+  <text class="rej" x="70.0" y="52.0" text-anchor="start" font-weight="700" font-size="19">model přeceňuje</text>
+  <text class="ok" x="384.8" y="220.0" text-anchor="end" font-weight="700" font-size="19">model podceňuje</text>
   <text class="ink2" x="452.0" y="296.0" text-anchor="end" font-size="16">skutečný závazek →</text>
   <text class="ink2" x="16.0" y="20.0" text-anchor="start" font-size="16">predikce ↑</text>
 </svg>

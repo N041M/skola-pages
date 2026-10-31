@@ -13,7 +13,7 @@
       .box { fill: #1a1f26; stroke: #aab2bf; } .boxa { fill: #232d3f; stroke: #8db4ff; } .boxok { fill: #1c3328; stroke: #7fd4a5; } .boxbad { fill: #3d2220; stroke: #ff9a92; }
     }
   </style>
-  <text class="ink" x="16.0" y="22.0" text-anchor="start" font-weight="700">v pořádku: vodorovný pás</text>
+  <text class="ink" x="16.0" y="22.0" text-anchor="start" font-weight="700" font-size="19">v pořádku: vodorovný pás</text>
   <line class="line" stroke-width="1.5" stroke-dasharray="5 4" x1="16" y1="95" x2="464" y2="95"/>
   <circle class="acc" cx="163.9" cy="80.5" r="4.5"/>
   <circle class="acc" cx="55.3" cy="74.8" r="4.5"/>
@@ -61,7 +61,7 @@
   <circle class="acc" cx="400.5" cy="77.9" r="4.5"/>
   <circle class="acc" cx="58.8" cy="115.6" r="4.5"/>
   <circle class="acc" cx="405.6" cy="88.2" r="4.5"/>
-  <text class="ink" x="16.0" y="182.0" text-anchor="start" font-weight="700">nelinearita: oblouk</text>
+  <text class="ink" x="16.0" y="182.0" text-anchor="start" font-weight="700" font-size="19">nelinearita: oblouk</text>
   <line class="line" stroke-width="1.5" stroke-dasharray="5 4" x1="16" y1="255" x2="464" y2="255"/>
   <circle class="acc" cx="377.9" cy="247.9" r="4.5"/>
   <circle class="acc" cx="203.4" cy="272.6" r="4.5"/>
@@ -109,7 +109,7 @@
   <circle class="acc" cx="36.5" cy="232.9" r="4.5"/>
   <circle class="acc" cx="36.1" cy="233.1" r="4.5"/>
   <circle class="acc" cx="323.2" cy="256.9" r="4.5"/>
-  <text class="ink" x="16.0" y="342.0" text-anchor="start" font-weight="700">heteroskedasticita: nálevka</text>
+  <text class="ink" x="16.0" y="342.0" text-anchor="start" font-weight="700" font-size="19">heteroskedasticita: nálevka</text>
   <line class="line" stroke-width="1.5" stroke-dasharray="5 4" x1="16" y1="415" x2="464" y2="415"/>
   <circle class="acc" cx="437.2" cy="476.1" r="4.5"/>
   <circle class="acc" cx="450.8" cy="393.3" r="4.5"/>

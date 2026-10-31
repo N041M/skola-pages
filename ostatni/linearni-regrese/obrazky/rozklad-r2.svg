@@ -13,12 +13,12 @@
       .box { fill: #1a1f26; stroke: #aab2bf; } .boxa { fill: #232d3f; stroke: #8db4ff; } .boxok { fill: #1c3328; stroke: #7fd4a5; } .boxbad { fill: #3d2220; stroke: #ff9a92; }
     }
   </style>
-  <text class="ink" x="16.0" y="30.0" text-anchor="start" font-weight="700">SST = 10</text>
+  <text class="ink" x="16.0" y="30.0" text-anchor="start" font-weight="700" font-size="19">SST = 10</text>
   <rect class="boxok" stroke-width="1.5" x="16" y="44" width="286.7" height="56"/>
   <rect class="boxbad" stroke-width="1.5" x="302.7" y="44" width="161.3" height="56"/>
-  <text class="ok" x="159.4" y="79.0" text-anchor="middle" font-weight="700">SSreg = 6,4</text>
-  <text class="rej" x="383.4" y="79.0" text-anchor="middle" font-weight="700">SSres = 3,6</text>
+  <text class="ok" x="159.4" y="79.0" text-anchor="middle" font-weight="700" font-size="19">SSreg = 6,4</text>
+  <text class="rej" x="383.4" y="79.0" text-anchor="middle" font-weight="700" font-size="19">SSres = 3,6</text>
   <text class="ok" x="159.4" y="128.0" text-anchor="middle" font-size="17">vysvětleno modelem</text>
   <text class="rej" x="383.4" y="128.0" text-anchor="middle" font-size="17">nevysvětleno</text>
-  <text class="ink" x="16.0" y="166.0" text-anchor="start" font-weight="700">R² = SSreg / SST = 6,4 / 10 = 0,64</text>
+  <text class="ink" x="16.0" y="166.0" text-anchor="start" font-weight="700" font-size="19">R² = SSreg / SST = 6,4 / 10 = 0,64</text>
 </svg>

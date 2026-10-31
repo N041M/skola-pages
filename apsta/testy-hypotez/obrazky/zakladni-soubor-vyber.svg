@@ -12,12 +12,12 @@
     }
   </style>
   <rect class="boxa" stroke-width="2" x="4" y="30" width="230" height="170"/>
-  <text class="acc" x="119.0" y="22.0" text-anchor="middle" font-weight="700">Základní soubor</text>
+  <text class="acc" x="119.0" y="22.0" text-anchor="middle" font-weight="700" font-size="19">Základní soubor</text>
   <text class="acc" x="119.0" y="95.0" text-anchor="middle" font-size="34" font-weight="700">μ  σ²  π</text>
   <text class="ink2" x="119.0" y="135.0" text-anchor="middle" font-size="18">parametry, neznámé</text>
   <text class="ink2" x="119.0" y="160.0" text-anchor="middle" font-size="18">jsou v hypotézách</text>
   <rect class="box" stroke-width="2" x="316" y="60" width="160" height="110"/>
-  <text class="ink" x="396.0" y="52.0" text-anchor="middle" font-weight="700">Výběr (n)</text>
+  <text class="ink" x="396.0" y="52.0" text-anchor="middle" font-weight="700" font-size="19">Výběr (n)</text>
   <text class="ink" x="396.0" y="112.0" text-anchor="middle" font-size="30" font-weight="700">x̄  s²  p</text>
   <text class="ink2" x="396.0" y="150.0" text-anchor="middle" font-size="18">spočítané z dat</text>
   <line class="line" stroke-width="1.5" x1="236" y1="80" x2="314" y2="80"/>

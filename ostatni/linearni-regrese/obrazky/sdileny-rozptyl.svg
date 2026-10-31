@@ -16,9 +16,9 @@
   <circle class="boxa" fill-opacity="0.55" stroke-width="2" cx="240" cy="105" r="90"/>
   <circle class="boxok" fill-opacity="0.55" stroke-width="2" cx="185" cy="190" r="85"/>
   <circle class="boxbad" fill-opacity="0.55" stroke-width="2" cx="295" cy="190" r="85"/>
-  <text class="acc" x="240.0" y="48.0" text-anchor="middle" font-weight="700">závazek</text>
-  <text class="ok" x="170.0" y="302.0" text-anchor="middle" font-weight="700">investice</text>
-  <text class="rej" x="310.0" y="302.0" text-anchor="middle" font-weight="700">spokojenost</text>
+  <text class="acc" x="240.0" y="48.0" text-anchor="middle" font-weight="700" font-size="19">závazek</text>
+  <text class="ok" x="170.0" y="302.0" text-anchor="middle" font-weight="700" font-size="19">investice</text>
+  <text class="rej" x="310.0" y="302.0" text-anchor="middle" font-weight="700" font-size="19">spokojenost</text>
   <text class="ink" x="188.0" y="134.0" text-anchor="middle" font-weight="700" font-size="24">a</text>
   <text class="ink" x="240.0" y="172.0" text-anchor="middle" font-weight="700" font-size="24">b</text>
   <text class="ink" x="292.0" y="134.0" text-anchor="middle" font-weight="700" font-size="24">c</text>

@@ -11,7 +11,7 @@
       .box { fill: #1a1f26; stroke: #aab2bf; } .boxa { fill: #232d3f; stroke: #8db4ff; } .boxok { fill: #1c3328; stroke: #7fd4a5; } .boxbad { fill: #3d2220; stroke: #ff9a92; }
     }
   </style>
-  <text class="ink" x="118.0" y="24.0" text-anchor="middle" font-weight="700">Závislé (párové)</text>
+  <text class="ink" x="118.0" y="24.0" text-anchor="middle" font-weight="700" font-size="19">Závislé (párové)</text>
   <text class="ink2" x="48.0" y="56.0" text-anchor="middle" font-size="17">před</text>
   <text class="ink2" x="188.0" y="56.0" text-anchor="middle" font-size="17">po</text>
   <line class="line" stroke-width="1.5" stroke-dasharray="5 4" x1="64" y1="84" x2="172" y2="84"/>
@@ -37,7 +37,7 @@
   <text class="acc" x="118.0" y="76.0" text-anchor="middle" font-size="17" font-style="italic">dᵢ</text>
   <text class="ink2" x="118.0" y="246.0" text-anchor="middle" font-size="17">stejné jednotky, n₁ = n₂</text>
   <line class="faint" stroke-width="2" x1="240" y1="10" x2="240" y2="250"/>
-  <text class="ink" x="362.0" y="24.0" text-anchor="middle" font-weight="700">Nezávislé</text>
+  <text class="ink" x="362.0" y="24.0" text-anchor="middle" font-weight="700" font-size="19">Nezávislé</text>
   <text class="ink2" x="290.0" y="56.0" text-anchor="middle" font-size="17">skupina 1</text>
   <text class="ink2" x="420.0" y="56.0" text-anchor="middle" font-size="17">skupina 2</text>
   <circle class="boxa" stroke-width="1.5" cx="290" cy="84" r="15"/>

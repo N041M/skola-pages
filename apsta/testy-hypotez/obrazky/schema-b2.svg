@@ -12,8 +12,8 @@
     }
   </style>
   <rect class="boxa" stroke-width="1.5" x="60" y="4" width="360" height="60"/>
-  <text class="ink" x="240.0" y="29.0" text-anchor="middle">Dva výběry: jsou závislé</text>
-  <text class="ink" x="240.0" y="51.0" text-anchor="middle">(párové)?</text>
+  <text class="ink" x="240.0" y="29.0" text-anchor="middle" font-size="19">Dva výběry: jsou závislé</text>
+  <text class="ink" x="240.0" y="51.0" text-anchor="middle" font-size="19">(párové)?</text>
   <line class="line" stroke-width="1.5" x1="150" y1="64" x2="104" y2="100"/>
   <path class="ink" d="M104.0,100.0 L108.4,92.1 L112.7,97.7 Z"/>
   <text class="ink2" x="106.0" y="82.0" text-anchor="middle" font-size="17" font-style="italic">ano</text>
@@ -21,11 +21,11 @@
   <path class="ink" d="M363.0,100.0 L354.8,96.3 L360.0,91.5 Z"/>
   <text class="ink2" x="366.0" y="84.0" text-anchor="middle" font-size="17" font-style="italic">ne</text>
   <rect class="boxok" stroke-width="1.5" x="4" y="100" width="200" height="70"/>
-  <text class="ink" x="104.0" y="130.0" text-anchor="middle" font-weight="700">párový t-test</text>
+  <text class="ink" x="104.0" y="130.0" text-anchor="middle" font-weight="700" font-size="19">párový t-test</text>
   <text class="ink2" x="104.0" y="152.0" text-anchor="middle" font-size="17">t(n − 1) z rozdílů d</text>
   <rect class="boxa" stroke-width="1.5" x="250" y="100" width="226" height="60"/>
-  <text class="ink" x="363.0" y="125.0" text-anchor="middle">Jsou σ₁ a σ₂</text>
-  <text class="ink" x="363.0" y="147.0" text-anchor="middle">známé?</text>
+  <text class="ink" x="363.0" y="125.0" text-anchor="middle" font-size="19">Jsou σ₁ a σ₂</text>
+  <text class="ink" x="363.0" y="147.0" text-anchor="middle" font-size="19">známé?</text>
   <line class="line" stroke-width="1.5" x1="300" y1="160" x2="220" y2="200"/>
   <path class="ink" d="M220.0,200.0 L225.8,193.2 L229.0,199.4 Z"/>
   <text class="ink2" x="238.0" y="176.0" text-anchor="middle" font-size="17" font-style="italic">ano</text>
@@ -33,10 +33,10 @@
   <path class="ink" d="M420.0,200.0 L416.5,191.7 L423.5,191.7 Z"/>
   <text class="ink2" x="440.0" y="184.0" text-anchor="middle" font-size="17" font-style="italic">ne</text>
   <rect class="boxok" stroke-width="1.5" x="4" y="200" width="200" height="60"/>
-  <text class="ink" x="104.0" y="225.0" text-anchor="middle" font-weight="700">Z-test</text>
+  <text class="ink" x="104.0" y="225.0" text-anchor="middle" font-weight="700" font-size="19">Z-test</text>
   <text class="ink2" x="104.0" y="247.0" text-anchor="middle" font-size="17">N(0,1)</text>
   <rect class="boxa" stroke-width="1.5" x="250" y="200" width="226" height="50"/>
-  <text class="ink" x="363.0" y="231.0" text-anchor="middle">F-test shody rozptylů</text>
+  <text class="ink" x="363.0" y="231.0" text-anchor="middle" font-size="19">F-test shody rozptylů</text>
   <line class="line" stroke-width="1.5" x1="320" y1="250" x2="160" y2="300"/>
   <path class="ink" d="M160.0,300.0 L166.9,294.2 L169.0,300.9 Z"/>
   <text class="ink2" x="88.0" y="290.0" text-anchor="middle" font-size="17" font-style="italic">F nezamítá</text>
@@ -44,9 +44,9 @@
   <path class="ink" d="M380.0,300.0 L382.4,291.3 L387.9,295.7 Z"/>
   <text class="ink2" x="440.0" y="280.0" text-anchor="middle" font-size="17" font-style="italic">F zamítá</text>
   <rect class="boxok" stroke-width="1.5" x="4" y="300" width="236" height="70"/>
-  <text class="ink" x="122.0" y="330.0" text-anchor="middle" font-weight="700">t-test, shodné rozptyly</text>
+  <text class="ink" x="122.0" y="330.0" text-anchor="middle" font-weight="700" font-size="19">t-test, shodné rozptyly</text>
   <text class="ink2" x="122.0" y="352.0" text-anchor="middle" font-size="17">t(n₁ + n₂ − 2)</text>
   <rect class="boxok" stroke-width="1.5" x="250" y="300" width="226" height="70"/>
-  <text class="ink" x="363.0" y="330.0" text-anchor="middle" font-weight="700">Welchův t-test</text>
+  <text class="ink" x="363.0" y="330.0" text-anchor="middle" font-weight="700" font-size="19">Welchův t-test</text>
   <text class="ink2" x="363.0" y="352.0" text-anchor="middle" font-size="17">df zaokrouhlit dolů</text>
 </svg>
