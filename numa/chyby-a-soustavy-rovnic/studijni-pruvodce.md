@@ -26,6 +26,17 @@ Kapitoly jsou seřazené tak, jak na sebe navazují. U každé kapitoly je nejry
 
 Funkce ze cvičení (soubory .m) musí ležet v aktuální složce Matlabu (Current Folder), jinak je Matlab nenajde.
 
+### Videa
+
+Česká videa k látce jsou přednášky doc. P. Habaly z FEL ČVUT k předmětu Diferenciální rovnice a numerické metody. Všechny díly jsou v [playlistu na YouTube](https://www.youtube.com/playlist?list=PLQL6z4JeTTQlinXTnIn6a69BcYqodChPK). Choleského rozklad v jejich osnově není.
+
+| Kapitola | Video |
+|---|---|
+| 2. a 3. GEM, pivotace a LU rozklad | [DRN-08a: Soustavy lineárních rovnic – eliminace, residuum, LUP rozklad](https://www.youtube.com/watch?v=kqO5JQkp6wg) |
+| 5. Normy a podmíněnost | [DRN-08b: Soustavy lineárních rovnic – norma, podmíněnost matice](https://www.youtube.com/watch?v=MvCh1fayomg) |
+| 6. Iterační metody | [DRN-08c: Soustavy lineárních rovnic – iterace (Gauss-Seidel)](https://www.youtube.com/watch?v=KbOlrfnvwUM) |
+| 7. a 8. Chyby a reprezentace čísel | [DRN-01a: Chyby výpočtu a jejich šíření, aproximace, řád chyby O(h^p)](https://www.youtube.com/watch?v=RlziE996_mM) |
+
 ## 1. Matlab minimum
 
 Na zápočet stačí umět zadat matici, vyřešit soustavu a ověřit ruční výpočet.
