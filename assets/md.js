@@ -1,5 +1,6 @@
 // Renders the Markdown subset the study guides use: headings, paragraphs, bullet and
-// numbered lists, tables, images, boxes, **bold**, ==highlight== and `code`.
+// numbered lists, tables, images, boxes, code blocks between ``` lines, **bold**,
+// ==highlight== and `code`.
 // A box is a run of lines starting with ">". Its first line is the title, and the titles
 // in BOXES get their own colour.
 const BOXES = { "Shrnutí": "box-sum", "Pozor": "box-warn", "Na písemku": "box-exam", "Do zprávy": "box-exam" };
@@ -11,7 +12,7 @@ function renderMarkdown(source) {
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/==([^=]+)==/g, "<mark>$1</mark>");
   const cells = (line) => line.trim().replace(/^\||\|$/g, "").split(/(?<!\\)\|/).map((c) => c.trim().replace(/\\\|/g, "|"));
-  const isBlockStart = (l) => /^(#{1,4} |\||>|!\[)/.test(l) || /^(\d+\.|[-*]) /.test(l);
+  const isBlockStart = (l) => /^(#{1,4} |\||>|!\[|```)/.test(l) || /^(\d+\.|[-*]) /.test(l);
 
   const lines = source.replace(/\r\n?/g, "\n").split("\n");
   const out = [];
@@ -29,6 +30,12 @@ function renderMarkdown(source) {
     } else if (image) {
       out.push(`<figure><img src="${esc(image[2])}" alt="${esc(image[1])}"><figcaption>${inline(image[1])}</figcaption></figure>`);
       i++;
+    } else if (line.startsWith("```")) {
+      const code = [];
+      i++;
+      while (i < lines.length && !lines[i].startsWith("```")) code.push(lines[i++]);
+      i++;
+      out.push(`<pre><code>${esc(code.join("\n"))}</code></pre>`);
     } else if (line.startsWith(">")) {
       const body = [];
       while (i < lines.length && lines[i].startsWith(">")) body.push(lines[i++].replace(/^> ?/, ""));

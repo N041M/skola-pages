@@ -108,6 +108,8 @@ h1 { margin: 0 0 2rem; font-size: clamp(2rem, 6vw, 2.75rem); line-height: 1.15; 
 .doc ul, .doc ol { padding-left: 1.5rem; }
 .doc li { margin-bottom: 0.375rem; }
 .doc code { padding: 0.1rem 0.35rem; background: var(--accent-soft); font: 0.9em var(--mono); }
+.doc pre { margin: 0 0 1.25rem; padding: 0.75rem 1rem; overflow-x: auto; background: var(--surface); border: 1px solid var(--line); font: 0.875rem / 1.55 var(--mono); }
+.doc pre code { padding: 0; background: none; font: inherit; }
 .doc .scroll { margin: 0 0 1.25rem; overflow-x: auto; }
 .doc table { border-collapse: collapse; background: var(--surface); font-size: 0.9375rem; line-height: 1.45; }
 .doc th, .doc td { padding: 0.5rem 0.75rem; border: 1px solid var(--line); text-align: left; vertical-align: top; }

@@ -34,4 +34,4 @@ Workflow `.github/workflows/deploy-pages.yml` publikuje celý repozitář při k
 
 ## Zdroje
 
-Obsah vychází z přednášek a materiálů předmětu APSTA (UHK FIM, H. Skalská).
+Obsah vychází z přednášek a materiálů předmětu APSTA (UHK FIM, H. Skalská) a z materiálů ke cvičení předmětu NUMA (Univerzita Hradec Králové, P. Pražák).
