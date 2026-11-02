@@ -1,6 +1,6 @@
 # Chyby a soustavy rovnic: studijní průvodce k zápočtu z NUMA
 
-Zdroje: poznámky ze cvičení, přednáška P. Pražáka „Reprezentace čísel, O chybách a nepřesných číslech“ (numa_01.pdf), listy ze cvičení k LU rozkladu a k iteračním metodám (cvLU_rozklad.pdf, cvITER_SLAR.pdf), řešený příklad MOJE_CHYBA.pdf, kapitola IV „Nejistoty měření a zpracování výsledků“, norma IEEE 754, soubory .m ze cvičení 1 až 4 a dokumentace Matlabu od MathWorks. Kód pro Matlab v průvodci nebyl spuštěný. Výsledky na kontrolu jsou přepočítané v Pythonu, u přímých metod přesně ve zlomcích. V materiálech ke cvičení nejsou čtyři věci, které průvodce přebírá ze standardní učebnicové látky: podmínka ρ(B) < 1, nerovnost s cond(A), hrubé pravidlo o ztrátě platných číslic a mez eps/2. Kroky a věty, které se píšou na zápočtu, jsou v zelených rámečcích „Na písemku“.
+Zdroje: poznámky ze cvičení, přednáška P. Pražáka „Reprezentace čísel, O chybách a nepřesných číslech“ (numa_01.pdf), listy ze cvičení k LU rozkladu a k iteračním metodám (cvLU_rozklad.pdf, cvITER_SLAR.pdf), řešený příklad MOJE_CHYBA.pdf, kapitola IV „Nejistoty měření a zpracování výsledků“, norma IEEE 754, soubory .m ze cvičení 1 až 4 a dokumentace Matlabu od MathWorks. Kód pro Matlab v průvodci nebyl spuštěný. Výsledky na kontrolu jsou přepočítané v Pythonu, u přímých metod přesně ve zlomcích. V materiálech ke cvičení nejsou tyto věci, které průvodce přebírá ze standardní učebnicové látky: vlastní a singulární čísla, podmínka ρ(B) < 1, nerovnost s cond(A), hrubé pravidlo o ztrátě platných číslic, mez eps/2 a převod čísla do dvojkové soustavy. Kroky a věty, které se píšou na zápočtu, jsou v zelených rámečcích „Na písemku“.
 
 ## 0. Co zápočet požaduje
 
@@ -291,7 +291,7 @@ Rozložit A = (4 2 −2; 2 10 2; −2 2 6). Na kontrolu: hlavní minory jsou 4, 
 | sloupcová ‖A‖₁, na listech ‖A‖_S | největší součet absolutních hodnot ve sloupci | `norm(A,1)` |
 | řádková ‖A‖∞, na listech ‖A‖_R | největší součet absolutních hodnot v řádku | `norm(A,Inf)` |
 | Frobeniova ‖A‖_F | odmocnina ze součtu čtverců všech prvků | `norm(A,'fro')` |
-| spektrální ‖A‖₂ | největší singulární číslo, ručně se nepočítá | `norm(A)` |
+| spektrální ‖A‖₂ | největší singulární číslo σ₁, ve cvičeních se počítá jen v Matlabu | `norm(A)` |
 
 > Pozor
 > `norm(A)` bez druhého argumentu je spektrální norma, ne řádková. U vektoru je `norm(v,Inf)` největší absolutní hodnota prvku.
@@ -305,6 +305,57 @@ Frobeniova: √(0,04 + 0,01 + 0,01 + 0,36 + 0,49) = √0,91 ≈ 0,954
 ```
 
 Řádková norma je větší než 1, sloupcová je menší. Pro záruku konvergence stačí, aby byla menší než 1 aspoň jedna norma, a proto poznámky použily sloupcovou.
+
+### Vlastní čísla a spektrální poloměr
+
+==Vlastní číslo== matice B je číslo λ, ke kterému existuje nenulový vektor v s vlastností Bv = λv. Násobení maticí B udělá s takovým vektorem totéž co násobení číslem λ. Vektor v se jmenuje vlastní vektor.
+
+Vlastní čísla jsou kořeny rovnice det(B − λE) = 0. Matice n×n má n vlastních čísel, která se mohou opakovat a mohou být i komplexní. U matice 2×2 vyjde kvadratická rovnice:
+
+```
+B = (a b; c d)
+(a − λ)(d − λ) − bc = 0
+```
+
+==Spektrální poloměr== ρ(B) je největší absolutní hodnota vlastního čísla B. Absolutní hodnota komplexního čísla p + qi je √(p² + q²). V Matlabu vrátí `eig(B)` sloupec vlastních čísel a `max(abs(eig(B)))` spektrální poloměr.
+
+Příklad: B = (0 2; 0,1 0).
+
+```
+det(B − λE) = (−λ)(−λ) − 2 · 0,1
+            = λ² − 0,2 = 0
+λ₁ = √0,2 ≈ 0,447
+λ₂ = −√0,2 ≈ −0,447
+ρ(B) ≈ 0,447
+‖B‖₁ = 2,  ‖B‖∞ = 2
+```
+
+Pro každou normu z tabulky výše platí ρ(B) ≤ ‖B‖. Proto podmínka ‖B‖ < 1 v jedné normě zaručí i ρ(B) < 1. Obráceně to neplatí. Matice B z příkladu má obě normy rovné 2, ale ρ(B) ≈ 0,447, takže iterace s touto maticí konverguje.
+
+> Pozor
+> ρ(B) u matice je spektrální poloměr. ρ(x̃) u čísla v kapitole 7 je odhad relativní chyby. Jde o dvě různé veličiny se stejným písmenem.
+
+### Singulární čísla a spektrální norma
+
+==Singulární čísla== matice A jsou odmocniny vlastních čísel matice AᵀA. Matice AᵀA je symetrická a její vlastní čísla jsou reálná a nezáporná, takže odmocniny vždy existují. Singulární čísla se řadí od největšího: σ₁ ≥ σ₂ ≥ … ≥ σₙ ≥ 0. V Matlabu je vrátí `svd(A)` ve stejném pořadí.
+
+Spektrální norma je největší singulární číslo, ‖A‖₂ = σ₁. Udává, kolikrát nejvíc může násobení maticí A prodloužit vektor, když se délka vektoru měří obvyklým způsobem jako √(v₁² + … + vₙ²). Nejmenší singulární číslo σₙ udává, kolikrát nejméně. Matice 2×2 zobrazí kružnici s poloměrem 1 na elipsu. Delší poloosa elipsy má délku σ₁ a kratší σ₂.
+
+U symetrické matice jsou singulární čísla absolutní hodnoty vlastních čísel, a proto je u ní ‖A‖₂ = ρ(A).
+
+Příklad: A = (3 0; 4 5).
+
+```
+AᵀA = (3 4; 0 5) · (3 0; 4 5)
+    = (25 20; 20 25)
+det(AᵀA − λE) = (25 − λ)² − 20² = 0
+λ₁ = 45,  λ₂ = 5
+σ₁ = √45 ≈ 6,708
+σ₂ = √5 ≈ 2,236
+‖A‖₂ ≈ 6,708
+```
+
+Ostatní normy téže matice jsou pro srovnání ‖A‖₁ = 7, ‖A‖∞ = 9 a ‖A‖_F ≈ 7,071.
 
 ### Podmíněnost matic
 
@@ -345,12 +396,16 @@ A\[2; 2.0002]
 - Poslední dva řádky ukážou, jak malá změna b změní řešení. Výsledky budou jen přibližně (1; 1) a (0; 2), protože 1,0001 nejde ve dvojkové soustavě uložit přesně.
 - Varování „Matrix is close to singular or badly scaled“ Matlab vypíše až u matice, jejíž odhad převrácené hodnoty čísla podmíněnosti (RCOND) je menší než eps. U této matice se neobjeví, přestože je špatně podmíněná.
 
+Ve spektrální normě je ‖A⁻¹‖₂ = 1/σₙ, a proto je cond₂(A) = σ₁/σₙ, tedy poměr největšího a nejmenšího singulárního čísla. Matice A = (3 0; 4 5) z předchozí části má cond₂(A) = √45 / √5 = 3. Matice A = (1 1; 1 1,0001) je symetrická a obě její vlastní čísla jsou kladná, takže její singulární čísla jsou přímo vlastní čísla, přibližně 2,00005 a 0,0000499988. Jejich podíl je přibližně 40002, stejně jako u `cond(A)`. Malé σₙ znamená, že A některý vektor zkrátí skoro na nulu. Malá změna b pak může hodně změnit řešení x.
+
 Další ukázky jsou v cv03_LU/matlab/cond.txt a v cviceni_02.m, kde příklad 3 počítá cond(A) dvěma způsoby.
 
 > Shrnutí
 > - Sloupcová norma je největší sloupcový součet absolutních hodnot, řádková největší řádkový.
 > - Konvergenci iterační metody zaručí, když je aspoň jedna norma B menší než 1.
 > - cond(A) = ‖A‖·‖A⁻¹‖ ≥ 1. Velké číslo znamená, že malá změna dat hodně změní řešení.
+> - Spektrální poloměr ρ(B) je největší absolutní hodnota vlastního čísla B. Pro každou normu z tabulky platí ρ(B) ≤ ‖B‖.
+> - Spektrální norma ‖A‖₂ je největší singulární číslo σ₁ a cond₂(A) = σ₁/σₙ.
 
 ## 6. Iterační metody
 
@@ -369,7 +424,9 @@ Matice se rozdělí na A = L + D + U. L je část pod diagonálou, D je diagoná
 | Jacobiho | −D⁻¹(L + U) | D⁻¹b | A je ryze řádkově diagonálně dominantní |
 | Gauss-Seidelova | −(D + L)⁻¹U | (D + L)⁻¹b | A je ryze řádkově diagonálně dominantní, nebo symetrická a pozitivně definitní |
 
-Podmínky v tabulce jsou postačující. Nutná a postačující podmínka je ==spektrální poloměr ρ(B) < 1==. Spektrální poloměr je největší absolutní hodnota vlastního čísla B a v Matlabu se spočítá jako `max(abs(eig(B)))`.
+Podmínky v tabulce jsou postačující. Nutná a postačující podmínka je ==spektrální poloměr ρ(B) < 1==. Spektrální poloměr je vysvětlený v kapitole 5 a v Matlabu se spočítá jako `max(abs(eig(B)))`.
+
+Důvod je v tom, jak se mění chyba. Přesné řešení x splňuje x = Bx + c. Odečtením od x⁽ᵏ⁺¹⁾ = Bx⁽ᵏ⁾ + c vyjde x⁽ᵏ⁺¹⁾ − x = B·(x⁽ᵏ⁾ − x), takže každý krok chybu vynásobí maticí B. Když je počáteční chyba x⁽⁰⁾ − x vlastní vektor B s vlastním číslem λ, každý krok ji vynásobí číslem λ a po k krocích je λᵏ-násobkem počáteční chyby. Pro |λ| < 1 chyba klesá k nule a pro |λ| > 1 roste. U obecné počáteční chyby se po mnoha krocích chyba v každém kroku vynásobí zhruba číslem ρ(B). Čím menší je ρ(B), tím méně iterací metoda potřebuje. V příkladu níže má Jacobiho metoda ρ(B) ≈ 0,693 a potřebuje 30 iterací, Gauss-Seidelova má ρ(B) ≈ 0,255 a potřebuje 14 iterací.
 
 Předpisy po složkách pro i = 1, …, n:
 
@@ -619,7 +676,31 @@ Zápis z přednášky (str. 10): **x = ±0,d₁d₂…dₜ · β^ϵ**, kde d₁ 
 - fl(x) je číslo z této množiny nejbližší k x a získá se zaokrouhlením. Příklad z přednášky pro t = 2: fl(3/80) = fl(0,0375) = 0,38·10⁻¹.
 - Číslo x̃ je správně zaokrouhlené na t desetinných míst, když |x − x̃| ≤ ½·10⁻ᵗ. Stejnou nerovností se pozná platné desetinné místo (str. 5 a 8).
 
-Matlab počítá ve dvojité přesnosti (double) podle normy IEEE 754. Číslo má 64 bitů: 1 bit znaménko, 11 bitů exponent a 52 bitů mantisa.
+Matlab počítá ve dvojité přesnosti (double) podle normy IEEE 754. Číslo má 64 bitů: 1 bit znaménko, 11 bitů exponent a 52 bitů mantisa. Rozložení bitů je na str. 12 přednášky a jejich význam v ieee754.pdf (odstavec 3.2.2).
+
+Bity tvoří tři části: znaménko s (0 nebo 1), exponent e (celé číslo 0 až 2047) a mantisu f (52 dvojkových číslic). Pro 0 < e < 2047 má číslo hodnotu **x = (−1)^s · 1,f · 2^(e − 1023)**, kde 1,f je dvojkové číslo s jedničkou před čárkou a s číslicemi f za čárkou.
+
+- Od e se odečítá 1023, aby se záporné exponenty daly uložit bez zvláštního znaménka. Skutečný exponent E = e − 1023 je −1022 až 1023.
+- Jednička před čárkou se neukládá, protože ji má každé takové číslo. Mantisa má proto 53 platných dvojkových číslic a to odpovídá 15 až 16 platným desítkovým číslicím.
+- V zápisu z přednášky je to totéž číslo s čárkou posunutou o jedno místo, 1,f · 2^E = 0,1f · 2^(E + 1). Pro double je tedy β = 2 a t = 53.
+- e = 0 je vyhrazené pro nulu a pro denormalizovaná čísla menší než `realmin`. e = 2047 je vyhrazené pro Inf a NaN.
+- Největší číslo je `realmax` = (2 − 2⁻⁵²) · 2¹⁰²³ ≈ 1,7977·10³⁰⁸ a nejmenší kladné normalizované číslo je `realmin` = 2⁻¹⁰²² ≈ 2,2251·10⁻³⁰⁸.
+- Číslo 1 má ve f samé nuly. Nejbližší větší číslo má jedničku jen v poslední, 52. číslici f, a liší se tedy o 2⁻⁵² = eps.
+
+Desetinná část se do dvojkové soustavy převede opakovaným násobením dvěma. Celá část každého součinu je další číslice za čárkou a dál se násobí jen část za čárkou. Příklad pro 0,1:
+
+```
+0,1 · 2 = 0,2   → 0
+0,2 · 2 = 0,4   → 0
+0,4 · 2 = 0,8   → 0
+0,8 · 2 = 1,6   → 1
+0,6 · 2 = 1,2   → 1
+0,2 · 2 = 0,4   → 0
+0,1 = 0,000110011001100…₂
+    = 1,100110011…₂ · 2⁻⁴
+```
+
+Šestý řádek začíná stejně jako druhý, a proto se od něj číslice opakují. Skupina 0011 se opakuje donekonečna a 52 bitů mantisy ji musí useknout a poslední bit zaokrouhlit. Uložené číslo proto není přesně 0,1 a první řádek ukázek níže vrátí nepravdu. Uloží se s = 0, e = −4 + 1023 = 1019 a f = 1001 1001 … 1001 1010. Číslo 5,75 = 101,11₂ = 1,0111₂ · 2² se naopak uloží přesně: s = 0, e = 2 + 1023 = 1025 a f je 0111 a za tím samé nuly.
 
 Aritmetika v pohyblivé řádové čárce zaokrouhluje i výsledek každé operace: a ⊕ b = fl(fl(a) + fl(b)). Proto neplatí asociativní zákon. Příklad z přednášky pro t = 3, a = 0,666·10⁻¹, b = −0,660·10⁻¹ a c = 0,944·10⁻³ dává (a ⊕ b) ⊕ c = 0,154·10⁻², ale a ⊕ (b ⊕ c) = 0,160·10⁻².
 
@@ -664,6 +745,7 @@ Příklad z přednášky: soustava x + αy = 1, αx + y = 0 se vstupem α a výs
 
 > Shrnutí
 > - Číslo v počítači je ±0,d₁…dₜ·β^ϵ s omezenou mantisou, takže se zaokrouhluje.
+> - Double má hodnotu (−1)^s · 1,f · 2^(e − 1023). Jednička před čárkou se neukládá, takže mantisa má 53 platných dvojkových číslic.
 > - Double má 52 bitů mantisy a eps = 2⁻⁵². Čísla se porovnávají s tolerancí, ne přes `==`.
 > - Odečtení blízkých čísel ztrácí platné číslice a v počítači neplatí asociativní zákon.
 > - Cₚ je poměr relativních chyb výstupu a vstupu. Úloha s Cₚ ≈ 1 je dobře podmíněná a úloha s Cₚ > 100 špatně podmíněná.
@@ -688,7 +770,9 @@ Příklad z přednášky: soustava x + αy = 1, αx + y = 0 se vstupem α a výs
 | `norm(A,1)`, `norm(A,Inf)`, `norm(A,'fro')`, `norm(A)` | sloupcová, řádková, Frobeniova a spektrální norma |
 | `norm(v,Inf)` | největší absolutní hodnota prvku vektoru |
 | `cond(A)`, `cond(A,1)`, `cond(A,Inf)` | číslo podmíněnosti |
+| `eig(B)` | vlastní čísla |
 | `max(abs(eig(B)))` | spektrální poloměr |
+| `svd(A)` | singulární čísla od největšího |
 | `eps`, `realmax`, `realmin` | strojové epsilon, největší a nejmenší kladné normalizované číslo |
 | `format long`, `format short` | 15 nebo 4 desetinná místa ve výpisu |
 
