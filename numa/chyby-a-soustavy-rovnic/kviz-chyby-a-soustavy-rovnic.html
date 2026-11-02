@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kvíz: chyby a soustavy rovnic</title>
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --surface: #ffffff;
+      --ink: #1a1f27;
+      --ink-2: #4b5563;
+      --line: #d3d9e2;
+      --accent: #1f56b8;
+      --accent-soft: #e6eefb;
+      --ok: #1f6b47;
+      --ok-soft: #e3f1e6;
+      --bad: #b3261e;
+      --bad-soft: #fbe7e5;
+      --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color-scheme: light;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #111418;
+        --surface: #1a1f26;
+        --ink: #e9ecf1;
+        --ink-2: #aab2bf;
+        --line: #333b47;
+        --accent: #8db4ff;
+        --accent-soft: #232d3f;
+        --ok: #7fd4a5;
+        --ok-soft: #1c3328;
+        --bad: #ff9a92;
+        --bad-soft: #3d2220;
+        color-scheme: dark;
+      }
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 400 1.0625rem / 1.6 var(--font); -webkit-font-smoothing: antialiased; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    main { max-width: 46rem; margin: 0 auto; padding: 3rem 1.5rem 4rem; }
+    @media (max-width: 40em) { main { padding: 1.75rem 1rem 3rem; } }
+    h1 { margin: 0 0 1.5rem; font-size: clamp(1.75rem, 5vw, 2.25rem); line-height: 1.15; }
+    h2 { margin: 0 0 1rem; font-size: 1.25rem; }
+    .crumb { margin: 0 0 1.5rem; font-size: 0.9375rem; }
+    [hidden] { display: none !important; }
+    .panel { padding: 1.5rem; background: var(--surface); border: 1px solid var(--line); }
+    .panel + .panel { margin-top: 1rem; }
+    .muted { color: var(--ink-2); }
+    .small { font-size: 0.9375rem; }
+    fieldset { margin: 0 0 1.25rem; padding: 0; border: 0; }
+    legend { margin-bottom: 0.5rem; font-weight: 700; }
+    .choices { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; }
+    .choices label { display: inline-flex; align-items: center; gap: 0.4rem; }
+    button { font: inherit; cursor: pointer; }
+    .btn { padding: 0.55rem 1.1rem; background: var(--accent); color: var(--bg); border: 1px solid var(--accent); font-weight: 700; }
+    .btn.secondary { background: var(--surface); color: var(--accent); }
+    .btn:disabled { opacity: 0.5; cursor: default; }
+    .row { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+
+    .bar { height: 0.4rem; margin: 0 0 1rem; background: var(--line); }
+    .bar > div { height: 100%; width: 0; background: var(--accent); transition: width 0.2s; }
+    .meta { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; margin: 0 0 0.75rem; font-size: 0.9375rem; color: var(--ink-2); }
+    .tag { padding: 0 0.5rem; background: var(--accent-soft); color: var(--accent); font-weight: 700; font-size: 0.8125rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    .q { margin: 0 0 1rem; font-size: 1.125rem; }
+    .q .data { display: block; margin-top: 0.5rem; font-size: 1rem; color: var(--ink-2); }
+    .opts { display: grid; gap: 0.5rem; margin: 0 0 1rem; }
+    .opt { display: flex; gap: 0.75rem; align-items: flex-start; width: 100%; padding: 0.65rem 0.85rem; background: var(--surface); border: 2px solid var(--line); color: var(--ink); text-align: left; line-height: 1.45; }
+    .opt .n { flex: none; min-width: 1.5rem; height: 1.5rem; border: 1px solid var(--line); font-size: 0.875rem; line-height: 1.4rem; text-align: center; color: var(--ink-2); }
+    .opt[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+    .opt[aria-pressed="true"] .n { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+    .opt.correct { border-color: var(--ok); background: var(--ok-soft); }
+    .opt.wrong { border-color: var(--bad); background: var(--bad-soft); }
+    .opt:disabled { cursor: default; }
+    .num { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin: 0 0 1rem; }
+    .num input { width: 11rem; padding: 0.5rem 0.65rem; font: inherit; background: var(--surface); color: var(--ink); border: 2px solid var(--line); }
+    .num input.correct { border-color: var(--ok); }
+    .num input.wrong { border-color: var(--bad); }
+    .fb { margin: 0 0 1rem; padding: 0.85rem 1rem; border-left: 4px solid var(--line); background: var(--bg); }
+    .fb.ok { border-color: var(--ok); }
+    .fb.bad { border-color: var(--bad); }
+    .fb strong { display: block; margin-bottom: 0.25rem; }
+    .fb .ans { margin: 0.25rem 0; }
+
+    .score { font-size: 2rem; font-weight: 700; line-height: 1.2; }
+    table { width: 100%; margin: 1rem 0; border-collapse: collapse; font-size: 0.9375rem; }
+    th, td { padding: 0.4rem 0.6rem; border: 1px solid var(--line); text-align: left; }
+    th { background: var(--accent-soft); }
+    td.r, th.r { text-align: right; }
+    .review { margin: 1.5rem 0 0; padding: 0; list-style: none; }
+    .review li { margin: 0 0 1rem; padding: 0.85rem 1rem; border: 1px solid var(--line); border-left: 4px solid var(--bad); background: var(--surface); }
+    .review .qq { font-weight: 700; }
+    .review p { margin: 0.35rem 0 0; }
+    kbd { padding: 0 0.3rem; border: 1px solid var(--line); font: 0.85em var(--font); }
+  </style>
+</head>
+<body>
+<main>
+  <p class="crumb"><a href="../../">Škola</a></p>
+  <h1>Kvíz: chyby a soustavy rovnic</h1>
+
+  <section id="start" class="panel">
+    <p class="muted">Otázky pokrývají látku zápočtu z NUMA: Matlab, GEM, LU a Choleského rozklad, normy a podmíněnost, iterační metody, chyby a reprezentaci čísel. Každá otázka se vyhodnotí hned a ukáže vysvětlení.</p>
+    <fieldset>
+      <legend>Okruhy</legend>
+      <div class="choices" id="topics"></div>
+    </fieldset>
+    <fieldset>
+      <legend>Počet otázek</legend>
+      <div class="choices" id="counts">
+        <label><input type="radio" name="count" value="10"> 10</label>
+        <label><input type="radio" name="count" value="20" checked> 20</label>
+        <label><input type="radio" name="count" value="40"> 40</label>
+        <label><input type="radio" name="count" value="all"> všechny</label>
+      </div>
+    </fieldset>
+    <div class="row">
+      <button class="btn" id="startBtn">Spustit kvíz</button>
+      <span class="small muted" id="best"></span>
+    </div>
+    <p class="small muted">Klávesy: <kbd>1</kbd> až <kbd>9</kbd> označí odpověď, <kbd>Enter</kbd> zkontroluje a přejde dál. Desetinná čísla lze psát s čárkou i tečkou.</p>
+  </section>
+
+  <section id="quiz" class="panel" hidden>
+    <div class="bar"><div id="barFill"></div></div>
+    <div class="meta"><span id="counter"></span><span class="tag" id="topicTag"></span><span id="kind"></span></div>
+    <p class="q" id="qText"></p>
+    <div class="opts" id="opts"></div>
+    <div class="num" id="numWrap" hidden>
+      <label for="numIn">Výsledek:</label>
+      <input id="numIn" type="text" inputmode="decimal" autocomplete="off" placeholder="např. −1,99">
+      <span class="small muted" id="numHint"></span>
+    </div>
+    <div class="fb" id="fb" hidden aria-live="polite"></div>
+    <div class="row">
+      <button class="btn" id="checkBtn">Zkontrolovat</button>
+      <button class="btn" id="nextBtn" hidden>Další otázka</button>
+      <button class="btn secondary" id="quitBtn">Ukončit</button>
+      <span class="small muted" id="running"></span>
+    </div>
+  </section>
+
+  <section id="end" class="panel" hidden>
+    <h2>Výsledek</h2>
+    <p class="score" id="scoreLine"></p>
+    <p class="muted" id="scoreNote"></p>
+    <table id="byTopic"></table>
+    <div class="row">
+      <button class="btn" id="againWrong">Zopakovat chybné</button>
+      <button class="btn secondary" id="restart">Nový kvíz</button>
+    </div>
+    <ul class="review" id="review"></ul>
+  </section>
+</main>
+
+<script>
+// Okruhy otázek. Klíč je v každé otázce v poli t.
+const TOPICS = {
+  matlab: "Matlab",
+  gem: "GEM a pivotace",
+  lu: "LU rozklad, inverze, determinant",
+  cholesky: "Choleského metoda",
+  normy: "Normy a podmíněnost",
+  iterace: "Iterační metody",
+  chyby: "Chyby",
+  cisla: "Reprezentace čísel a podmíněnost úloh",
+};
+
+// Otázka: t okruh, k druh (single = jedna správná, multi = všechny správné, num = číslo),
+// q text, o možnosti, a správná odpověď (index nebo pole indexů), e vysvětlení, fixed = možnosti se nemíchají.
+// Otázka druhu num je šablona. Pole id je stálý klíč historie zadání a gen() při každém zobrazení vylosuje čísla
+// a vrátí q, a (číslo), dp (počet desetinných míst v odpovědi, 0 = přesné celé číslo) a e.
+const BANK = [
+  // Matlab
+  { t: "matlab", k: "single", q: "Který příkaz vyřeší soustavu Ax = b?", o: ["x = A\\b", "x = b\\A", "x = A/b", "x = b*A"], a: 0,
+    e: "Zpětné lomítko řeší soustavu Ax = b. Inverzi A přitom nepočítá." },
+  { t: "matlab", k: "single", q: "Jak se v Matlabu zapíše sloupcový vektor b = (1; 2; 3)?", o: ["b = [1; 2; 3]", "b = [1 2 3]", "b = (1, 2, 3)", "b = {1; 2; 3}"], a: 0,
+    e: "Středník uvnitř hranatých závorek začíná nový řádek. [1 2 3] je řádkový vektor." },
+  { t: "matlab", k: "single", q: "Co udělá středník na konci příkazu, například x = A\\b;?", o: ["potlačí výpis výsledku", "ukončí program", "začne nový sloupec", "označí komentář"], a: 0,
+    e: "Příkaz se provede, jen se výsledek nevypíše. Komentář začíná znakem %." },
+  { t: "matlab", k: "single", q: "Co vrátí norm(A) bez druhého argumentu?", o: ["spektrální normu, tedy největší singulární číslo", "řádkovou normu", "sloupcovou normu", "Frobeniovu normu"], a: 0,
+    e: "Řádková norma je norm(A, Inf), sloupcová norm(A, 1) a Frobeniova norm(A, 'fro')." },
+  { t: "matlab", k: "multi", q: "Které příkazy vytvoří matice D, L a U pro rozklad A = L + D + U? (Všechny správné možnosti.)", o: ["D = diag(diag(A))", "L = tril(A, -1)", "U = triu(A, 1)", "L = tril(A)"], a: [0, 1, 2],
+    e: "diag(A) vrátí diagonálu jako vektor a diag(diag(A)) z ní udělá diagonální matici. tril(A) bez druhého argumentu obsahuje i diagonálu, takže to není L z rozkladu A = L + D + U." },
+  { t: "matlab", k: "single", q: "Co vrátí [L, U, P] = lu(A)?", o: ["rozklad s prohazováním řádků, P·A = L·U", "rozklad bez pivotace, A = L·U", "Choleského rozklad", "inverzní matici A"], a: 0,
+    e: "Funkce lu pivotuje, takže její L a U se mohou lišit od ručního výpočtu bez pivotace. Ruční L a U se ověří příkazem L*U - A." },
+  { t: "matlab", k: "multi", q: "Které příkazy dají determinant matice A, když U pochází z LU rozkladu bez pivotace? (Všechny správné možnosti.)", o: ["prod(diag(U))", "determinant(U), funkce ze cvičení", "det(A)", "sum(diag(U))"], a: [0, 1, 2],
+    e: "det A = det L · det U a det L = 1, takže stačí vynásobit prvky na diagonále U. Součet diagonály je stopa matice, ne determinant." },
+  { t: "matlab", k: "single", q: "Výraz 0.1 + 0.1 + 0.1 == 0.3 vrátí v Matlabu:", o: ["0, tedy nepravdu", "1, tedy pravdu", "chybu", "0.3"], a: 0,
+    e: "0,1 ani 0,3 nejdou ve dvojkové soustavě zapsat přesně a součet se od 0,3 liší v posledních bitech. Čísla se proto porovnávají s tolerancí, abs(a - b) < tol." },
+  { t: "matlab", k: "single", q: "Volání NaseJacobi(A, b, x0, presnost) skončí chybou, že funkce neexistuje. Nejpravděpodobnější příčina:", o: ["soubor NaseJacobi.m není v aktuální složce Matlabu (Current Folder) ani na cestě", "matice A není diagonálně dominantní", "x0 je řádkový vektor", "presnost je příliš malá"], a: 0,
+    e: "Matlab hledá funkce v aktuální složce a ve složkách na cestě (path). Soubor se musí jmenovat stejně jako funkce." },
+  { t: "matlab", k: "single", q: "Jak se v Matlabu zapíše transponovaná matice A?", o: ["A'", "A^T", "trans(A)", "A.T"], a: 0,
+    e: "Apostrof za maticí ji transponuje. Používá se například v úpravě A'*A pro Gauss-Seidelovu metodu." },
+
+  // GEM a pivotace
+  { t: "gem", k: "single", q: "Multiplikátor m₂₁ v prvním kroku GEM je:", o: ["a₂₁ / a₁₁", "a₁₁ / a₂₁", "a₂₁ · a₁₁", "a₂₁ − a₁₁"], a: 0,
+    e: "Nulovaný prvek se dělí pivotem. Nový 2. řádek je 2. řádek − m₂₁ · 1. řádek." },
+  { t: "gem", k: "single", q: "Částečná pivotace vybere za pivot:", o: ["prvek s největší absolutní hodnotou v nulovaném sloupci, na diagonále a pod ní", "největší prvek celé matice", "první nenulový prvek řádku", "prvek na diagonále bez ohledu na velikost"], a: 0,
+    e: "Řádek s tímto prvkem se prohodí s aktuálním řádkem. Výběr z celé matice by byl úplná pivotace." },
+  { t: "gem", k: "multi", q: "Proč se v GEM pivotuje? (Všechny správné možnosti.)", o: ["nulový pivot by eliminaci zastavil", "malý pivot dá velký multiplikátor a zvětší zaokrouhlovací chyby", "pivotace zmenší počet operací na polovinu", "bez pivotace nejde spočítat determinant"], a: [0, 1],
+    e: "Soustava 10⁻¹⁷·x₁ + x₂ = 1, x₁ + x₂ = 2 dá bez pivotace x = (0; 1) místo (1; 1). Počet operací pivotace nezmenší a determinant jde spočítat i bez ní." },
+  { t: "gem", k: "single", q: "Zpětná substituce počítá neznámé v pořadí:", o: ["xₙ, xₙ₋₁, …, x₁", "x₁, x₂, …, xₙ", "libovolném", "od největší po nejmenší"], a: 0,
+    e: "Poslední řádek horní trojúhelníkové matice obsahuje jen xₙ. Každý řádek nad ním přidá jednu neznámou." },
+  { t: "gem", k: "single", q: "Při prohození dvou řádků v GEM je potřeba také:", o: ["prohodit odpovídající prvky pravé strany b", "prohodit stejné sloupce", "změnit znaménko pravé strany", "nic dalšího"], a: 0,
+    e: "Řádek matice a prvek pravé strany tvoří jednu rovnici, takže se prohazují spolu." },
+  { t: "gem", k: "single", q: "Výsledkem přímého chodu GEM je:", o: ["horní trojúhelníková matice U a upravená pravá strana", "dolní trojúhelníková matice", "diagonální matice", "inverzní matice"], a: 0,
+    e: "Přímý chod nuluje prvky pod diagonálou. Zbytek dořeší zpětná substituce." },
+  { id: "gem-u22", t: "gem", k: "num", gen() {
+    const { L, U, A } = drawLU(false);
+    return { q: `A = ${mat(A)}. Prvek na pozici (2, 2) po prvním kroku GEM bez pivotace:`, a: U[1][1], dp: 0,
+      e: `m₂₁ = a₂₁/a₁₁ = ${cz(A[1][0], 0)}/${par(A[0][0])} = ${cz(L[1][0], 0)}. Nový prvek je a₂₂ − m₂₁·a₁₂ = ${cz(A[1][1], 0)} − ${par(L[1][0])}·${par(A[0][1])} = ${cz(U[1][1], 0)}.` };
+  } },
+  { id: "gem-pivot", t: "gem", k: "num", gen() {
+    const col = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]).slice(0, 3).map((v) => v * sign());
+    const A = col.map((v) => [v, randInt(-9, 9), randInt(-9, 9)]);
+    const r = col.reduce((best, v, i) => Math.abs(v) > Math.abs(col[best]) ? i : best, 0);
+    return { q: `A = ${mat(A)}. Ze kterého řádku se v prvním kroku GEM s částečnou pivotací vezme pivot?`, a: r + 1, dp: 0,
+      e: `Pivot je prvek 1. sloupce s největší absolutní hodnotou, tedy ${cz(col[r], 0)} ve ${r + 1}. řádku. Tento řádek se prohodí s 1. řádkem.` };
+  } },
+  { id: "zpet-x1", t: "gem", k: "num", gen() {
+    const d = () => sign() * randInt(1, 3);
+    const U = [[d(), randInt(-4, 4), randInt(-4, 4)], [0, d(), randInt(-4, 4)], [0, 0, d()]];
+    const x = [randInt(-5, 5), randInt(-5, 5), randInt(-5, 5)];
+    const y = mulVec(U, x);
+    return { q: `U·x = y, kde U = ${mat(U)} a y = ${vec(y)}. Hodnota x₁ ze zpětné substituce:`, a: x[0], dp: 0,
+      e: `x₃ = ${cz(y[2], 0)}/${par(U[2][2])} = ${cz(x[2], 0)}, x₂ = (${cz(y[1], 0)} − ${par(U[1][2])}·${par(x[2])})/${par(U[1][1])} = ${cz(x[1], 0)}, x₁ = (${cz(y[0], 0)} − ${par(U[0][1])}·${par(x[1])} − ${par(U[0][2])}·${par(x[2])})/${par(U[0][0])} = ${cz(x[0], 0)}.` };
+  } },
+
+  // LU rozklad, inverze, determinant
+  { t: "lu", k: "single", q: "Co obsahuje matice L v LU rozkladu bez pivotace?", o: ["jedničky na diagonále a pod ní multiplikátory z GEM", "výsledek GEM", "jedničky na diagonále a nad ní multiplikátory", "inverzi matice U"], a: 0,
+    e: "U je výsledek GEM. L zaznamenává, čím se v GEM násobily řádky." },
+  { t: "lu", k: "single", q: "Jak se s LU rozkladem řeší soustava Ax = b?", o: ["Ly = b shora dolů, pak Ux = y zdola nahoru", "Ux = b zdola nahoru, pak Ly = x shora dolů", "x = U·L·b", "Ly = b zdola nahoru, pak Ux = y shora dolů"], a: 0,
+    e: "Ax = L(Ux) = b. Nejdřív se dopřednou substitucí najde y = Ux, pak zpětnou substitucí x." },
+  { t: "lu", k: "single", q: "Determinant matice z LU rozkladu bez pivotace je:", o: ["součin prvků na diagonále U", "součin prvků na diagonále L", "součet prvků na diagonále U", "det L + det U"], a: 0,
+    e: "det A = det L · det U. L má na diagonále jedničky, takže det L = 1." },
+  { t: "lu", k: "single", q: "Jak se z LU rozkladu spočítá inverzní matice A⁻¹?", o: ["vyřeší se A·xᵢ = eᵢ pro každý sloupec eᵢ jednotkové matice a vektory xᵢ jsou sloupce A⁻¹", "invertuje se zvlášť L a U a výsledky se sečtou", "A⁻¹ = Uᵀ·Lᵀ", "vyřeší se jedna soustava A·x = (1; 1; 1)"], a: 0,
+    e: "A·A⁻¹ = E po sloupcích znamená n soustav se stejnou maticí. LU rozklad se spočítá jednou a pro každou soustavu stačí dvě substituce." },
+  { t: "lu", k: "single", q: "[L, U, P] = lu(A) v Matlabu dal jiné L a U než ruční výpočet. Proč?", o: ["lu prohazuje řádky, ruční výpočet je bez pivotace", "ruční výpočet je určitě špatně", "Matlab počítá Choleského rozklad", "Matlab zaokrouhluje na 4 místa"], a: 0,
+    e: "Platí P·A = L·U. Řešení, inverze i determinant vyjdou stejně. Ruční L a U se ověří příkazem L*U - A." },
+  { t: "lu", k: "single", q: "Výhoda LU rozkladu u maticové rovnice AX = B s několika sloupci B:", o: ["rozklad se spočítá jednou a pro každý sloupec B stačí dvě substituce", "není potřeba žádná substituce", "funguje i pro singulární matice", "vždy dá přesnější výsledek než GEM"], a: 0,
+    e: "GEM by eliminaci opakovala pro každou pravou stranu. LU rozklad ji udělá jednou." },
+  { t: "lu", k: "single", q: "Rozklad P·A = L·U vznikl se dvěma prohozeními řádků. Determinant A je:", o: ["u₁₁·u₂₂·…·uₙₙ", "−u₁₁·u₂₂·…·uₙₙ", "det P", "nedá se z rozkladu určit"], a: 0,
+    e: "Každé prohození řádků změní znaménko determinantu. Dvě prohození dají (−1)² = 1." },
+  { id: "lu-m32", t: "lu", k: "num", gen() {
+    const { L, U, A } = drawLU(false);
+    const a32 = A[2][1] - L[2][0] * A[0][1];
+    return { q: `A = ${mat(A)}. Multiplikátor m₃₂ v LU rozkladu bez pivotace:`, a: L[2][1], dp: 0,
+      e: `m₃₁ = ${cz(A[2][0], 0)}/${par(A[0][0])} = ${cz(L[2][0], 0)}. Po 1. kroku je na pozici (2, 2) prvek ${cz(U[1][1], 0)} a na pozici (3, 2) prvek a₃₂ − m₃₁·a₁₂ = ${cz(A[2][1], 0)} − ${par(L[2][0])}·${par(A[0][1])} = ${cz(a32, 0)}. m₃₂ = ${cz(a32, 0)}/${par(U[1][1])} = ${cz(L[2][1], 0)}. Celá L = ${mat(L)}.` };
+  } },
+  { id: "lu-det", t: "lu", k: "num", gen() {
+    const { U, A } = drawLU(false);
+    const det = U[0][0] * U[1][1] * U[2][2];
+    return { q: `A = ${mat(A)}. Determinant A spočítaný z LU rozkladu:`, a: det, dp: 0,
+      e: `GEM bez pivotace dá U = ${mat(U)}. det A = u₁₁·u₂₂·u₃₃ = ${par(U[0][0])}·${par(U[1][1])}·${par(U[2][2])} = ${cz(det, 0)}.` };
+  } },
+  { id: "lu-y3", t: "lu", k: "num", gen() {
+    const { L, U, A } = drawLU(false);
+    const x = [randInt(-3, 3), randInt(-3, 3), randInt(-3, 3)];
+    const b = mulVec(A, x), y = mulVec(U, x);
+    return { q: `L = ${mat(L)} a b = ${vec(b)}. Složka y₃ z dopředné substituce L·y = b:`, a: y[2], dp: 0,
+      e: `y₁ = ${cz(b[0], 0)}, y₂ = ${cz(b[1], 0)} − ${par(L[1][0])}·${par(y[0])} = ${cz(y[1], 0)}, y₃ = ${cz(b[2], 0)} − ${par(L[2][0])}·${par(y[0])} − ${par(L[2][1])}·${par(y[1])} = ${cz(y[2], 0)}.` };
+  } },
+  { id: "lu-inv", t: "lu", k: "num", gen() {
+    const { A } = drawLU(true);
+    const inv = inverse3(A);
+    const i = randInt(0, 2), j = randInt(0, 2);
+    return { q: `A = ${mat(A)}. Prvek (A⁻¹)${SUB[i + 1]}${SUB[j + 1]} inverzní matice:`, a: inv[i][j], dp: 0,
+      e: `${j + 1}. sloupec A⁻¹ je řešení soustavy A·x = e${SUB[j + 1]}. Celá inverze je A⁻¹ = ${mat(inv)}.` };
+  } },
+
+  // Choleského metoda
+  { t: "cholesky", k: "single", q: "Choleského rozklad A = L·Lᵀ jde použít, když je A:", o: ["symetrická a pozitivně definitní", "libovolná regulární", "diagonálně dominantní", "horní trojúhelníková"], a: 0,
+    e: "Pod odmocninou na diagonále L musí vycházet kladná čísla. To zaručí právě pozitivní definitnost." },
+  { t: "cholesky", k: "single", q: "Podle Sylvestrova kritéria je symetrická matice pozitivně definitní, když:", o: ["jsou všechny hlavní minory kladné", "jsou všechny prvky kladné", "je determinant kladný", "jsou prvky na diagonále kladné"], a: 0,
+    e: "Hlavní minory jsou determinanty levých horních podmatic 1×1, 2×2 až n×n. V Matlabu například [det(A(1,1)), det(A(1:2,1:2)), det(A)]." },
+  { t: "cholesky", k: "single", q: "Co vrací Matlab chol(A)?", o: ["horní trojúhelníkovou R, pro kterou A = R'·R", "dolní trojúhelníkovou L, pro kterou A = L·L'", "matice L a U", "inverzi A"], a: 0,
+    e: "Ručně počítané L je R'. Rovnou L vrátí chol(A, 'lower') nebo funkce cholesky(A) ze cvičení." },
+  { t: "cholesky", k: "single", q: "Jde na matici A = (1 2; 2 1) použít Choleského rozklad?", o: ["ne, det A = −3 < 0, takže A není pozitivně definitní", "ano, A je symetrická", "ano, všechny prvky jsou kladné", "ne, A není symetrická"], a: 0,
+    e: "Hlavní minory jsou 1 a 1·1 − 2·2 = −3. Druhý je záporný, takže Sylvestrovo kritérium neplatí." },
+  { t: "cholesky", k: "single", q: "chol(A) dostane nesymetrickou matici. Co udělá?", o: ["symetrii nekontroluje a použije jen diagonálu a horní trojúhelník", "skončí chybou", "matici symetrizuje průměrem s Aᵀ", "matici transponuje"], a: 0,
+    e: "Tak to popisuje dokumentace MathWorks. Symetrii je proto potřeba ověřit na papíře." },
+  { id: "chol-l", t: "cholesky", k: "num", gen() {
+    const L = [[randInt(1, 3), 0, 0], [randInt(-3, 3), randInt(1, 3), 0], [randInt(-3, 3), randInt(-3, 3), randInt(1, 3)]];
+    const A = matMul(L, tr(L));
+    const [i, j] = pick([[1, 1], [2, 1], [2, 2]]);
+    return { q: `A = ${mat(A)}. Prvek l${SUB[i + 1]}${SUB[j + 1]} Choleského rozkladu A = L·Lᵀ:`, a: L[i][j], dp: 0,
+      e: `l₁₁ = √${cz(A[0][0], 0)} = ${L[0][0]}, l₂₁ = ${cz(A[1][0], 0)}/${L[0][0]} = ${cz(L[1][0], 0)}, l₃₁ = ${cz(A[2][0], 0)}/${L[0][0]} = ${cz(L[2][0], 0)}, l₂₂ = √(${cz(A[1][1], 0)} − ${par(L[1][0])}²) = ${L[1][1]}, l₃₂ = (${cz(A[2][1], 0)} − ${par(L[2][0])}·${par(L[1][0])})/${L[1][1]} = ${cz(L[2][1], 0)}, l₃₃ = √(${cz(A[2][2], 0)} − ${par(L[2][0])}² − ${par(L[2][1])}²) = ${L[2][2]}.` };
+  } },
+  { id: "chol-minor", t: "cholesky", k: "num", gen() {
+    const L = [[randInt(1, 3), 0, 0], [randInt(-3, 3), randInt(1, 3), 0], [randInt(-3, 3), randInt(-3, 3), randInt(1, 3)]];
+    const A = matMul(L, tr(L));
+    const m = A[0][0] * A[1][1] - A[0][1] * A[1][0];
+    return { q: `A = ${mat(A)}. Druhý hlavní minor matice A:`, a: m, dp: 0,
+      e: `Je to determinant levé horní podmatice 2×2: ${cz(A[0][0], 0)}·${cz(A[1][1], 0)} − ${par(A[0][1])}·${par(A[1][0])} = ${cz(m, 0)}. Je kladný, stejně jako první minor ${cz(A[0][0], 0)} a det A = ${cz((L[0][0] * L[1][1] * L[2][2]) ** 2, 0)}.` };
+  } },
+
+  // Normy a podmíněnost
+  { t: "normy", k: "single", q: "Sloupcová norma ‖A‖₁ je:", o: ["největší součet absolutních hodnot ve sloupci", "největší součet absolutních hodnot v řádku", "odmocnina ze součtu čtverců všech prvků", "největší prvek matice"], a: 0,
+    e: "V Matlabu norm(A, 1). Na listech ze cvičení se značí ‖A‖_S." },
+  { t: "normy", k: "single", q: "Řádková norma ‖A‖∞ je:", o: ["největší součet absolutních hodnot v řádku", "největší součet absolutních hodnot ve sloupci", "odmocnina ze součtu čtverců všech prvků", "největší vlastní číslo"], a: 0,
+    e: "V Matlabu norm(A, Inf). Na listech ze cvičení se značí ‖A‖_R." },
+  { t: "normy", k: "single", q: "Iterační matice má ‖B‖₁ = 0,9 a ‖B‖∞ = 1,3. Plyne z toho konvergence?", o: ["ano, stačí, aby byla menší než 1 aspoň jedna norma", "ne, menší než 1 musí být obě normy", "ne, rozhoduje řádková norma", "z norem nelze nic usoudit"], a: 0,
+    e: "Tak je to v příkladu na Ritzovu metodu z poznámek. Řádková norma konvergenci nezaručí, sloupcová ano." },
+  { t: "normy", k: "single", q: "Velké číslo podmíněnosti cond(A) znamená:", o: ["malá změna pravé strany může výrazně změnit řešení", "matice je singulární", "soustava nemá řešení", "GEM nejde použít"], a: 0,
+    e: "Relativní chyba řešení může být až cond(A)krát větší než relativní chyba pravé strany." },
+  { t: "normy", k: "single", q: "Pro každou regulární matici A platí:", o: ["cond(A) ≥ 1", "cond(A) ≤ 1", "cond(A) = det A", "cond(A) = 0"], a: 0,
+    e: "cond(A) = ‖A‖·‖A⁻¹‖ ≥ ‖A·A⁻¹‖ = ‖E‖ = 1." },
+  { t: "normy", k: "single", q: "Matlab cond(A) bez druhého argumentu počítá číslo podmíněnosti:", o: ["ve spektrální normě", "v řádkové normě", "ve sloupcové normě", "ve Frobeniově normě"], a: 0,
+    e: "Pro řádkovou normu je cond(A, Inf), pro sloupcovou cond(A, 1)." },
+  { id: "norm-1", t: "normy", k: "num", gen() {
+    const A = [0, 1, 2].map(() => [0, 1, 2].map(() => randInt(-9, 9)));
+    const s = [0, 1, 2].map((j) => A.reduce((t, r) => t + Math.abs(r[j]), 0));
+    return { q: `A = ${mat(A)}. Sloupcová norma ‖A‖₁:`, a: Math.max(...s), dp: 0,
+      e: `Součty absolutních hodnot ve sloupcích jsou ${s.join(", ")}. Největší je ${Math.max(...s)}.` };
+  } },
+  { id: "norm-inf", t: "normy", k: "num", gen() {
+    const A = [0, 1, 2].map(() => [0, 1, 2].map(() => randInt(-9, 9)));
+    const s = A.map((r) => r.reduce((t, v) => t + Math.abs(v), 0));
+    return { q: `A = ${mat(A)}. Řádková norma ‖A‖∞:`, a: Math.max(...s), dp: 0,
+      e: `Součty absolutních hodnot v řádcích jsou ${s.join(", ")}. Největší je ${Math.max(...s)}.` };
+  } },
+  { id: "norm-fro", t: "normy", k: "num", gen() {
+    const A = [0, 1, 2].map(() => [0, 1, 2].map(() => randInt(-4, 4)));
+    const s = A.flat().reduce((t, v) => t + v * v, 0);
+    return { q: `A = ${mat(A)}. Frobeniova norma ‖A‖_F:`, a: Math.sqrt(s), dp: 2,
+      e: `Součet čtverců všech prvků je ${s}, takže ‖A‖_F = √${s} = ${cz(Math.sqrt(s), 4)}.` };
+  } },
+  { id: "cond-inf", t: "normy", k: "num", gen() {
+    let a, b, c, d;
+    do { [a, b, c, d] = [randInt(-5, 5), randInt(-5, 5), randInt(-5, 5), randInt(-5, 5)]; } while (Math.abs(a * d - b * c) !== 1);
+    const det = a * d - b * c, inv = [[d / det, -b / det], [-c / det, a / det]];
+    const nA = Math.max(Math.abs(a) + Math.abs(b), Math.abs(c) + Math.abs(d));
+    const nI = Math.max(Math.abs(d) + Math.abs(b), Math.abs(c) + Math.abs(a));
+    return { q: `A = ${mat([[a, b], [c, d]])}. Číslo podmíněnosti v řádkové normě cond∞(A) = ‖A‖∞·‖A⁻¹‖∞:`, a: nA * nI, dp: 0,
+      e: `det A = ${cz(det, 0)}, takže A⁻¹ = ${mat(inv)}. ‖A‖∞ = ${nA}, ‖A⁻¹‖∞ = ${nI} a cond∞(A) = ${nA}·${nI} = ${nA * nI}.` };
+  } },
+
+  // Iterační metody
+  { t: "iterace", k: "single", q: "Jacobiho metoda konverguje pro každé x⁽⁰⁾, když je A:", o: ["ryze řádkově diagonálně dominantní", "symetrická", "regulární", "horní trojúhelníková"], a: 0,
+    e: "V každém řádku musí být |aᵢᵢ| větší než součet absolutních hodnot ostatních prvků řádku. Je to postačující podmínka." },
+  { t: "iterace", k: "single", q: "Čím se Gauss-Seidelova metoda liší od Jacobiho?", o: ["složky x⁽ᵏ⁺¹⁾ spočítané v tomtéž kroku použije hned", "používá jen hodnoty z předchozího kroku", "nepotřebuje počáteční vektor", "nedělí prvkem na diagonále"], a: 0,
+    e: "Ve složkovém předpisu Gauss-Seidelovy metody je u xⱼ pro j < i index k+1. Jacobi má všude k." },
+  { t: "iterace", k: "multi", q: "Gauss-Seidelova metoda konverguje pro každé x⁽⁰⁾, když je A: (Všechny správné možnosti.)", o: ["ryze řádkově diagonálně dominantní", "symetrická a pozitivně definitní", "libovolná regulární", "singulární"], a: [0, 1],
+    e: "Obě podmínky jsou postačující. Pozitivní definitnost se ověří Sylvestrovým kritériem." },
+  { t: "iterace", k: "single", q: "Nutná a postačující podmínka konvergence metody x⁽ᵏ⁺¹⁾ = Bx⁽ᵏ⁾ + c pro každé x⁽⁰⁾ je:", o: ["ρ(B) < 1, největší absolutní hodnota vlastního čísla B je menší než 1", "‖B‖∞ < 1", "det B < 1", "B je symetrická"], a: 0,
+    e: "Norma menší než 1 konvergenci zaručí, ale nutná není. V Matlabu se ρ(B) spočítá jako max(abs(eig(B)))." },
+  { t: "iterace", k: "single", q: "Ritzova (prostá) iterační metoda používá matici:", o: ["B = E − A a c = b", "B = −D⁻¹(L + U)", "B = −(D + L)⁻¹U", "B = A − E"], a: 0,
+    e: "Z Ax = b plyne x = (E − A)x + b. Metoda konverguje, když ‖E − A‖ < 1." },
+  { t: "iterace", k: "single", q: "V rozkladu A = L + D + U je L:", o: ["část matice A pod diagonálou", "dolní činitel LU rozkladu s jedničkami na diagonále", "dolní trojúhelník včetně diagonály", "inverze D"], a: 0,
+    e: "L, D a U se tu sčítají. V LU rozkladu jsou L a U činitele součinu, tedy jiné matice." },
+  { t: "iterace", k: "single", q: "Soustava není diagonálně dominantní. Co se zkusí nejdřív?", o: ["přeházet rovnice tak, aby dominantní byla", "použít metodu stejně a doufat", "vynásobit soustavu −1", "zvětšit toleranci"], a: 0,
+    e: "Přeházení rovnic nemění řešení. V cviceni_04.m se dělá permutační maticí P a součinem P·[A, b]." },
+  { t: "iterace", k: "single", q: "Matice není diagonálně dominantní ani pozitivně definitní a přeházet nejde. Co dělá cviceni_04.m?", o: ["přejde na soustavu AᵀAx = Aᵀb a použije Gauss-Seidelovu metodu", "použije Jacobiho metodu", "zvětší počet iterací", "nic, úloha nejde řešit"], a: 0,
+    e: "Pro regulární A je AᵀA symetrická pozitivně definitní, takže na ni Gauss-Seidelova metoda konverguje." },
+  { t: "iterace", k: "single", q: "Pro matici A = (1 2 −2; 1 1 1; 2 2 1) platí:", o: ["Jacobiho metoda konverguje, Gauss-Seidelova ne", "obě metody konvergují", "Gauss-Seidelova konverguje, Jacobiho ne", "žádná nekonverguje"], a: 0,
+    e: "Příklad z listu cvITER_SLAR.pdf. Spektrální poloměr je u Jacobiho metody 0, u Gauss-Seidelovy 2." },
+  { t: "iterace", k: "single", q: "Zastavovací podmínka ‖x⁽ᵏ⁺¹⁾ − x⁽ᵏ⁾‖∞ < ε je:", o: ["absolutní chyba", "relativní chyba", "reziduum", "číslo podmíněnosti"], a: 0,
+    e: "Relativní chyba by tuto hodnotu ještě vydělila ‖x⁽ᵏ⁺¹⁾‖ nebo ‖x⁽ᵏ⁾‖." },
+  { t: "iterace", k: "single", q: "Kdy skončí cyklus ve funkcích NaseJacobi a NaseGaussSeidel ze cvičení?", o: ["když norm(x0-x, Inf) klesne na hodnotu presnost nebo pod ni", "po 100 iteracích", "když je reziduum nulové", "když se přestane měnit první složka"], a: 0,
+    e: "Cyklus běží, dokud je vzdálenost dvou po sobě jdoucích iterací větší než presnost. Omezení počtu iterací tyto funkce nemají." },
+  { id: "jacobi-x1", t: "iterace", k: "num", gen() {
+    const A = drawDominant(), b = [0, 1, 2].map(() => randInt(-20, 20)), x0 = [0, 1, 2].map(() => randInt(-2, 2));
+    const i = randInt(0, 2), [j, k] = [0, 1, 2].filter((v) => v !== i);
+    const v = (b[i] - A[i][j] * x0[j] - A[i][k] * x0[k]) / A[i][i];
+    return { q: `A = ${mat(A)}, b = ${vec(b)}, x⁽⁰⁾ = ${vec(x0)}. Složka x${SUB[i + 1]}⁽¹⁾ Jacobiho metody:`, a: v, dp: 4,
+      e: `x${SUB[i + 1]}⁽¹⁾ = (b${SUB[i + 1]} − a${SUB[i + 1]}${SUB[j + 1]}·x${SUB[j + 1]}⁽⁰⁾ − a${SUB[i + 1]}${SUB[k + 1]}·x${SUB[k + 1]}⁽⁰⁾)/a${SUB[i + 1]}${SUB[i + 1]} = (${cz(b[i], 0)} − ${par(A[i][j])}·${par(x0[j])} − ${par(A[i][k])}·${par(x0[k])})/${par(A[i][i])} = ${cz(v, 4)}.` };
+  } },
+  { id: "gs-x2", t: "iterace", k: "num", gen() {
+    const A = drawDominant(), b = [0, 1, 2].map(() => randInt(-20, 20)), x0 = [0, 1, 2].map(() => randInt(-2, 2));
+    const x1 = (b[0] - A[0][1] * x0[1] - A[0][2] * x0[2]) / A[0][0];
+    const x2 = (b[1] - A[1][0] * x1 - A[1][2] * x0[2]) / A[1][1];
+    return { q: `A = ${mat(A)}, b = ${vec(b)}, x⁽⁰⁾ = ${vec(x0)}. Složka x₂⁽¹⁾ Gauss-Seidelovy metody:`, a: x2, dp: 4,
+      e: `Nejdřív x₁⁽¹⁾ = (${cz(b[0], 0)} − ${par(A[0][1])}·${par(x0[1])} − ${par(A[0][2])}·${par(x0[2])})/${par(A[0][0])} = ${cz(x1, 4)}. Gauss-Seidel ho hned použije: x₂⁽¹⁾ = (${cz(b[1], 0)} − ${par(A[1][0])}·${par(x1, 4)} − ${par(A[1][2])}·${par(x0[2])})/${par(A[1][1])} = ${cz(x2, 4)}.` };
+  } },
+  { id: "ritz-norm", t: "iterace", k: "num", gen() {
+    const A = [0, 1, 2].map((i) => [0, 1, 2].map((j) => i === j ? 1 : randDec(-0.5, 0.5, 1)));
+    const B = A.map((r, i) => r.map((v, j) => (i === j ? 0 : -v)));
+    const s = [0, 1, 2].map((j) => B.reduce((t, r) => t + Math.abs(r[j]), 0));
+    const n = Math.max(...s);
+    return { q: `Ritzova metoda pro A = ${mat(A, 1)}. Sloupcová norma ‖B‖₁ matice B = E − A:`, a: n, dp: 2,
+      e: `B = ${mat(B, 1)}. Součty absolutních hodnot ve sloupcích jsou ${s.map((v) => cz(v, 1)).join("; ")}, největší je ${cz(n, 1)}. ${n < 1 ? "Je menší než 1, takže metoda konverguje." : "Není menší než 1, takže sloupcová norma konvergenci nezaručí."}` };
+  } },
+  { id: "dominance", t: "iterace", k: "num", gen() {
+    const A = [0, 1, 2].map((i) => {
+      const row = [0, 1, 2].map(() => randInt(-5, 5));
+      if (Math.random() < 0.5) row[i] = sign() * (Math.abs(row[(i + 1) % 3]) + Math.abs(row[(i + 2) % 3]) + randInt(1, 3));
+      return row;
+    });
+    const ok = A.map((r, i) => Math.abs(r[i]) > r.reduce((t, v, j) => t + (j === i ? 0 : Math.abs(v)), 0));
+    return { q: `A = ${mat(A)}. Kolik řádků splňuje podmínku ryzí řádkové diagonální dominance |aᵢᵢ| > Σ |aᵢⱼ| (j ≠ i)?`, a: ok.filter(Boolean).length, dp: 0,
+      e: A.map((r, i) => `${i + 1}. řádek: |${cz(r[i], 0)}| ${ok[i] ? ">" : "≤"} ${r.reduce((t, v, j) => t + (j === i ? 0 : Math.abs(v)), 0)}`).join(", ") + `. Podmínku splňuje řádků: ${ok.filter(Boolean).length}.` };
+  } },
+
+  // Chyby
+  { t: "chyby", k: "single", q: "Odhad relativní chyby ρ(x̃) je:", o: ["δ(x̃)/|x̃|", "δ(x̃)·|x̃|", "|x̃| − δ(x̃)", "δ(x̃)²"], a: 0,
+    e: "δ(x̃) je odhad absolutní chyby. Relativní chyba je její podíl k velikosti hodnoty a často se udává v procentech." },
+  { t: "chyby", k: "single", q: "Při sčítání a odčítání přibližných čísel se sčítají:", o: ["absolutní chyby", "relativní chyby", "čtverce chyb", "nic, chyba se nemění"], a: 0,
+    e: "δ(x̃ ± ỹ) = δ(x̃) + δ(ỹ). Relativní chyby se sčítají při násobení a dělení." },
+  { t: "chyby", k: "single", q: "Při násobení a dělení přibližných čísel se přibližně sčítají:", o: ["relativní chyby", "absolutní chyby", "čtverce chyb", "převrácené hodnoty chyb"], a: 0,
+    e: "ρ(x̃·ỹ) ≈ ρ(x̃) + ρ(ỹ) a ρ(x̃/ỹ) ≈ ρ(x̃) + ρ(ỹ)." },
+  { t: "chyby", k: "single", q: "Proč je nebezpečné odečítat dvě blízká přibližná čísla?", o: ["relativní chyba rozdílu je mnohem větší než relativní chyby čísel", "absolutní chyba klesne na nulu", "výsledek vyjde vždy záporný", "Matlab odečítání blízkých čísel neumí"], a: 0,
+    e: "Absolutní chyby se sečtou, ale rozdíl je malý. Příklad z přednášky: 14,20 ± 0,08 minus 12,40 ± 0,06 je 1,80 ± 0,14, relativně asi 8 %." },
+  { t: "chyby", k: "single", q: "Relativní chyba mocniny x̃ⁿ je přibližně:", o: ["|n|·ρ(x̃)", "ρ(x̃)ⁿ", "ρ(x̃)/n", "n + ρ(x̃)"], a: 0,
+    e: "Plyne to ze vzorce pro chybu funkce i z pravidla pro součin. List MOJE_CHYBA.pdf počítá ρ(d̃³) = 3ρ(d̃)." },
+  { t: "chyby", k: "single", q: "Odhad absolutní chyby hodnoty funkce f(x, y) je:", o: ["|∂f/∂x|·δ(x̃) + |∂f/∂y|·δ(ỹ)", "∂f/∂x·δ(x̃) − ∂f/∂y·δ(ỹ)", "δ(x̃)·δ(ỹ)", "|f(x̃, ỹ)|·δ(x̃)"], a: 0,
+    e: "Parciální derivace se berou v bodě (x̃, ỹ) a v absolutní hodnotě, aby se chyby nemohly navzájem odečíst." },
+  { t: "chyby", k: "single", q: "Podle kapitoly IV se chyba 0,0327 m³ zaokrouhlí na:", o: ["0,04 m³", "0,03 m³", "0,033 m³", "0,0327 m³"], a: 0,
+    e: "Chyba se zaokrouhluje na jednu platnou číslici vždy nahoru. Když začíná číslicí 1 nebo 2, zaokrouhlí se na dvě." },
+  { id: "chyba-obdelnik", t: "chyby", k: "num", gen() {
+    const a = randDec(10, 30, 1), b = randDec(10, 30, 1), da = pick([0.1, 0.2, 0.5]), db = pick([0.1, 0.2, 0.5]);
+    const d = b * da + a * db;
+    return { q: `Obdélník má strany a = (${cz(a, 1)} ± ${cz(da, 1)}) cm a b = (${cz(b, 1)} ± ${cz(db, 1)}) cm. Odhad absolutní chyby obsahu δ(S) v cm²:`, a: d, dp: 2,
+      e: `S = a·b, ∂S/∂a = b a ∂S/∂b = a. δ(S) = b·δ(a) + a·δ(b) = ${cz(b, 1)}·${cz(da, 1)} + ${cz(a, 1)}·${cz(db, 1)} = ${cz(d, 3)} cm².` };
+  } },
+  { id: "chyba-obdelnik-rel", t: "chyby", k: "num", gen() {
+    const a = randDec(10, 30, 1), b = randDec(10, 30, 1), da = pick([0.1, 0.2, 0.5]), db = pick([0.1, 0.2, 0.5]);
+    const r = (da / a + db / b) * 100;
+    return { q: `Obdélník má strany a = (${cz(a, 1)} ± ${cz(da, 1)}) cm a b = (${cz(b, 1)} ± ${cz(db, 1)}) cm. Odhad relativní chyby obsahu ρ(S) v procentech:`, a: r, dp: 2,
+      e: `Pro součin se sčítají relativní chyby: ρ(S) = ${cz(da, 1)}/${cz(a, 1)} + ${cz(db, 1)}/${cz(b, 1)} = ${cz(da / a, 5)} + ${cz(db / b, 5)} = ${cz(r / 100, 5)}, tedy ${cz(r, 2)} %.` };
+  } },
+  { id: "chyba-krychle", t: "chyby", k: "num", gen() {
+    const a = randDec(2, 9, 1), da = pick([0.05, 0.1]);
+    const d = 3 * a * a * da;
+    return { q: `Krychle má hranu a = (${cz(a, 1)} ± ${cz(da, 2)}) cm. Odhad absolutní chyby objemu δ(V) v cm³:`, a: d, dp: 2,
+      e: `V = a³ a dV/da = 3a². δ(V) = 3·${cz(a, 1)}²·${cz(da, 2)} = ${cz(d, 4)} cm³. Relativně ρ(V) = 3·ρ(a) = ${cz(3 * da / a * 100, 2)} %.` };
+  } },
+  { id: "chyba-valec", t: "chyby", k: "num", gen() {
+    const r = randDec(1, 5, 1), h = randDec(5, 20, 1), dr = pick([0.05, 0.1]), dh = pick([0.1, 0.2]);
+    const d = 2 * Math.PI * r * h * dr + Math.PI * r * r * dh;
+    return { q: `Válec má poloměr r = (${cz(r, 1)} ± ${cz(dr, 2)}) cm a výšku h = (${cz(h, 1)} ± ${cz(dh, 1)}) cm. Odhad absolutní chyby objemu δ(V) v cm³:`, a: d, dp: 2,
+      e: `V = πr²h, ∂V/∂r = 2πrh a ∂V/∂h = πr². δ(V) = 2π·${cz(r, 1)}·${cz(h, 1)}·${cz(dr, 2)} + π·${cz(r, 1)}²·${cz(dh, 1)} = ${cz(2 * Math.PI * r * h * dr, 4)} + ${cz(Math.PI * r * r * dh, 4)} = ${cz(d, 4)} cm³.` };
+  } },
+  { id: "chyba-rozdil", t: "chyby", k: "num", gen() {
+    const x = randDec(10, 20, 2), y = Number((x - randDec(0.5, 2, 2)).toFixed(2)), dx = pick([0.05, 0.08, 0.1]), dy = pick([0.05, 0.06, 0.1]);
+    const diff = x - y, r = (dx + dy) / diff * 100;
+    return { q: `x = ${cz(x, 2)} ± ${cz(dx, 2)} a y = ${cz(y, 2)} ± ${cz(dy, 2)}. Odhad relativní chyby rozdílu x − y v procentech:`, a: r, dp: 1,
+      e: `x − y = ${cz(diff, 2)} ± ${cz(dx + dy, 2)}, protože se sčítají absolutní chyby. ρ = ${cz(dx + dy, 2)}/${cz(diff, 2)} = ${cz(r / 100, 4)}, tedy ${cz(r, 1)} %. Relativní chyby samotných čísel jsou jen asi ${cz(dx / x * 100, 1)} % a ${cz(dy / y * 100, 1)} %.` };
+  } },
+
+  // Reprezentace čísel a podmíněnost úloh
+  { t: "cisla", k: "single", q: "Kolik bitů mantisy má číslo double podle normy IEEE 754?", o: ["52", "23", "11", "64"], a: 0,
+    e: "Double má 64 bitů: 1 znaménko, 11 exponent a 52 mantisa. 23 bitů mantisy má single." },
+  { t: "cisla", k: "single", q: "Co je eps v Matlabu?", o: ["2⁻⁵² ≈ 2,22·10⁻¹⁶, vzdálenost od 1 k nejbližšímu většímu číslu double", "nejmenší kladné číslo double", "přesně 10⁻¹⁶", "největší chyba dělení"], a: 0,
+    e: "Proto 1 + eps/2 == 1 vrátí pravdu. Nejmenší kladné normalizované číslo je realmin ≈ 2,2·10⁻³⁰⁸." },
+  { t: "cisla", k: "single", q: "fl(3/80) při mantise se dvěma číslicemi (t = 2, β = 10) je:", o: ["0,38·10⁻¹", "0,37·10⁻¹", "0,375·10⁻¹", "0,4·10⁻¹"], a: 0,
+    e: "3/80 = 0,0375 = 0,375·10⁻¹. Třetí číslice je 5, takže se druhá zaokrouhlí nahoru. Příklad je z přednášky." },
+  { t: "cisla", k: "single", q: "Proč se výsledky výpočtů nemají porovnávat přes ==?", o: ["kvůli zaokrouhlení se i matematicky stejné hodnoty mohou lišit v posledních bitech", "== v Matlabu neexistuje", "== porovnává jen celá čísla", "== je pomalé"], a: 0,
+    e: "Porovnává se s tolerancí: abs(a - b) < tol." },
+  { t: "cisla", k: "single", q: "Který zákon v pohyblivé řádové čárce obecně neplatí?", o: ["asociativní, (a + b) + c = a + (b + c)", "komutativní, a + b = b + a", "a·1 = a", "a + 0 = a"], a: 0,
+    e: "Každá operace se zaokrouhluje, takže na pořadí sčítání záleží. V cviceni_01a.m přeteče (1e308 + 1,1e308) − 1,01e308 na Inf, ale 1e308 + (1,1e308 − 1,01e308) vyjde 1,09e308." },
+  { t: "cisla", k: "single", q: "Číslo podmíněnosti úlohy Cₚ je:", o: ["poměr relativní chyby výstupu a relativní chyby vstupu", "poměr absolutních chyb", "počet platných číslic výsledku", "determinant matice úlohy"], a: 0,
+    e: "Pro y = f(x) vychází Cₚ ≈ |x·f′(x)/f(x)|. Přednáška tento poměr přirovnává k elasticitě v ekonomii." },
+  { t: "cisla", k: "single", q: "Úloha má Cₚ = 500. Podle přednášky je:", o: ["špatně podmíněná", "dobře podmíněná", "neřešitelná v jakékoli přesnosti", "přesně podmíněná"], a: 0,
+    e: "Cₚ ≈ 1 je dobře podmíněná úloha, Cₚ > 100 špatně podmíněná. Neřešitelná v dané přesnosti je až při Cₚ > 1/ϵ." },
+  { t: "cisla", k: "single", q: "((1 + 1e-15) − 1)/1e-15 vyjde v Matlabu asi 1,11. Proč ne 1?", o: ["odečtením blízkých čísel se ztratily platné číslice", "Matlab špatně dělí", "1e-15 je menší než eps", "chyba v zápisu výrazu"], a: 0,
+    e: "1 + 10⁻¹⁵ se uloží zaokrouhleně a po odečtení 1 zůstane jen chyba zaokrouhlení. 10⁻¹⁵ je větší než eps ≈ 2,2·10⁻¹⁶." },
+  { id: "cp-rozdil", t: "cisla", k: "num", gen() {
+    const a = pick([1, 2, 5, 10]), k = pick([100, 200, 500, 1000]);
+    const x = a + 1 / k;
+    return { q: `Číslo podmíněnosti Cₚ ≈ |x·f′(x)/f(x)| úlohy f(x) = x − ${a} v bodě x = ${cz(x, 3)}:`, a: a * k + 1, dp: 0,
+      e: `f′(x) = 1, takže Cₚ = |x/(x − ${a})| = ${cz(x, 3)}/${cz(1 / k, 3)} = ${cz(a * k + 1, 0)}.Odečtení blízkých čísel je špatně podmíněná úloha.` };
+  } },
+];
+
+// Losování čísel pro šablony číselných otázek.
+const randInt = (lo, hi) => lo + Math.floor(Math.random() * (hi - lo + 1));
+const randDec = (lo, hi, d) => Number((lo + Math.random() * (hi - lo)).toFixed(d));
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const sign = () => pick([-1, 1]);
+
+// Matice se v textu otázek píšou po řádcích se středníkem mezi řádky, například (1 −2; 3 4).
+const SUB = "₀₁₂₃₄₅₆₇₈₉";
+const mat = (M, d = 0) => "(" + M.map((r) => r.map((v) => cz(v, d)).join(" ")).join("; ") + ")";
+const vec = (v) => "(" + v.map((x) => cz(x, 0)).join("; ") + ")";
+const par = (v, d = 0) => (v < 0 ? `(${cz(v, d)})` : cz(v, d));
+const matMul = (X, Y) => X.map((r) => Y[0].map((_, j) => r.reduce((s, v, k) => s + v * Y[k][j], 0)));
+const mulVec = (M, x) => M.map((r) => r.reduce((s, v, k) => s + v * x[k], 0));
+const tr = (M) => M[0].map((_, j) => M.map((r) => r[j]));
+
+// Vylosuje celočíselné A = L·U řádu 3, které GEM bez pivotace rozloží přesně na tato L a U.
+// Při unitU má U na diagonále ±1, takže det A = ±1 a A⁻¹ je celočíselná.
+function drawLU(unitU) {
+  const m = () => sign() * randInt(1, 3);
+  const d = () => (unitU ? sign() : sign() * randInt(1, 4));
+  const L = [[1, 0, 0], [m(), 1, 0], [randInt(-3, 3), m(), 1]];
+  const U = [[d(), randInt(-4, 4), randInt(-4, 4)], [0, d(), randInt(-4, 4)], [0, 0, d()]];
+  return { L, U, A: matMul(L, U) };
+}
+
+// Vylosuje ryze řádkově diagonálně dominantní celočíselnou matici řádu 3.
+function drawDominant() {
+  return [0, 1, 2].map((i) => {
+    const row = [0, 1, 2].map(() => randInt(-3, 3));
+    row[i] = sign() * (Math.abs(row[(i + 1) % 3]) + Math.abs(row[(i + 2) % 3]) + randInt(1, 4));
+    return row;
+  });
+}
+
+// Inverze přes adjungovanou matici. Pro celočíselnou A s det A = ±1 vyjde přesně celočíselná.
+function inverse3(A) {
+  const cof = (i, j) => {
+    const r = [0, 1, 2].filter((k) => k !== i), s = [0, 1, 2].filter((k) => k !== j);
+    return ((i + j) % 2 ? -1 : 1) * (A[r[0]][s[0]] * A[r[1]][s[1]] - A[r[0]][s[1]] * A[r[1]][s[0]]);
+  };
+  const det = A[0][0] * cof(0, 0) + A[0][1] * cof(0, 1) + A[0][2] * cof(0, 2);
+  return [0, 1, 2].map((i) => [0, 1, 2].map((j) => cof(j, i) / det));
+}
+
+// Vypíše číslo zaokrouhlené na d desetinných míst s desetinnou čárkou a bez koncových nul.
+function cz(x, d) {
+  let s = Math.abs(x).toFixed(d);
+  if (d) s = s.replace(/\.?0+$/, "");
+  const [i, f] = s.split(".");
+  const neg = x < 0 && /[1-9]/.test(s);
+  return (neg ? "−" : "") + (i.length > 4 ? i.replace(/\B(?=(\d{3})+$)/g, " ") : i) + (f ? "," + f : "");
+}
+
+function hash(s) {
+  let h = 2166136261;
+  for (const ch of s) h = Math.imul(h ^ ch.codePointAt(0), 16777619);
+  return (h >>> 0).toString(36);
+}
+
+// Vytvoří ze šablony otázku s novými čísly. Zadání, které už v historii šablony je, se losuje znovu.
+// Když po 100 pokusech žádné nové nepadne, zopakuje se. To nastane jen u šablon s malým počtem kombinací.
+function instantiate(tpl, seen) {
+  const used = seen[tpl.id] || (seen[tpl.id] = []);
+  let out, key;
+  for (let i = 0; i < 100; i++) {
+    out = tpl.gen();
+    key = hash(out.q);
+    if (!used.includes(key)) break;
+  }
+  used.push(key);
+  if (used.length > 500) used.shift();
+  const tol = out.dp ? Math.max(Math.abs(out.a) / 100, 10 ** -out.dp) : 0;
+  const hint = out.dp === 0 ? "celé číslo" : out.dp === 1 ? "na 1 desetinné místo" : `na ${out.dp} desetinná místa`;
+  return { t: tpl.t, k: "num", tpl, ...out, tol, hint };
+}
+
+const $ = (id) => document.getElementById(id);
+const STORE = "kviz-chyby-a-soustavy-rovnic";
+let round = [];      // otázky aktuálního kola, každá s promíchanými možnostmi
+let pos = 0;
+let picked = new Set();
+let answered = false;
+let results = [];    // {q, ok, given}
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function prepare(q, seen) {
+  if (q.k === "num") return { q: instantiate(q, seen), opts: null, correct: null };
+  const idx = q.fixed ? q.o.map((_, i) => i) : shuffle(q.o.map((_, i) => i));
+  const opts = idx.map((i) => q.o[i]);
+  const correctSet = new Set(Array.isArray(q.a) ? q.a : [q.a]);
+  const correct = idx.map((orig, j) => correctSet.has(orig) ? j : -1).filter((j) => j >= 0);
+  return { q, opts, correct };
+}
+
+function loadStore() {
+  try { return JSON.parse(localStorage.getItem(STORE)) || {}; } catch (e) { return {}; }
+}
+function saveStore(data) {
+  try { localStorage.setItem(STORE, JSON.stringify(data)); } catch (e) { /* bez úložiště funguje kvíz dál */ }
+}
+
+function renderStart() {
+  const box = $("topics");
+  box.innerHTML = "";
+  for (const key in TOPICS) {
+    const n = BANK.filter((q) => q.t === key).length;
+    const label = document.createElement("label");
+    label.innerHTML = `<input type="checkbox" value="${key}" checked> ${TOPICS[key]} <span class="muted small">(${n})</span>`;
+    box.appendChild(label);
+  }
+  const s = loadStore();
+  $("best").textContent = s.best != null ? `Nejlepší výsledek: ${s.best} % (${s.bestN} otázek)` : "";
+}
+
+function startRound(questions) {
+  const s = loadStore();
+  s.seen = s.seen || {};
+  round = questions.map((q) => prepare(q, s.seen));
+  saveStore(s);
+  pos = 0;
+  results = [];
+  $("start").hidden = true;
+  $("end").hidden = true;
+  $("quiz").hidden = false;
+  showQuestion();
+}
+
+function startFromForm() {
+  const topics = [...document.querySelectorAll("#topics input:checked")].map((i) => i.value);
+  if (!topics.length) { alert("Je potřeba zvolit aspoň jeden okruh."); return; }
+  const pool = shuffle(BANK.filter((q) => topics.includes(q.t)));
+  const countVal = document.querySelector("input[name=count]:checked").value;
+  const n = countVal === "all" ? pool.length : Math.min(pool.length, Number(countVal));
+  startRound(pool.slice(0, n));
+}
+
+function showQuestion() {
+  const item = round[pos];
+  const q = item.q;
+  picked = new Set();
+  answered = false;
+  $("barFill").style.width = `${(pos / round.length) * 100}%`;
+  $("counter").textContent = `Otázka ${pos + 1} z ${round.length}`;
+  $("topicTag").textContent = TOPICS[q.t];
+  $("kind").textContent = q.k === "multi" ? "více správných odpovědí" : q.k === "num" ? "číselná odpověď" : "jedna správná odpověď";
+  $("qText").innerHTML = q.q;
+  $("fb").hidden = true;
+  $("fb").className = "fb";
+  $("checkBtn").hidden = false;
+  $("checkBtn").disabled = false;
+  $("nextBtn").hidden = true;
+  $("running").textContent = `Správně ${results.filter((r) => r.ok).length} z ${results.length}`;
+
+  const opts = $("opts");
+  opts.innerHTML = "";
+  if (q.k === "num") {
+    $("numWrap").hidden = false;
+    $("numIn").value = "";
+    $("numIn").className = "";
+    $("numIn").disabled = false;
+    $("numHint").textContent = q.hint || "";
+    $("numIn").focus();
+  } else {
+    $("numWrap").hidden = true;
+    item.opts.forEach((text, i) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "opt";
+      b.setAttribute("aria-pressed", "false");
+      b.dataset.i = i;
+      b.innerHTML = `<span class="n">${i + 1}</span><span>${text}</span>`;
+      b.addEventListener("click", () => toggle(i));
+      opts.appendChild(b);
+    });
+  }
+}
+
+function toggle(i) {
+  if (answered) return;
+  const q = round[pos].q;
+  if (q.k === "single") picked = new Set([i]);
+  else if (picked.has(i)) picked.delete(i); else picked.add(i);
+  document.querySelectorAll(".opt").forEach((b) => b.setAttribute("aria-pressed", picked.has(Number(b.dataset.i)) ? "true" : "false"));
+}
+
+function parseNumber(text) {
+  const t = text.trim().replace(/\s/g, "").replace("−", "-").replace(",", ".");
+  if (!/^[-+]?\d*\.?\d+$/.test(t)) return NaN;
+  return Number(t);
+}
+
+function check() {
+  if (answered) return;
+  const item = round[pos];
+  const q = item.q;
+  let ok, given, correctText;
+  if (q.k === "num") {
+    const v = parseNumber($("numIn").value);
+    if (Number.isNaN(v)) { $("numIn").focus(); return; }
+    ok = Math.abs(v - q.a) <= q.tol;
+    given = cz(v, 6);
+    correctText = cz(q.a, q.dp);
+    $("numIn").className = ok ? "correct" : "wrong";
+    $("numIn").disabled = true;
+  } else {
+    if (!picked.size) return;
+    const want = new Set(item.correct);
+    ok = picked.size === want.size && [...picked].every((i) => want.has(i));
+    given = [...picked].sort().map((i) => item.opts[i]).join("; ");
+    correctText = item.correct.map((i) => item.opts[i]).join("; ");
+    document.querySelectorAll(".opt").forEach((b) => {
+      const i = Number(b.dataset.i);
+      b.disabled = true;
+      if (want.has(i)) b.classList.add("correct");
+      else if (picked.has(i)) b.classList.add("wrong");
+    });
+  }
+  answered = true;
+  results.push({ q, item, ok, given, correctText });
+  const fb = $("fb");
+  fb.className = `fb ${ok ? "ok" : "bad"}`;
+  fb.innerHTML = `<strong>${ok ? "Správně." : "Špatně."}</strong>` +
+    (ok ? "" : `<div class="ans">Správná odpověď: ${correctText}</div>`) +
+    `<div>${q.e}</div>`;
+  fb.hidden = false;
+  $("checkBtn").hidden = true;
+  $("nextBtn").hidden = false;
+  $("nextBtn").textContent = pos + 1 < round.length ? "Další otázka" : "Zobrazit výsledek";
+  $("nextBtn").focus();
+}
+
+function next() {
+  if (!answered) return;
+  pos++;
+  if (pos < round.length) showQuestion(); else finish();
+}
+
+function finish() {
+  $("quiz").hidden = true;
+  $("end").hidden = false;
+  const okN = results.filter((r) => r.ok).length;
+  const pct = Math.round((okN / results.length) * 100);
+  $("scoreLine").textContent = `${okN} z ${results.length} správně (${pct} %)`;
+  const s = loadStore();
+  let note = "";
+  if (s.best == null || pct > s.best || (pct === s.best && results.length > s.bestN)) {
+    saveStore({ ...s, best: pct, bestN: results.length });
+    note = "Nový nejlepší výsledek.";
+  } else {
+    note = `Nejlepší výsledek: ${s.best} % (${s.bestN} otázek).`;
+  }
+  $("scoreNote").textContent = note;
+
+  const rows = [];
+  for (const key in TOPICS) {
+    const rs = results.filter((r) => r.q.t === key);
+    if (!rs.length) continue;
+    const k = rs.filter((r) => r.ok).length;
+    rows.push(`<tr><td>${TOPICS[key]}</td><td class="r">${k} / ${rs.length}</td><td class="r">${Math.round((k / rs.length) * 100)} %</td></tr>`);
+  }
+  $("byTopic").innerHTML = `<thead><tr><th>Okruh</th><th class="r">Správně</th><th class="r">Úspěšnost</th></tr></thead><tbody>${rows.join("")}</tbody>`;
+
+  const wrong = results.filter((r) => !r.ok);
+  $("againWrong").hidden = !wrong.length;
+  $("review").innerHTML = wrong.length
+    ? `<li class="muted" style="border-left-color: var(--line)">Chybné odpovědi (${wrong.length}):</li>` + wrong.map((r) =>
+      `<li><div class="qq">${r.q.q}</div><p>Zadaná odpověď: ${r.given}</p><p>Správná odpověď: ${r.correctText}</p><p class="muted">${r.q.e}</p></li>`).join("")
+    : "";
+}
+
+$("startBtn").addEventListener("click", startFromForm);
+$("checkBtn").addEventListener("click", check);
+$("nextBtn").addEventListener("click", next);
+$("quitBtn").addEventListener("click", () => { if (results.length) finish(); else { $("quiz").hidden = true; $("start").hidden = false; } });
+$("againWrong").addEventListener("click", () => startRound(results.filter((r) => !r.ok).map((r) => r.q.tpl || r.q)));
+$("restart").addEventListener("click", () => { $("end").hidden = true; $("start").hidden = false; renderStart(); });
+$("numIn").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); answered ? next() : check(); } });
+document.addEventListener("keydown", (e) => {
+  if ($("quiz").hidden || e.target.tagName === "INPUT") return;
+  if (e.key === "Enter") { e.preventDefault(); answered ? next() : check(); }
+  else if (/^[1-9]$/.test(e.key) && round[pos].q.k !== "num") { toggle(Number(e.key) - 1); }
+});
+
+renderStart();
+</script>
+</body>
+</html>
