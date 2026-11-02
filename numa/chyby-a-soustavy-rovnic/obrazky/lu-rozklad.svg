@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="16">
+  <style>
+    .ink { fill: #1a1f27; } .ink2 { fill: #4b5563; } .acc { fill: #1f56b8; } .ok { fill: #1f6b47; }
+    .frame { fill: none; stroke: #4b5563; } .cell { fill: #ffffff; } .cella { fill: #e6eefb; } .cellok { fill: #e3f1e6; }
+    .boxa { fill: #e6eefb; stroke: #1f56b8; } .boxok { fill: #e3f1e6; stroke: #1f6b47; }
+    @media (prefers-color-scheme: dark) {
+      .ink { fill: #e9ecf1; } .ink2 { fill: #aab2bf; } .acc { fill: #8db4ff; } .ok { fill: #7fd4a5; }
+      .frame { stroke: #aab2bf; } .cell { fill: #1a1f26; } .cella { fill: #232d3f; } .cellok { fill: #1c3328; }
+      .boxa { fill: #232d3f; stroke: #8db4ff; } .boxok { fill: #1c3328; stroke: #7fd4a5; }
+    }
+  </style>
+
+  <text class="ink" x="82" y="24" text-anchor="middle" font-weight="700" font-size="19">A</text>
+  <text class="acc" x="240" y="24" text-anchor="middle" font-weight="700" font-size="19">L</text>
+  <text class="ok" x="398" y="24" text-anchor="middle" font-weight="700" font-size="19">U</text>
+
+  <rect class="cell" x="27" y="36" width="110" height="110"/>
+  <rect class="frame" stroke-width="1.5" x="27" y="36" width="110" height="110"/>
+  <g class="ink" text-anchor="middle" font-size="16">
+    <text x="45" y="60">a₁₁</text><text x="82" y="60">a₁₂</text><text x="119" y="60">a₁₃</text>
+    <text x="45" y="97">a₂₁</text><text x="82" y="97">a₂₂</text><text x="119" y="97">a₂₃</text>
+    <text x="45" y="134">a₃₁</text><text x="82" y="134">a₃₂</text><text x="119" y="134">a₃₃</text>
+  </g>
+
+  <text class="ink" x="161" y="98" text-anchor="middle" font-size="19">=</text>
+
+  <rect class="cell" x="185" y="36" width="110" height="110"/>
+  <path class="cella" d="M185 36 H221.7 V72.7 H258.3 V109.3 H295 V146 H185 Z"/>
+  <rect class="frame" stroke-width="1.5" x="185" y="36" width="110" height="110"/>
+  <g text-anchor="middle" font-size="16">
+    <text class="acc" x="203" y="60" font-weight="700">1</text><text class="ink2" x="240" y="60">0</text><text class="ink2" x="277" y="60">0</text>
+    <text class="ink" x="203" y="97">m₂₁</text><text class="acc" x="240" y="97" font-weight="700">1</text><text class="ink2" x="277" y="97">0</text>
+    <text class="ink" x="203" y="134">m₃₁</text><text class="ink" x="240" y="134">m₃₂</text><text class="acc" x="277" y="134" font-weight="700">1</text>
+  </g>
+
+  <text class="ink" x="319" y="98" text-anchor="middle" font-size="19">·</text>
+
+  <rect class="cell" x="343" y="36" width="110" height="110"/>
+  <path class="cellok" d="M343 36 H453 V146 H416.3 V109.3 H379.7 V72.7 H343 Z"/>
+  <rect class="frame" stroke-width="1.5" x="343" y="36" width="110" height="110"/>
+  <g text-anchor="middle" font-size="16">
+    <text class="ink" x="361" y="60">u₁₁</text><text class="ink" x="398" y="60">u₁₂</text><text class="ink" x="435" y="60">u₁₃</text>
+    <text class="ink2" x="361" y="97">0</text><text class="ink" x="398" y="97">u₂₂</text><text class="ink" x="435" y="97">u₂₃</text>
+    <text class="ink2" x="361" y="134">0</text><text class="ink2" x="398" y="134">0</text><text class="ink" x="435" y="134">u₃₃</text>
+  </g>
+
+  <g class="ink2" text-anchor="middle" font-size="15">
+    <text x="82" y="172">zadaná matice</text>
+    <text x="240" y="172">jedničky na diagonále,</text>
+    <text x="240" y="190">pod ní multiplikátory</text>
+    <text x="398" y="172">výsledek GEM</text>
+  </g>
+
+  <rect class="boxa" stroke-width="1.5" x="2" y="212" width="476" height="38"/>
+  <text class="acc" x="16" y="237" font-weight="700" font-size="16">1.</text>
+  <text class="ink" x="40" y="237" font-weight="700" font-size="16">L·y = b</text>
+  <text class="ink2" x="130" y="237" font-size="15">dopředná substituce, shora dolů</text>
+
+  <rect class="boxok" stroke-width="1.5" x="2" y="258" width="476" height="38"/>
+  <text class="ok" x="16" y="283" font-weight="700" font-size="16">2.</text>
+  <text class="ink" x="40" y="283" font-weight="700" font-size="16">U·x = y</text>
+  <text class="ink2" x="130" y="283" font-size="15">zpětná substituce, zdola nahoru</text>
+</svg>

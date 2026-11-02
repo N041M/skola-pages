@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 380" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="16">
+  <style>
+    .ink { fill: #1a1f27; } .ink2 { fill: #4b5563; } .line { stroke: #1a1f27; } .head { fill: #1a1f27; }
+    .ok { fill: #1f6b47; } .rej { fill: #b3261e; } .acc { fill: #1f56b8; }
+    .box { fill: #ffffff; stroke: #4b5563; } .boxa { fill: #e6eefb; stroke: #1f56b8; } .boxok { fill: #e3f1e6; stroke: #1f6b47; }
+    @media (prefers-color-scheme: dark) {
+      .ink { fill: #e9ecf1; } .ink2 { fill: #aab2bf; } .line { stroke: #e9ecf1; } .head { fill: #e9ecf1; }
+      .ok { fill: #7fd4a5; } .rej { fill: #ff9a92; } .acc { fill: #8db4ff; }
+      .box { fill: #1a1f26; stroke: #aab2bf; } .boxa { fill: #232d3f; stroke: #8db4ff; } .boxok { fill: #1c3328; stroke: #7fd4a5; }
+    }
+  </style>
+
+  <rect class="box" stroke-width="1.5" x="2" y="2" width="260" height="72"/>
+  <text class="ink" x="132" y="33" text-anchor="middle" font-size="16">Je A ryze řádkově</text>
+  <text class="ink" x="132" y="55" text-anchor="middle" font-size="16">diagonálně dominantní?</text>
+  <rect class="boxok" stroke-width="1.5" x="300" y="10" width="178" height="56"/>
+  <text class="ink" x="389" y="34" text-anchor="middle" font-weight="700" font-size="15">Jacobi i Gauss-Seidel</text>
+  <text class="ink" x="389" y="54" text-anchor="middle" font-size="15">konvergují</text>
+
+  <rect class="box" stroke-width="1.5" x="2" y="104" width="260" height="72"/>
+  <text class="ink" x="132" y="135" text-anchor="middle" font-size="16">Jdou přeházet rovnice</text>
+  <text class="ink" x="132" y="157" text-anchor="middle" font-size="16">na dominantní tvar?</text>
+  <rect class="boxok" stroke-width="1.5" x="300" y="112" width="178" height="56"/>
+  <text class="ink" x="389" y="136" text-anchor="middle" font-weight="700" font-size="15">Přeházet rovnice</text>
+  <text class="ink" x="389" y="156" text-anchor="middle" font-size="15">a použít obě metody</text>
+
+  <rect class="box" stroke-width="1.5" x="2" y="206" width="260" height="84"/>
+  <text class="ink" x="132" y="234" text-anchor="middle" font-size="16">Je A symetrická</text>
+  <text class="ink" x="132" y="256" text-anchor="middle" font-size="16">a pozitivně definitní?</text>
+  <text class="ink2" x="132" y="277" text-anchor="middle" font-size="14">Sylvestrovo kritérium</text>
+  <rect class="boxok" stroke-width="1.5" x="300" y="220" width="178" height="56"/>
+  <text class="ink" x="389" y="244" text-anchor="middle" font-weight="700" font-size="15">Gauss-Seidel</text>
+  <text class="ink" x="389" y="264" text-anchor="middle" font-size="15">konverguje</text>
+
+  <rect class="boxa" stroke-width="1.5" x="2" y="320" width="476" height="56"/>
+  <text class="ink" x="240" y="344" text-anchor="middle" font-weight="700" font-size="16">Přejít na soustavu AᵀA·x = Aᵀb</text>
+  <text class="ink" x="240" y="365" text-anchor="middle" font-size="15">a počítat Gauss-Seidelovou metodou</text>
+
+  <g class="line" stroke-width="1.5">
+    <line x1="262" y1="38" x2="291" y2="38"/>
+    <line x1="262" y1="140" x2="291" y2="140"/>
+    <line x1="262" y1="248" x2="291" y2="248"/>
+    <line x1="132" y1="74" x2="132" y2="95"/>
+    <line x1="132" y1="176" x2="132" y2="197"/>
+    <line x1="132" y1="290" x2="132" y2="311"/>
+  </g>
+  <g class="head">
+    <polygon points="300,38 291,33 291,43"/>
+    <polygon points="300,140 291,135 291,145"/>
+    <polygon points="300,248 291,243 291,253"/>
+    <polygon points="132,104 127,95 137,95"/>
+    <polygon points="132,206 127,197 137,197"/>
+    <polygon points="132,320 127,311 137,311"/>
+  </g>
+  <g class="ok" text-anchor="middle" font-weight="700" font-size="14">
+    <text x="281" y="30">ano</text>
+    <text x="281" y="132">ano</text>
+    <text x="281" y="240">ano</text>
+  </g>
+  <g class="rej" font-weight="700" font-size="14">
+    <text x="142" y="94">ne</text>
+    <text x="142" y="196">ne</text>
+    <text x="142" y="310">ne</text>
+  </g>
+</svg>

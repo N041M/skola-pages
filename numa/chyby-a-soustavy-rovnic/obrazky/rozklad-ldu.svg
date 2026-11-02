@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 270" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="15">
+  <style>
+    .ink { fill: #1a1f27; } .ink2 { fill: #4b5563; } .acc { fill: #1f56b8; } .ok { fill: #1f6b47; }
+    .frame { fill: none; stroke: #4b5563; } .cell { fill: #ffffff; } .cella { fill: #e6eefb; } .cellok { fill: #e3f1e6; }
+    .box { fill: #ffffff; stroke: #4b5563; }
+    @media (prefers-color-scheme: dark) {
+      .ink { fill: #e9ecf1; } .ink2 { fill: #aab2bf; } .acc { fill: #8db4ff; } .ok { fill: #7fd4a5; }
+      .frame { stroke: #aab2bf; } .cell { fill: #1a1f26; } .cella { fill: #232d3f; } .cellok { fill: #1c3328; }
+      .box { fill: #1a1f26; stroke: #aab2bf; }
+    }
+  </style>
+
+  <g text-anchor="middle" font-weight="700" font-size="19">
+    <text class="ink" x="48" y="24">A</text>
+    <text class="acc" x="176" y="24">L</text>
+    <text class="ok" x="304" y="24">D</text>
+    <text class="acc" x="432" y="24">U</text>
+  </g>
+  <g class="ink" text-anchor="middle" font-size="19">
+    <text x="112" y="86">=</text>
+    <text x="240" y="86">+</text>
+    <text x="368" y="86">+</text>
+  </g>
+
+  <rect class="cell" x="2" y="34" width="92" height="92"/>
+  <rect class="frame" stroke-width="1.5" x="2" y="34" width="92" height="92"/>
+  <g class="ink" text-anchor="middle">
+    <text x="17.3" y="55">a₁₁</text><text x="48" y="55">a₁₂</text><text x="78.7" y="55">a₁₃</text>
+    <text x="17.3" y="85.7">a₂₁</text><text x="48" y="85.7">a₂₂</text><text x="78.7" y="85.7">a₂₃</text>
+    <text x="17.3" y="116.3">a₃₁</text><text x="48" y="116.3">a₃₂</text><text x="78.7" y="116.3">a₃₃</text>
+  </g>
+
+  <rect class="cell" x="130" y="34" width="92" height="92"/>
+  <path class="cella" d="M130 64.7 H160.7 V95.3 H191.3 V126 H130 Z"/>
+  <rect class="frame" stroke-width="1.5" x="130" y="34" width="92" height="92"/>
+  <g text-anchor="middle">
+    <text class="ink2" x="145.3" y="55">0</text><text class="ink2" x="176" y="55">0</text><text class="ink2" x="206.7" y="55">0</text>
+    <text class="ink" x="145.3" y="85.7">a₂₁</text><text class="ink2" x="176" y="85.7">0</text><text class="ink2" x="206.7" y="85.7">0</text>
+    <text class="ink" x="145.3" y="116.3">a₃₁</text><text class="ink" x="176" y="116.3">a₃₂</text><text class="ink2" x="206.7" y="116.3">0</text>
+  </g>
+
+  <rect class="cell" x="258" y="34" width="92" height="92"/>
+  <rect class="cellok" x="258" y="34" width="30.7" height="30.7"/>
+  <rect class="cellok" x="288.7" y="64.7" width="30.7" height="30.7"/>
+  <rect class="cellok" x="319.3" y="95.3" width="30.7" height="30.7"/>
+  <rect class="frame" stroke-width="1.5" x="258" y="34" width="92" height="92"/>
+  <g text-anchor="middle">
+    <text class="ink" x="273.3" y="55">a₁₁</text><text class="ink2" x="304" y="55">0</text><text class="ink2" x="334.7" y="55">0</text>
+    <text class="ink2" x="273.3" y="85.7">0</text><text class="ink" x="304" y="85.7">a₂₂</text><text class="ink2" x="334.7" y="85.7">0</text>
+    <text class="ink2" x="273.3" y="116.3">0</text><text class="ink2" x="304" y="116.3">0</text><text class="ink" x="334.7" y="116.3">a₃₃</text>
+  </g>
+
+  <rect class="cell" x="386" y="34" width="92" height="92"/>
+  <path class="cella" d="M416.7 34 H478 V95.3 H447.3 V64.7 H416.7 Z"/>
+  <rect class="frame" stroke-width="1.5" x="386" y="34" width="92" height="92"/>
+  <g text-anchor="middle">
+    <text class="ink2" x="401.3" y="55">0</text><text class="ink" x="432" y="55">a₁₂</text><text class="ink" x="462.7" y="55">a₁₃</text>
+    <text class="ink2" x="401.3" y="85.7">0</text><text class="ink2" x="432" y="85.7">0</text><text class="ink" x="462.7" y="85.7">a₂₃</text>
+    <text class="ink2" x="401.3" y="116.3">0</text><text class="ink2" x="432" y="116.3">0</text><text class="ink2" x="462.7" y="116.3">0</text>
+  </g>
+
+  <g class="ink2" text-anchor="middle" font-size="15">
+    <text x="48" y="150">zadaná</text><text x="48" y="168">matice</text>
+    <text x="176" y="150">část pod</text><text x="176" y="168">diagonálou</text>
+    <text x="304" y="150">diagonála</text>
+    <text x="432" y="150">část nad</text><text x="432" y="168">diagonálou</text>
+  </g>
+
+  <rect class="box" stroke-width="1.5" x="2" y="186" width="476" height="36"/>
+  <text class="ink" x="16" y="209" font-weight="700" font-size="16">Jacobi</text>
+  <text class="ink" x="150" y="209" font-size="16">D·x⁽ᵏ⁺¹⁾ = b − (L + U)·x⁽ᵏ⁾</text>
+  <rect class="box" stroke-width="1.5" x="2" y="230" width="476" height="36"/>
+  <text class="ink" x="16" y="253" font-weight="700" font-size="16">Gauss-Seidel</text>
+  <text class="ink" x="150" y="253" font-size="16">(D + L)·x⁽ᵏ⁺¹⁾ = b − U·x⁽ᵏ⁾</text>
+</svg>

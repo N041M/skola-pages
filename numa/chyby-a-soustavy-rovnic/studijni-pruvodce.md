@@ -148,6 +148,8 @@ Vyřešit GEM soustavu A = (2 1 1; 4 3 3; 8 7 9), b = (4; 10; 24). Na kontrolu: 
 - L·y = b se řeší dopřednou substitucí (shora dolů) a U·x = y zpětnou substitucí (zdola nahoru).
 - det A = det L · det U = u₁₁·u₂₂·…·uₙₙ, protože det L = 1.
 
+![A = L·U pro matici 3×3. L má na diagonále jedničky a pod ní multiplikátory z GEM, U je výsledek GEM. Soustava se pak řeší dvěma substitucemi.](obrazky/lu-rozklad.svg)
+
 ### Postup na papír
 
 > Na písemku
@@ -356,6 +358,8 @@ Další ukázky jsou v cv03_LU/matlab/cond.txt a v cviceni_02.m, kde příklad 3
 
 Matice se rozdělí na A = L + D + U. L je část pod diagonálou, D je diagonála a U je část nad diagonálou.
 
+![Rozklad A = L + D + U. Jacobiho metoda nechá na levé straně jen D, Gauss-Seidelova D + L.](obrazky/rozklad-ldu.svg)
+
 > Pozor
 > L a U v rozkladu A = L + D + U nejsou L a U z LU rozkladu. Tady jsou to části matice A, které se sčítají. V LU rozkladu jsou to činitele součinu.
 
@@ -492,6 +496,8 @@ Podmínky z tabulky výše jsou jen postačující. Na listu cvITER_SLAR.pdf (st
 | (1 1 1; 1 2 2; 1 2 3) | 1,41 | 0,67 | A je symetrická pozitivně definitní, takže Gauss-Seidel konverguje |
 
 Pozitivní definitnost se v cviceni_04.m ověřuje Sylvestrovým kritériem: `[det(A(1,1)), det(A(1:2,1:2)), det(A)]` musí dát tři kladná čísla. Když matice není diagonálně dominantní ani pozitivně definitní, cviceni_04.m přejde na soustavu AᵀAx = Aᵀb (`B = A'*A; c = A'*b;`). Pro regulární A je AᵀA symetrická pozitivně definitní a Gauss-Seidelova metoda na ní konverguje.
+
+![Volba iterační metody podle cviceni_04.m. Podmínky jsou postačující, takže metoda může konvergovat i mimo ně.](obrazky/volba-metody.svg)
 
 ### Cvičení
 
