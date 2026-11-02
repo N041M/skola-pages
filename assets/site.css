@@ -111,6 +111,24 @@ h1 { margin: 0 0 2rem; font-size: clamp(2rem, 6vw, 2.75rem); line-height: 1.15; 
 .doc pre { margin: 0 0 1.25rem; padding: 0.75rem 1rem; overflow-x: auto; background: var(--surface); border: 1px solid var(--line); font: 0.875rem / 1.55 var(--mono); }
 .doc pre code { padding: 0; background: none; font: inherit; }
 .doc .scroll { margin: 0 0 1.25rem; overflow-x: auto; }
+/* Hand calculations from ```matice blocks. A matrix sits between square brackets drawn with
+   borders, and its rows share one row height with the row operations beside it. */
+.doc .calc { --row: 1.6rem; margin: 0 0 1.25rem; padding: 0.875rem 1rem; overflow-x: auto; background: var(--surface); border: 1px solid var(--line); }
+.doc .chain { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 0.5rem; }
+.doc .unit { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.doc .mg { display: inline-flex; align-items: center; gap: 0.5rem; }
+.doc .mat { position: relative; display: inline-grid; grid-template-columns: repeat(var(--n), auto); padding: 0.2rem 0.3em; justify-items: stretch; text-align: right; line-height: var(--row); font-variant-numeric: tabular-nums; }
+.doc .mat::before, .doc .mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 0.32em; border-block: 1.5px solid var(--ink); }
+.doc .mat::before { left: 0; border-left: 1.5px solid var(--ink); }
+.doc .mat::after { right: 0; border-right: 1.5px solid var(--ink); }
+.doc .mat span { padding: 0 0.35em; }
+.doc .mat .z { color: var(--ink-2); }
+.doc .mat .new { background: var(--mark); }
+.doc .mat .pv { outline: 1.5px solid var(--accent); outline-offset: -1px; }
+.doc .ops { display: inline-grid; padding: 0.2rem 0; line-height: var(--row); font-size: 0.8125rem; color: var(--ink-2); white-space: nowrap; }
+.doc .arrow { display: inline-flex; flex-direction: column; align-items: center; color: var(--ink-2); font-size: 0.8125rem; line-height: 1.1; }
+.doc .arrow b { color: var(--ink); font-size: 1.25rem; font-weight: 400; }
+.doc .calc .steps { margin: 0.75rem 0 0; padding: 0; list-style: none; font-size: 0.9375rem; }
 .doc table { border-collapse: collapse; background: var(--surface); font-size: 0.9375rem; line-height: 1.45; }
 .doc th, .doc td { padding: 0.5rem 0.75rem; border: 1px solid var(--line); text-align: left; vertical-align: top; }
 .doc th { background: var(--accent-soft); }

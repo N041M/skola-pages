@@ -85,16 +85,18 @@ V Matlabu se píše desetinná tečka (`0.5`), na papíře desetinná čárka (0
 > 4. Nový řádek i = řádek i − mᵢₖ · řádek k. Stejně upravit pravou stranu b.
 > 5. Po posledním kroku spočítat zpětnou substitucí nejdřív xₙ, pak xₙ₋₁ a tak dál nahoru.
 
-Tímto zápisem je spočítaný příklad v poznámkách (str. 5 a 6) pro A = (1 −2 3; 6 −13 18; 4 −10 14):
+Tímto zápisem je spočítaný příklad v poznámkách (str. 5 a 6). Pivot je v rámečku, změněné řádky jsou žluté a ř₂ znamená 2. řádek.
 
-```
-KROK 1: nulování 1. sloupce, PIVOT = 1
-  m21 = 6/1 = 6       2. řádek − 6 · 1. řádek = (0, −1, 0)
-  m31 = 4/1 = 4       3. řádek − 4 · 1. řádek = (0, −2, 2)
-KROK 2: nulování 2. sloupce, PIVOT = −1
-  m32 = −2/(−1) = 2   3. řádek − 2 · 2. řádek = (0, 0, 2)
-
-U = (1 −2 3; 0 −1 0; 0 0 2)
+```matice
+A = [*1 −2 3; 6 −13 18; 4 −10 14]
+| ; ř₂ − 6·ř₁; ř₃ − 4·ř₁
+→ krok 1
+[1 −2 3; !0 !*−1 !0; !0 !−2 !2]
+| ; ; ř₃ − 2·ř₂
+→ krok 2
+[1 −2 3; 0 −1 0; !0 !0 !2] = U
+- Krok 1, pivot 1: m₂₁ = 6/1 = 6, m₃₁ = 4/1 = 4
+- Krok 2, pivot −1: m₃₂ = −2/(−1) = 2
 ```
 
 Zpětná substituce postupně pro i = n, n − 1, …, 1:

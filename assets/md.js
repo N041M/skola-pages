@@ -3,6 +3,10 @@
 // ==highlight==, `code` and [links](https://…).
 // A box is a run of lines starting with ">". Its first line is the title, and the titles
 // in BOXES get their own colour.
+// A code block opened with ```matice is a hand calculation drawn as a chain of matrices.
+// Each line is a unit of text and matrices such as "A = [*1 2; !0 3]", where *x marks
+// the pivot and !x a changed entry. "| a; b" puts row operations beside the rows of the
+// unit's last matrix, "→ text" is an arrow with a label and "- text" a note under the chain.
 const BOXES = { "Shrnutí": "box-sum", "Pozor": "box-warn", "Na písemku": "box-exam", "Do zprávy": "box-exam" };
 
 function renderMarkdown(source) {
@@ -14,6 +18,36 @@ function renderMarkdown(source) {
     .replace(/\[([^\]]+)\]\((https:\/\/[^\s)]+)\)/g, '<a href="$2">$1</a>');
   const cells = (line) => line.trim().replace(/^\||\|$/g, "").split(/(?<!\\)\|/).map((c) => c.trim().replace(/\\\|/g, "|"));
   const isBlockStart = (l) => /^(#{1,4} |\||>|!\[|```)/.test(l) || /^(\d+\.|[-*]) /.test(l);
+  const matrix = (src) => {
+    const rows = src.split(";").map((r) => r.trim().split(/\s+/));
+    const cell = (c) => {
+      const [, marks, value] = c.match(/^([!*]*)(.*)$/);
+      const cls = [marks.includes("*") && "pv", marks.includes("!") && "new", value === "0" && "z"].filter(Boolean).join(" ");
+      return `<span${cls ? ` class="${cls}"` : ""}>${esc(value)}</span>`;
+    };
+    return `<span class="mat" style="--n:${rows[0].length}">${rows.flat().map(cell).join("")}</span>`;
+  };
+  const calc = (src) => {
+    const chain = [], notes = [];
+    for (let k = 0; k < src.length; k++) {
+      const l = src[k].trim();
+      if (!l) continue;
+      if (l.startsWith("- ")) notes.push(`<li>${inline(l.slice(2))}</li>`);
+      else if (l.startsWith("→")) chain.push(`<span class="arrow">${inline(l.slice(1).trim())}<b>→</b></span>`);
+      else {
+        const ops = (src[k + 1] || "").trim().startsWith("|") ? src[++k].trim().slice(1).split(";").map((o) => o.trim()) : null;
+        const parts = l.split(/(\[[^\]]*\])/).filter((p) => p.trim());
+        const last = parts.map((p) => p.startsWith("[")).lastIndexOf(true);
+        const html = parts.map((p, n) => {
+          if (!p.startsWith("[")) return `<span>${inline(p.trim())}</span>`;
+          const side = n === last && ops ? `<span class="ops">${ops.map((o) => `<span>${inline(o) || "&nbsp;"}</span>`).join("")}</span>` : "";
+          return `<span class="mg">${matrix(p.slice(1, -1))}${side}</span>`;
+        });
+        chain.push(`<span class="unit">${html.join("")}</span>`);
+      }
+    }
+    return `<div class="calc"><div class="chain">${chain.join("")}</div>${notes.length ? `<ul class="steps">${notes.join("")}</ul>` : ""}</div>`;
+  };
 
   const lines = source.replace(/\r\n?/g, "\n").split("\n");
   const out = [];
@@ -36,7 +70,7 @@ function renderMarkdown(source) {
       i++;
       while (i < lines.length && !lines[i].startsWith("```")) code.push(lines[i++]);
       i++;
-      out.push(`<pre><code>${esc(code.join("\n"))}</code></pre>`);
+      out.push(line.slice(3).trim() === "matice" ? calc(code) : `<pre><code>${esc(code.join("\n"))}</code></pre>`);
     } else if (line.startsWith(">")) {
       const body = [];
       while (i < lines.length && lines[i].startsWith(">")) body.push(lines[i++].replace(/^> ?/, ""));
