@@ -1,6 +1,6 @@
 // Renders the Markdown subset the study guides use: headings, paragraphs, bullet and
 // numbered lists, tables, images, boxes, code blocks between ``` lines, **bold**,
-// ==highlight== and `code`.
+// ==highlight==, `code` and [links](https://…).
 // A box is a run of lines starting with ">". Its first line is the title, and the titles
 // in BOXES get their own colour.
 const BOXES = { "Shrnutí": "box-sum", "Pozor": "box-warn", "Na písemku": "box-exam", "Do zprávy": "box-exam" };
@@ -10,7 +10,8 @@ function renderMarkdown(source) {
   const inline = (s) => esc(s)
     .replace(/`([^`]+)`/g, "<code>$1</code>")
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
-    .replace(/==([^=]+)==/g, "<mark>$1</mark>");
+    .replace(/==([^=]+)==/g, "<mark>$1</mark>")
+    .replace(/\[([^\]]+)\]\((https:\/\/[^\s)]+)\)/g, '<a href="$2">$1</a>');
   const cells = (line) => line.trim().replace(/^\||\|$/g, "").split(/(?<!\\)\|/).map((c) => c.trim().replace(/\\\|/g, "|"));
   const isBlockStart = (l) => /^(#{1,4} |\||>|!\[|```)/.test(l) || /^(\d+\.|[-*]) /.test(l);
 
