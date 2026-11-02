@@ -117,7 +117,7 @@ h1 { margin: 0 0 2rem; font-size: clamp(2rem, 6vw, 2.75rem); line-height: 1.15; 
 .doc .chain { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 0.5rem; }
 .doc .unit { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
 .doc .mg { display: inline-flex; align-items: center; gap: 0.5rem; }
-.doc .mat { position: relative; display: inline-grid; grid-template-columns: repeat(var(--n), auto); padding: 0.2rem 0.3em; justify-items: stretch; text-align: right; line-height: var(--row); font-variant-numeric: tabular-nums; }
+.doc .mat { position: relative; display: inline-grid; grid-template-columns: repeat(var(--n), auto); padding: 0.2rem 0.3em; justify-items: stretch; text-align: center; line-height: var(--row); font-variant-numeric: tabular-nums; }
 .doc .mat::before, .doc .mat::after { content: ""; position: absolute; top: 0; bottom: 0; width: 0.32em; border-block: 1.5px solid var(--ink); }
 .doc .mat::before { left: 0; border-left: 1.5px solid var(--ink); }
 .doc .mat::after { right: 0; border-right: 1.5px solid var(--ink); }

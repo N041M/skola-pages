@@ -251,17 +251,14 @@ Prvky L se počítají po sloupcích, v každém sloupci nejdřív diagonální 
 
 Pro matici z poznámek (str. 1):
 
-```
-A = (1 2 6; 2 5 15; 6 15 46), symetrická
-hlavní minory: 1 > 0, 1·5 − 2·2 = 1 > 0, det A = 1 > 0
-
-l11 = √1 = 1
-l21 = 2/1 = 2          l31 = 6/1 = 6
-l22 = √(5 − 2²) = 1
-l32 = (15 − 6·2)/1 = 3
-l33 = √(46 − 6² − 3²) = 1
-
-L = (1 0 0; 2 1 0; 6 3 1)
+```matice
+A = [1 2 6; 2 5 15; 6 15 46] = Aᵀ
+→ A = L·Lᵀ
+L = [1 0 0; 2 1 0; 6 3 1]
+- Hlavní minory: 1 > 0, 1·5 − 2·2 = 1 > 0, det A = 1 > 0
+- l₁₁ = √1 = 1, l₂₁ = 2/1 = 2, l₃₁ = 6/1 = 6
+- l₂₂ = √(5 − 2²) = 1, l₃₂ = (15 − 6·2)/1 = 3
+- l₃₃ = √(46 − 6² − 3²) = 1
 ```
 
 ### V Matlabu
@@ -309,12 +306,14 @@ Rozložit A = (4 2 −2; 2 10 2; −2 2 6). Na kontrolu: hlavní minory jsou 4, 
 > Pozor
 > `norm(A)` bez druhého argumentu je spektrální norma, ne řádková. U vektoru je `norm(v,Inf)` největší absolutní hodnota prvku.
 
-Příklad z poznámek a z listu cvITER_SLAR.pdf: B = (0 −0,2 0,1; −0,1 0 0; −0,6 0,7 0).
+Příklad z poznámek a z listu cvITER_SLAR.pdf. Vedle řádků matice jsou součty absolutních hodnot v řádku.
 
-```
-sloupcová:  max{0,1 + 0,6; 0,2 + 0,7; 0,1} = max{0,7; 0,9; 0,1} = 0,9
-řádková:    max{0,2 + 0,1; 0,1; 0,6 + 0,7} = max{0,3; 0,1; 1,3} = 1,3
-Frobeniova: √(0,04 + 0,01 + 0,01 + 0,36 + 0,49) = √0,91 ≈ 0,954
+```matice
+B = [0 −0,2 0,1; −0,1 0 0; −0,6 0,7 0]
+| součet 0,3; součet 0,1; součet 1,3
+- sloupcová: max{0,1 + 0,6; 0,2 + 0,7; 0,1} = max{0,7; 0,9; 0,1} = 0,9
+- řádková: max{0,3; 0,1; 1,3} = 1,3
+- Frobeniova: √(0,04 + 0,01 + 0,01 + 0,36 + 0,49) = √0,91 ≈ 0,954
 ```
 
 Řádková norma je větší než 1, sloupcová je menší. Pro záruku konvergence stačí, aby byla menší než 1 aspoň jedna norma, a proto poznámky použily sloupcovou.
@@ -325,8 +324,10 @@ Frobeniova: √(0,04 + 0,01 + 0,01 + 0,36 + 0,49) = √0,91 ≈ 0,954
 
 Vlastní čísla jsou kořeny rovnice det(B − λE) = 0. Matice n×n má n vlastních čísel, která se mohou opakovat a mohou být i komplexní. U matice 2×2 vyjde kvadratická rovnice:
 
-```
-B = (a b; c d)
+```matice
+B = [a b; c d],
+B − λE = [a−λ b; c d−λ]
+→ det(B − λE) = 0
 (a − λ)(d − λ) − bc = 0
 ```
 
@@ -334,13 +335,12 @@ B = (a b; c d)
 
 Příklad: B = (0 2; 0,1 0).
 
-```
-det(B − λE) = (−λ)(−λ) − 2 · 0,1
-            = λ² − 0,2 = 0
-λ₁ = √0,2 ≈ 0,447
-λ₂ = −√0,2 ≈ −0,447
-ρ(B) ≈ 0,447
-‖B‖₁ = 2,  ‖B‖∞ = 2
+```matice
+B − λE = [−λ 2; 0,1 −λ]
+→ det(B − λE) = 0
+(−λ)(−λ) − 2 · 0,1 = λ² − 0,2 = 0
+- λ₁ = √0,2 ≈ 0,447, λ₂ = −√0,2 ≈ −0,447, ρ(B) ≈ 0,447
+- ‖B‖₁ = 2, ‖B‖∞ = 2
 ```
 
 Pro každou normu z tabulky výše platí ρ(B) ≤ ‖B‖. Proto podmínka ‖B‖ < 1 v jedné normě zaručí i ρ(B) < 1. Obráceně to neplatí. Matice B z příkladu má obě normy rovné 2, ale ρ(B) ≈ 0,447, takže iterace s touto maticí konverguje.
@@ -358,14 +358,12 @@ U symetrické matice jsou singulární čísla absolutní hodnoty vlastních č�
 
 Příklad: A = (3 0; 4 5).
 
-```
-AᵀA = (3 4; 0 5) · (3 0; 4 5)
-    = (25 20; 20 25)
-det(AᵀA − λE) = (25 − λ)² − 20² = 0
-λ₁ = 45,  λ₂ = 5
-σ₁ = √45 ≈ 6,708
-σ₂ = √5 ≈ 2,236
-‖A‖₂ ≈ 6,708
+```matice
+AᵀA = [3 4; 0 5] · [3 0; 4 5] = [25 20; 20 25]
+→ det(AᵀA − λE) = 0
+(25 − λ)² − 20² = 0
+- λ₁ = 45, λ₂ = 5
+- σ₁ = √45 ≈ 6,708, σ₂ = √5 ≈ 2,236, ‖A‖₂ = σ₁ ≈ 6,708
 ```
 
 Ostatní normy téže matice jsou pro srovnání ‖A‖₁ = 7, ‖A‖∞ = 9 a ‖A‖_F ≈ 7,071.
@@ -384,13 +382,15 @@ Platí cond(A) ≥ 1. Číslo blízko 1 znamená dobře podmíněnou matici. Hru
 
 Příklad: A = (1 1; 1 1,0001).
 
-```
-A⁻¹ = (10001 −10000; −10000 10000)
-‖A‖∞ = 2,0001       ‖A⁻¹‖∞ = 20001
-cond∞(A) = 2,0001 · 20001 = 40004,0001
-
-b = (2; 2,0001)  →  x = (1; 1)
-b = (2; 2,0002)  →  x = (0; 2)
+```matice
+A = [1 1; 1 1,0001]
+| součet 2; součet 2,0001
+A⁻¹ = [10001 −10000; −10000 10000]
+| součet 20001; součet 20000
+- ‖A‖∞ = 2,0001, ‖A⁻¹‖∞ = 20001
+- cond∞(A) = 2,0001 · 20001 = 40004,0001
+- b = (2; 2,0001) → x = (1; 1)
+- b = (2; 2,0002) → x = (0; 2)
 ```
 
 Změna pravé strany o 0,0001 změnila řešení o 1. Tak se projevuje špatná podmíněnost.
@@ -458,10 +458,14 @@ Předpisy po složkách pro i = 1, …, n:
 
 Příklad z poznámek a z listu cvITER_SLAR.pdf. Původní soustava (2 1 −6; 12 7 −3; 3 6 −1), b = (−13; −21; 19) není diagonálně dominantní a Jacobiho metoda by na ní divergovala, protože ρ(B) ≈ 4,42. Po přeházení rovnic v pořadí 2, 3, 1:
 
+```matice
+A = [*12 7 −3; 3 *6 −1; 2 1 *−6]
+| |12| > 7 + 3; |6| > 3 + 1; |−6| > 2 + 1
+b = [−21; 19; −13]
+- Diagonála je v rámečku. V každém řádku je její prvek v absolutní hodnotě větší než součet absolutních hodnot ostatních prvků, takže A je ryze řádkově diagonálně dominantní.
 ```
-A = (12 7 −3; 3 6 −1; 2 1 −6), b = (−21; 19; −13)
-|12| > 7 + 3,  |6| > 3 + 1,  |−6| > 2 + 1   → ryze řádkově diagonálně dominantní
 
+```
 Jacobi:
 x1(k+1) =  1/12 · (−21 − 7·x2(k) + 3·x3(k))
 x2(k+1) =  1/6  · ( 19 − 3·x1(k) +   x3(k))
