@@ -535,7 +535,7 @@ k
 - Pro soustavu z příkladu vychází u Jacobiho metody ‖B‖∞ ≈ 0,833 a ρ(B) ≈ 0,693, u Gauss-Seidelovy ρ(B) ≈ 0,255.
 - Maticový tvar dává stejná čísla jako předpisy po složkách.
 
-Ritzova (prostá) iterační metoda z poznámek (str. 2 a 3) a z listu cvITER_SLAR.pdf má ‖B‖₁ = 0,9 a vyjde x ≈ (−0,896848; 2,389685; 1,310888) po 13 iteracích.
+Ritzova (prostá) iterační metoda z poznámek (str. 2 a 3) a z listu cvITER_SLAR.pdf má ‖B‖₁ = 0,9. Funkce `Ritz` má pevnou toleranci 10⁻⁴ a z x⁽⁰⁾ = (0; 0; 0) skončí po 9 iteracích s x ≈ (−0,8968; 2,3897; 1,3109). Přesné řešení je x ≈ (−0,896848; 2,389685; 1,310888).
 
 > Pozor
 > V poznámkách je u Ritzovy metody x₃ = 1,309. Správně je 1,3109, stejně jako na listu cvITER_SLAR.pdf.
